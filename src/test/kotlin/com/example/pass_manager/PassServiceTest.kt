@@ -1,6 +1,7 @@
 package com.example.pass_manager
 
-import com.example.pass_manager.data.TestDataFixture
+import com.example.pass_manager.data.ClientFixture
+import com.example.pass_manager.data.PassFixture
 import com.example.pass_manager.repositories.PassRepository
 import com.example.pass_manager.service.ClientService
 import com.example.pass_manager.service.PassServiceImpl
@@ -13,7 +14,6 @@ import io.mockk.justRun
 import io.mockk.verify
 import io.mockk.verifyOrder
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
@@ -29,21 +29,14 @@ class PassServiceTest {
     @InjectMockKs
     private lateinit var passService: PassServiceImpl
 
-    companion object {
-        private lateinit var data: TestDataFixture
-
-        @JvmStatic
-        @BeforeAll
-        fun setupFixture() {
-            data = TestDataFixture()
-        }
-    }
+    private val clientFixture = ClientFixture
+    private val passFixture = PassFixture
 
     @Test
     fun `calculating price distribution for client should return valid result list`() {
-        every { passRepository.findAllByClientId(any()) } returns data.passes
+        every { passRepository.findAllByClientId(any()) } returns passFixture.passes
 
-        val priceDistributions = passService.calculatePriceDistribution(data.clientId)
+        val priceDistributions = passService.calculatePriceDistribution(clientFixture.clientId)
         val expected = listOf("First type", "Second type", "Third type").map { PriceDistribution(it, BigDecimal.TEN) }
 
         assertThat(priceDistributions).isEqualTo(expected)
@@ -53,11 +46,11 @@ class PassServiceTest {
 
     @Test
     fun `transfering pass to another client should complete if all ids are valid`() {
-        every { passService.findById(any()) } returns data.singlePass
-        every { clientService.findById(any()) } returns data.clientFromDb
-        justRun { passRepository.updateMongoPassByClient(data.singlePass, data.clientFromDb) }
+        every { passService.findById(any()) } returns passFixture.singlePass
+        every { clientService.findById(any()) } returns clientFixture.clientFromDb
+        justRun { passRepository.updateMongoPassByClient(passFixture.singlePass, clientFixture.clientFromDb) }
 
-        assertThat(passService.transferPassToAnotherClient(data.singlePassId, data.clientId))
+        assertThat(passService.transferPassToAnotherClient(passFixture.singlePassId, clientFixture.clientId))
 
         verifyOrder {
             passService.findById(any())

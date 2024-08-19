@@ -41,7 +41,7 @@ class ClientServiceImpl(
             val isInList = passes.map { it.id }.contains(passId)
             passRepository.deleteById(passId)
             isInList
-        } ?: false
+        } ?: throw ClientNotFoundException(clientId)
     }
 
     override fun calculateSpentAfterDate(afterDate: Instant, clientId: ObjectId): BigDecimal {

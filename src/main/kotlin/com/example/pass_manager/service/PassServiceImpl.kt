@@ -27,7 +27,7 @@ class PassServiceImpl(
     override fun calculatePriceDistribution(clientId: ObjectId): List<PriceDistribution> {
         val passTypeWithTotalMap = passRepository.findAllByClientId(clientId)
             .map { pass -> pass.passType to pass.purchasedFor }
-            .groupBy({ pair -> pair.first?.name }, { it.second })
+            .groupBy({ (passType, _) -> passType?.name }, { it.second })
             .mapValues { (_, prices) -> prices.sumOf { price -> price ?: BigDecimal.ZERO } }
 
         return passTypeWithTotalMap.map { PriceDistribution(it.key, it.value) }
