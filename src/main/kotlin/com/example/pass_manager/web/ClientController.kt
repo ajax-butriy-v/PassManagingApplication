@@ -15,7 +15,7 @@ import java.time.Instant
 
 @RestController
 @RequestMapping("/clients")
-class ClientController(private val clientService: ClientService) {
+class ClientController(private val clientService: ClientService,) {
 
     @GetMapping("/{id}")
     fun calculateSpentAfterDate(

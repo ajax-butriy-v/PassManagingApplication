@@ -14,7 +14,7 @@ import java.time.Instant
 @Service
 class ClientServiceImpl(
     private val clientRepository: ClientRepository,
-    private val passRepository: PassRepository
+    private val passRepository: PassRepository,
 ) : ClientService {
     override fun findById(clientId: ObjectId): MongoClient? = clientRepository.findByIdOrNull(clientId)
 

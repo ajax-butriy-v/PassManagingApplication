@@ -14,7 +14,7 @@ data class MongoClient(
     val lastName: String?,
     val phoneNumber: String?,
     val email: String?,
-    val ownedPasses: List<MongoPass>?
+    val ownedPasses: List<MongoPass>?,
 ) {
 
     companion object {

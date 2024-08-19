@@ -10,5 +10,5 @@ data class MongoClientDto(
     @NotBlank(message = "Specify phone number")
     val phoneNumber: String?,
     @NotBlank(message = "Specify email")
-    val email: String?
+    val email: String?,
 )

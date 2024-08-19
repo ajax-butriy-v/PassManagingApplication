@@ -7,5 +7,5 @@ import java.time.Instant
 data class SpentAfterDateDto(
     val afterDate: Instant,
     val clientId: ObjectId,
-    val total: BigDecimal
+    val total: BigDecimal,
 )

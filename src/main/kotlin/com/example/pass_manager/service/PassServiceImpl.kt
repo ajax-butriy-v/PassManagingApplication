@@ -14,7 +14,7 @@ import java.math.BigDecimal
 @Service
 class PassServiceImpl(
     private val clientService: ClientService,
-    private val passRepository: PassRepository
+    private val passRepository: PassRepository,
 ) : PassService {
     override fun findById(passId: ObjectId): MongoPass? = passRepository.findByIdOrNull(passId)
 

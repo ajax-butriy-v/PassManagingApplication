@@ -19,7 +19,7 @@ data class MongoPassType(
     val name: String?,
 
     @Field(targetType = FieldType.DECIMAL128)
-    val price: BigDecimal?
+    val price: BigDecimal?,
 ) {
     companion object {
         const val COLLECTION_NAME = "pass_type"
