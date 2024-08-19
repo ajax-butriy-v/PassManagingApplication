@@ -1,3 +1,11 @@
 spring:
   application:
     name: PassManagingApplication
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: test_db
+server:
+  servlet:
+    context-path: /api/v1
