@@ -8,3 +8,4 @@ interface ClientRepository : MongoRepository<Client, ObjectId> {
     fun existsByEmailOrPhoneNumber(email: String, phoneNumber: String): Boolean
     fun findByEmailAndPhoneNumber(email: String, phoneNumber: String): Client?
 }
+

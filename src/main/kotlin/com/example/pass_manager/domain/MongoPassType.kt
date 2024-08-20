@@ -24,3 +24,4 @@ data class MongoPassType(
         const val COLLECTION_NAME = "pass_type"
     }
 }
+

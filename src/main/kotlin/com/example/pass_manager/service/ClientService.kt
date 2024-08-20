@@ -13,3 +13,4 @@ interface ClientService {
     fun calculateSpentAfterDate(afterDate: Instant, clientId: ObjectId): BigDecimal
     fun deleteById(clientId: ObjectId)
 }
+

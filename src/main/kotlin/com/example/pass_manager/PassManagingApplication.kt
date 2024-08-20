@@ -9,3 +9,4 @@ class PassManagingApplication
 fun main(args: Array<String>) {
     runApplication<PassManagingApplication>(*args)
 }
+

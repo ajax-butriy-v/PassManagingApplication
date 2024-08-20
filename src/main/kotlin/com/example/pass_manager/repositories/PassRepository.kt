@@ -11,3 +11,4 @@ interface PassRepository : MongoRepository<MongoPass, ObjectId> {
     fun findAllByClientId(clientId: ObjectId): List<MongoPass>
     fun updateMongoPassByClient(pass: MongoPass, client: Client)
 }
+

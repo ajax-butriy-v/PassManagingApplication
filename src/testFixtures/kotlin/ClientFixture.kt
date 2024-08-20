@@ -24,3 +24,4 @@ object ClientFixture {
     )
     val clientFromDb = clientToCreate.copy(id = clientId)
 }
+

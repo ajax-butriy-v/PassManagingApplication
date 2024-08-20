@@ -11,3 +11,4 @@ interface PassService {
     fun calculatePriceDistribution(clientId: ObjectId): List<PriceDistribution>
     fun transferPassToAnotherClient(passId: ObjectId, targetClientId: ObjectId)
 }
+

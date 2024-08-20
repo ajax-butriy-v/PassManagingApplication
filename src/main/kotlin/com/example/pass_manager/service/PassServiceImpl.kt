@@ -40,3 +40,4 @@ class PassServiceImpl(
             ?: throw ClientNotFoundException(targetClientId)
     }
 }
+

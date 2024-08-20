@@ -114,6 +114,5 @@ class ClientServiceTest {
             passRepository.findAllByClientAndPurchasedAtAfter(any(), any())
         }
     }
-
-
 }
+

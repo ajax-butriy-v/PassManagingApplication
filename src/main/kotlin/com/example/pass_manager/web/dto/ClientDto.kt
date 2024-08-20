@@ -12,3 +12,4 @@ data class ClientDto(
     @NotBlank(message = "Specify email")
     val email: String?,
 )
+

@@ -6,3 +6,4 @@ data class PriceDistribution(
     val typeName: String?,
     val spentForPassType: BigDecimal,
 )
+
