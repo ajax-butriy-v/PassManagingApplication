@@ -1,7 +1,7 @@
 package com.example.pass_manager
 
-import com.example.pass_manager.data.ClientFixture
-import com.example.pass_manager.data.PassFixture
+import ClientFixture
+import PassFixture
 import com.example.pass_manager.exception.ClientAlreadyExistsException
 import com.example.pass_manager.repositories.ClientRepository
 import com.example.pass_manager.repositories.PassRepository
@@ -99,15 +99,13 @@ class ClientServiceTest {
         every { clientService.findById(any()) } returns clientFixture.clientFromDb
         every {
             passRepository.findAllByClientAndPurchasedAtAfter(
-                any(),
-                any()
+                any(), any()
             )
         } returns clientFixture.clientFromDb.ownedPasses!!
 
         assertThat(
             clientService.calculateSpentAfterDate(
-                Instant.now(),
-                clientFixture.clientId
+                Instant.now(), clientFixture.clientId
             )
         ).isEqualTo(BigDecimal.TEN)
 

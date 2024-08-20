@@ -1,6 +1,6 @@
 package com.example.pass_manager.service
 
-import com.example.pass_manager.domain.MongoClient
+import com.example.pass_manager.domain.Client
 import com.example.pass_manager.exception.ClientAlreadyExistsException
 import com.example.pass_manager.exception.ClientNotFoundException
 import com.example.pass_manager.repositories.ClientRepository
@@ -16,16 +16,16 @@ class ClientServiceImpl(
     private val clientRepository: ClientRepository,
     private val passRepository: PassRepository,
 ) : ClientService {
-    override fun findById(clientId: ObjectId): MongoClient? = clientRepository.findByIdOrNull(clientId)
+    override fun findById(clientId: ObjectId): Client? = clientRepository.findByIdOrNull(clientId)
 
-    override fun create(newClient: MongoClient): MongoClient {
+    override fun create(newClient: Client): Client {
         return newClient.ifUnique(
             { !clientRepository.existsByEmailOrPhoneNumber(email ?: "", phoneNumber ?: "") },
             { uniqueClient -> clientRepository.insert(uniqueClient) }
         )
     }
 
-    override fun update(clientId: ObjectId, modifiedClient: MongoClient): MongoClient {
+    override fun update(clientId: ObjectId, modifiedClient: Client): Client {
         return modifiedClient.ifUnique({
             val clientWithSameCredentialsInDb = clientRepository.findByEmailAndPhoneNumber(
                 email ?: "",
@@ -56,7 +56,7 @@ class ClientServiceImpl(
         clientRepository.deleteById(clientId)
     }
 
-    private fun <R> MongoClient.ifUnique(predicate: MongoClient.() -> Boolean, finisher: (MongoClient) -> R): R {
+    private fun <R> Client.ifUnique(predicate: Client.() -> Boolean, finisher: (Client) -> R): R {
         return if (predicate(this)) finisher.invoke(this) else throw ClientAlreadyExistsException()
     }
 

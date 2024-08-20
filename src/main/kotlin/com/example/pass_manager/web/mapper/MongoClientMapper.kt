@@ -1,16 +1,16 @@
 package com.example.pass_manager.web.mapper
 
-import com.example.pass_manager.domain.MongoClient
-import com.example.pass_manager.web.dto.MongoClientDto
+import com.example.pass_manager.domain.Client
+import com.example.pass_manager.web.dto.ClientDto
 
 
 object MongoClientMapper {
-    fun MongoClient.toDto(): MongoClientDto {
-        return MongoClientDto(firstName, lastName, phoneNumber, email)
+    fun Client.toDto(): ClientDto {
+        return ClientDto(firstName, lastName, phoneNumber, email)
     }
 
-    fun MongoClientDto.toEntity(): MongoClient {
-        return MongoClient(
+    fun ClientDto.toEntity(): Client {
+        return Client(
             firstName = firstName,
             id = null,
             lastName = lastName,
@@ -20,7 +20,7 @@ object MongoClientMapper {
         )
     }
 
-    fun MongoClient.partialUpdate(dto: MongoClientDto): MongoClient {
+    fun Client.partialUpdate(dto: ClientDto): Client {
         return copy(
             firstName = dto.firstName ?: firstName,
             lastName = dto.lastName ?: lastName,

@@ -17,7 +17,6 @@ data class MongoPassType(
     val activeFrom: Instant?,
     val activeTo: Instant?,
     val name: String?,
-
     @Field(targetType = FieldType.DECIMAL128)
     val price: BigDecimal?,
 ) {

@@ -8,13 +8,12 @@ import org.springframework.data.mongodb.core.mapping.Document
 import java.math.BigDecimal
 import java.time.Instant
 
-
 @TypeAlias("Pass")
 @Document(collection = COLLECTION_NAME)
 data class MongoPass(
     @Id val id: ObjectId?,
     val purchasedFor: BigDecimal?,
-    val client: MongoClient?,
+    val client: Client?,
     val passType: MongoPassType?,
     val purchasedAt: Instant?,
 ) {

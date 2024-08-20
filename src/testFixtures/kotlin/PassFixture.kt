@@ -1,5 +1,3 @@
-package com.example.pass_manager.data
-
 import com.example.pass_manager.domain.MongoPass
 import com.example.pass_manager.domain.MongoPassType
 import org.bson.types.ObjectId
@@ -29,5 +27,5 @@ object PassFixture {
     }
 
     val singlePass = passes.first()
-    val singlePassId: ObjectId = singlePass.id ?: ObjectId("")
+    val singlePassId: ObjectId = singlePass.id!!
 }

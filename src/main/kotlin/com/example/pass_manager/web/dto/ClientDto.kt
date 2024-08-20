@@ -2,7 +2,7 @@ package com.example.pass_manager.web.dto
 
 import jakarta.validation.constraints.NotBlank
 
-data class MongoClientDto(
+data class ClientDto(
     @NotBlank(message = "Specify first name")
     val firstName: String?,
     @NotBlank(message = "Specify last name")

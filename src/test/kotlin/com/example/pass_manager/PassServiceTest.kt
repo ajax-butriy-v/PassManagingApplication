@@ -1,7 +1,7 @@
 package com.example.pass_manager
 
-import com.example.pass_manager.data.ClientFixture
-import com.example.pass_manager.data.PassFixture
+import ClientFixture
+import PassFixture
 import com.example.pass_manager.repositories.PassRepository
 import com.example.pass_manager.service.ClientService
 import com.example.pass_manager.service.PassServiceImpl

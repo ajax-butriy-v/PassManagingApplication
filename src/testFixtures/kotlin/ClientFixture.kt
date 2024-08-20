@@ -1,6 +1,4 @@
-package com.example.pass_manager.data
-
-import com.example.pass_manager.domain.MongoClient
+import com.example.pass_manager.domain.Client
 import com.example.pass_manager.domain.MongoPass
 import org.bson.types.ObjectId
 import java.math.BigDecimal
@@ -8,7 +6,7 @@ import java.time.Instant
 
 object ClientFixture {
     val clientId: ObjectId = ObjectId.get()
-    val clientToCreate = MongoClient(
+    val clientToCreate = Client(
         id = null,
         firstName = "First Name",
         lastName = "Last Name",
