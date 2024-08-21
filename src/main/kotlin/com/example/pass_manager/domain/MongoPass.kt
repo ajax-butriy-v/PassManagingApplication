@@ -13,7 +13,7 @@ import java.time.Instant
 data class MongoPass(
     @Id val id: ObjectId?,
     val purchasedFor: BigDecimal?,
-    val client: Client?,
+    val passOwner: MongoPassOwner?,
     val passType: MongoPassType?,
     val purchasedAt: Instant?,
 ) {

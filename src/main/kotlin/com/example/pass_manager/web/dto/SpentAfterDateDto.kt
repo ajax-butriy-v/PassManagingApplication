@@ -4,7 +4,7 @@ import java.math.BigDecimal
 import java.time.Instant
 
 data class SpentAfterDateDto(
-    val clientId: String,
+    val passOwnerId: String,
     val afterDate: Instant,
     val total: BigDecimal,
 )
