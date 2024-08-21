@@ -59,6 +59,5 @@ class PassOwnerController(
         passOwnerService.deleteById(id.toObjectId())
         return ResponseEntity.noContent().build()
     }
-
 }
 

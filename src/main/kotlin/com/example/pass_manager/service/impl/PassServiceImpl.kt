@@ -30,6 +30,5 @@ class PassServiceImpl(private val passRepository: PassRepository, ) : PassServic
     override fun updateByPassOwner(pass: MongoPass, passOwner: MongoPassOwner): MongoPass {
         return passRepository.updateMongoPassByPassOwner(pass, passOwner)
     }
-
 }
 

@@ -40,6 +40,5 @@ object PassFixture {
     val passFromDb = passes.first()
     val singlePassId: ObjectId = passFromDb.id!!
     val updatedPass = passFromDb.copy(passOwner = updatedOwner)
-
 }
 

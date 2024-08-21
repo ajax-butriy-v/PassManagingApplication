@@ -82,8 +82,7 @@ internal class PassServiceTest {
         // GIVEN
         every {
             passRepository.updateMongoPassByPassOwner(
-                any(),
-                any()
+                any(), any()
             )
         } returns updatedPass
 
@@ -92,8 +91,6 @@ internal class PassServiceTest {
 
         // THEN
         verify { passRepository.updateMongoPassByPassOwner(any(), any()) }
-
-
     }
 }
 
