@@ -1,6 +1,5 @@
 package com.example.pass_manager.service.impl
 
-import com.example.pass_manager.domain.MongoPass
 import com.example.pass_manager.exception.PassNotFoundException
 import com.example.pass_manager.exception.PassOwnerNotFoundException
 import com.example.pass_manager.service.PassManagementService
@@ -23,10 +22,10 @@ class PassManagementServiceImpl(
     }
 
 
-    override fun transferPassToAnotherClient(passId: ObjectId, targetPassOwnerId: ObjectId): MongoPass {
+    override fun transferPass(passId: ObjectId, targetPassOwnerId: ObjectId) {
         val passInDb = passService.findById(passId) ?: throw PassNotFoundException(passId)
         val targetClient = passOwnerService.findById(targetPassOwnerId)
-        return targetClient?.let { passService.updateByPassOwner(passInDb, it) }
+        targetClient?.also { passService.updateByPassOwner(passInDb, it) }
             ?: throw PassOwnerNotFoundException(targetPassOwnerId)
     }
 }

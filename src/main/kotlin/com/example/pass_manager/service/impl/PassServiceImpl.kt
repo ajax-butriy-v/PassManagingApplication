@@ -27,8 +27,8 @@ class PassServiceImpl(private val passRepository: PassRepository, ) : PassServic
         return passRepository.findAllByPassOwnerId(passOwnerId)
     }
 
-    override fun updateByPassOwner(pass: MongoPass, passOwner: MongoPassOwner): MongoPass {
-        return passRepository.updateMongoPassByPassOwner(pass, passOwner)
+    override fun updateByPassOwner(pass: MongoPass, passOwner: MongoPassOwner) {
+        passRepository.updateMongoPassByPassOwner(pass, passOwner)
     }
 }
 

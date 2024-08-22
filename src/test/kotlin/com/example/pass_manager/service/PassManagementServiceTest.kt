@@ -4,7 +4,6 @@ import com.example.pass_manager.service.impl.PassManagementServiceImpl
 import com.example.pass_manager.util.PassFixture.passFromDb
 import com.example.pass_manager.util.PassFixture.passes
 import com.example.pass_manager.util.PassFixture.singlePassId
-import com.example.pass_manager.util.PassFixture.updatedPass
 import com.example.pass_manager.util.PassOwnerFixture.passOwnerFromDb
 import com.example.pass_manager.util.PassOwnerFixture.passOwnerId
 import io.mockk.every
@@ -13,7 +12,6 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.justRun
 import io.mockk.verifyOrder
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.Test
@@ -50,10 +48,10 @@ internal class PassManagementServiceTest {
         // GIVEN
         every { passService.findById(any()) } returns passFromDb
         every { passOwnerService.findById(any()) } returns passOwnerFromDb
-        every { passService.updateByPassOwner(passFromDb, passOwnerFromDb) } returns updatedPass
+        justRun { passService.updateByPassOwner(passFromDb, passOwnerFromDb) }
 
         // WHEN
-        assertThat(passManagementService.transferPassToAnotherClient(singlePassId, passOwnerId)).isEqualTo(updatedPass)
+        passManagementService.transferPass(singlePassId, passOwnerId)
 
         // THEN
         verifyOrder {

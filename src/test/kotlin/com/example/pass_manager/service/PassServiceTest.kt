@@ -6,7 +6,6 @@ import com.example.pass_manager.service.impl.PassServiceImpl
 import com.example.pass_manager.util.PassFixture.passFromDb
 import com.example.pass_manager.util.PassFixture.passToCreate
 import com.example.pass_manager.util.PassFixture.passes
-import com.example.pass_manager.util.PassFixture.updatedPass
 import com.example.pass_manager.util.PassOwnerFixture.passOwnerFromDb
 import com.example.pass_manager.util.PassOwnerFixture.passOwnerId
 import com.example.pass_manager.util.PassOwnerFixture.updatedOwner
@@ -80,14 +79,10 @@ internal class PassServiceTest {
     @Test
     fun updateByPassOwner() {
         // GIVEN
-        every {
-            passRepository.updateMongoPassByPassOwner(
-                any(), any()
-            )
-        } returns updatedPass
+        justRun { passRepository.updateMongoPassByPassOwner(any(), any()) }
 
         // WHEN
-        assertThat(passService.updateByPassOwner(passFromDb, updatedOwner)).isEqualTo(updatedPass)
+        passService.updateByPassOwner(passFromDb, updatedOwner)
 
         // THEN
         verify { passRepository.updateMongoPassByPassOwner(any(), any()) }

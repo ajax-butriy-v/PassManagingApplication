@@ -11,6 +11,6 @@ interface PassService {
     fun deleteById(passId: ObjectId)
     fun findAllByPassOwnerAndPurchasedAtAfter(passOwner: MongoPassOwner, afterDate: Instant): List<MongoPass>
     fun findAllByPassOwnerId(passOwnerId: ObjectId): List<MongoPass>
-    fun updateByPassOwner(pass: MongoPass, passOwner: MongoPassOwner): MongoPass
+    fun updateByPassOwner(pass: MongoPass, passOwner: MongoPassOwner)
 }
 
