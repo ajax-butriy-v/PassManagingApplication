@@ -6,7 +6,7 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.TypeAlias
 import org.springframework.data.mongodb.core.mapping.Document
 
-@TypeAlias("MongoClient")
+@TypeAlias("PassOwner")
 @Document(collection = COLLECTION_NAME)
 data class MongoPassOwner(
     @Id val id: ObjectId?,
@@ -16,9 +16,8 @@ data class MongoPassOwner(
     val email: String?,
     val ownedPasses: List<MongoPass>?,
 ) {
-
     companion object {
-        const val COLLECTION_NAME = "client"
+        const val COLLECTION_NAME = "pass_owner"
     }
 }
 

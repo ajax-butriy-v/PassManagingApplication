@@ -15,7 +15,7 @@ data class MongoPass(
     val purchasedFor: BigDecimal?,
     val passOwner: MongoPassOwner?,
     val passType: MongoPassType?,
-    val purchasedAt: Instant?,
+    val purchasedAt: Instant? = Instant.now(),
 ) {
     companion object {
         const val COLLECTION_NAME = "pass"

@@ -19,8 +19,8 @@ class PassServiceImpl(private val passRepository: PassRepository, ) : PassServic
         passRepository.deleteById(passId)
     }
 
-    override fun findAllByPassOwnerAndPurchasedAtAfter(passOwner: MongoPassOwner, afterDate: Instant): List<MongoPass> {
-        return passRepository.findAllByPassOwnerAndPurchasedAtAfter(passOwner, afterDate)
+    override fun findAllByPassOwnerAndPurchasedAtGreaterThan(passOwner: MongoPassOwner, afterDate: Instant): List<MongoPass> {
+        return passRepository.findAllByPassOwnerAndPurchasedAtGreaterThan(passOwner, afterDate)
     }
 
     override fun findAllByPassOwnerId(passOwnerId: ObjectId): List<MongoPass> {

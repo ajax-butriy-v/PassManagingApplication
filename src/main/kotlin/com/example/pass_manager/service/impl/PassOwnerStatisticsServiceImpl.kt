@@ -18,7 +18,7 @@ class PassOwnerStatisticsServiceImpl(
     override fun calculateSpentAfterDate(afterDate: Instant, passOwnerId: ObjectId): BigDecimal {
         val clientInDb = passOwnerService.findById(passOwnerId)
         return clientInDb?.let { client ->
-            val ownedPassesAfterDate = passService.findAllByPassOwnerAndPurchasedAtAfter(client, afterDate)
+            val ownedPassesAfterDate = passService.findAllByPassOwnerAndPurchasedAtGreaterThan(client, afterDate)
             ownedPassesAfterDate.map { it.purchasedFor ?: BigDecimal.ZERO }.sumOf { it }
         } ?: throw PassOwnerNotFoundException(passOwnerId)
     }
