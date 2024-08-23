@@ -1,6 +1,7 @@
-package com.example.pass_manager.service
+package com.example.pass_manager.service.impl
 
-import com.example.pass_manager.service.impl.PassManagementServiceImpl
+import com.example.pass_manager.service.PassOwnerService
+import com.example.pass_manager.service.PassService
 import com.example.pass_manager.util.PassFixture.passFromDb
 import com.example.pass_manager.util.PassFixture.passes
 import com.example.pass_manager.util.PassFixture.singlePassId
@@ -17,7 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.Test
 
 @ExtendWith(MockKExtension::class)
-internal class PassManagementServiceTest {
+internal class PassManagementServiceImplTest {
     @MockK
     private lateinit var passOwnerService: PassOwnerService
 

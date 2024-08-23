@@ -1,9 +1,8 @@
-package com.example.pass_manager.service
+package com.example.pass_manager.service.impl
 
 
 import com.example.pass_manager.domain.MongoPassOwner
 import com.example.pass_manager.repositories.PassOwnerRepository
-import com.example.pass_manager.service.impl.PassOwnerServiceImpl
 import com.example.pass_manager.util.PassOwnerFixture.passOwnerFromDb
 import com.example.pass_manager.util.PassOwnerFixture.passOwnerId
 import com.example.pass_manager.util.PassOwnerFixture.passOwnerToCreate
@@ -19,7 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.data.repository.findByIdOrNull
 
 @ExtendWith(MockKExtension::class)
-internal class PassOwnerServiceTest {
+internal class PassOwnerServiceImplTest {
     @MockK
     private lateinit var passOwnerRepository: PassOwnerRepository
 

@@ -21,11 +21,10 @@ class PassManagementServiceImpl(
         return listContainsPass
     }
 
-
     override fun transferPass(passId: ObjectId, targetPassOwnerId: ObjectId) {
         val passInDb = passService.findById(passId) ?: throw PassNotFoundException(passId)
-        val targetClient = passOwnerService.findById(targetPassOwnerId)
-        targetClient?.also { passService.updateByPassOwner(passInDb, it) }
+        val targetPassOwner = passOwnerService.findById(targetPassOwnerId)
+        targetPassOwner?.also { passService.updateByPassOwner(passInDb, it) }
             ?: throw PassOwnerNotFoundException(targetPassOwnerId)
     }
 }

@@ -1,8 +1,7 @@
-package com.example.pass_manager.service
+package com.example.pass_manager.service.impl
 
 import com.example.pass_manager.domain.MongoPass
 import com.example.pass_manager.repositories.PassRepository
-import com.example.pass_manager.service.impl.PassServiceImpl
 import com.example.pass_manager.util.PassFixture.passFromDb
 import com.example.pass_manager.util.PassFixture.passToCreate
 import com.example.pass_manager.util.PassFixture.passes
@@ -22,7 +21,7 @@ import org.springframework.data.repository.findByIdOrNull
 import java.time.Instant
 
 @ExtendWith(MockKExtension::class)
-internal class PassServiceTest {
+internal class PassServiceImplTest {
     @MockK
     private lateinit var passRepository: PassRepository
 
@@ -58,12 +57,12 @@ internal class PassServiceTest {
 
     @Test
     fun `should return all passes for owner after particular date`() {
-        every { passRepository.findAllByPassOwnerAndPurchasedAtAfter(any(), any()) } returns passes
+        every { passRepository.findAllByPassOwnerAndPurchasedAtGreaterThan(any(), any()) } returns passes
 
-        val afterDateList = passService.findAllByPassOwnerAndPurchasedAtAfter(passOwnerFromDb, Instant.MIN)
+        val afterDateList = passService.findAllByPassOwnerAndPurchasedAtGreaterThan(passOwnerFromDb, Instant.MIN)
         assertThat(afterDateList).size().isEqualTo(3)
 
-        verify { passRepository.findAllByPassOwnerAndPurchasedAtAfter(any(), any()) }
+        verify { passRepository.findAllByPassOwnerAndPurchasedAtGreaterThan(any(), any()) }
     }
 
     @Test

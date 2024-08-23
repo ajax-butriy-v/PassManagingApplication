@@ -1,6 +1,7 @@
-package com.example.pass_manager.service
+package com.example.pass_manager.service.impl
 
-import com.example.pass_manager.service.impl.PassOwnerStatisticsServiceImpl
+import com.example.pass_manager.service.PassOwnerService
+import com.example.pass_manager.service.PassService
 import com.example.pass_manager.util.PassFixture.passes
 import com.example.pass_manager.util.PassOwnerFixture
 import com.example.pass_manager.util.PassOwnerFixture.passOwnerId
@@ -17,7 +18,7 @@ import java.time.Instant
 import kotlin.test.Test
 
 @ExtendWith(MockKExtension::class)
-internal class PassOwnerStatisticsServiceTest {
+internal class PassOwnerStatisticsServiceImplTest {
     @MockK
     private lateinit var passOwnerService: PassOwnerService
 
@@ -31,7 +32,7 @@ internal class PassOwnerStatisticsServiceTest {
     fun `calculating spent after date should return positive BigDecimal value if there are passes`() {
         // GIVEN
         every { passOwnerService.findById(any()) } returns PassOwnerFixture.passOwnerFromDb
-        every { passService.findAllByPassOwnerAndPurchasedAtAfter(any(), any()) } returns passes
+        every { passService.findAllByPassOwnerAndPurchasedAtGreaterThan(any(), any()) } returns passes
 
         // WHEN
         assertThat(passOwnerStatisticsService.calculateSpentAfterDate(Instant.now(), passOwnerId))
@@ -40,7 +41,7 @@ internal class PassOwnerStatisticsServiceTest {
         // THEN
         verify {
             passOwnerService.findById(any())
-            passService.findAllByPassOwnerAndPurchasedAtAfter(any(), any())
+            passService.findAllByPassOwnerAndPurchasedAtGreaterThan(any(), any())
         }
     }
 

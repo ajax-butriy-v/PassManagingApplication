@@ -12,3 +12,4 @@ class PassDto(
     @NotNull(message = "Specify pass type id")
     val passTypeId: String?,
 )
+

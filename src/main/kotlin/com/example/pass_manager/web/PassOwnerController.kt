@@ -38,10 +38,10 @@ class PassOwnerController(
     @GetMapping("/{id}/spent")
     fun calculateSpentAfterDate(
         @RequestParam afterDate: Instant,
-        @PathVariable("id") clientId: String,
+        @PathVariable("id") ownerId: String,
     ): ResponseEntity<SpentAfterDateDto> {
-        val totalSpent = passOwnerStatisticsService.calculateSpentAfterDate(afterDate, clientId.toObjectId())
-        return ResponseEntity.ok(SpentAfterDateDto(clientId, afterDate, totalSpent))
+        val totalSpent = passOwnerStatisticsService.calculateSpentAfterDate(afterDate, ownerId.toObjectId())
+        return ResponseEntity.ok(SpentAfterDateDto(ownerId, afterDate, totalSpent))
     }
 
     @PostMapping
@@ -53,11 +53,11 @@ class PassOwnerController(
     @PatchMapping("/{id}")
     fun partialUpdate(
         @Valid @RequestBody dto: PassOwnerDto,
-        @PathVariable("id") clientId: String,
+        @PathVariable("id") ownerId: String,
     ): ResponseEntity<PassOwnerDto> {
-        return passOwnerService.findById(clientId.toObjectId())?.let {
-            val mappedClient = it.partialUpdate(dto)
-            val updatedInDb = passOwnerService.update(clientId.toObjectId(), mappedClient)
+        return passOwnerService.findById(ownerId.toObjectId())?.let {
+            val mappedOwner = it.partialUpdate(dto)
+            val updatedInDb = passOwnerService.update(ownerId.toObjectId(), mappedOwner)
             ResponseEntity.ok(updatedInDb.toDto())
         } ?: ResponseEntity.notFound().build()
     }

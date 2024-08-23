@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service
 
 @Service
 class PassOwnerServiceImpl(private val passOwnerRepository: PassOwnerRepository) : PassOwnerService {
-    override fun findById(passOwnerId: ObjectId): MongoPassOwner? = passOwnerRepository.findByIdOrNull(passOwnerId)
+    override fun findById(passOwnerId: ObjectId): MongoPassOwner? {
+        return passOwnerRepository.findByIdOrNull(passOwnerId)
+    }
 
     override fun create(newMongoPassOwner: MongoPassOwner): MongoPassOwner {
         return passOwnerRepository.insert(newMongoPassOwner)
