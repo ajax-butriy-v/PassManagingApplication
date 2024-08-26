@@ -1,15 +1,17 @@
 package com.example.pass_manager.web.dto
 
+import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Pattern
 
 data class PassOwnerDto(
-    @NotBlank(message = "Specify first name")
+    @field:NotBlank(message = "Specify first name")
     val firstName: String?,
-    @NotBlank(message = "Specify last name")
+    @field:NotBlank(message = "Specify last name")
     val lastName: String?,
-    @NotBlank(message = "Specify phone number")
+    @field:Pattern(regexp = "(^$|[0-9]{10})", message = "Specify valid phone number")
     val phoneNumber: String?,
-    @NotBlank(message = "Specify email")
+    @field:Email(message = "Specify valid email")
     val email: String?,
 )
 

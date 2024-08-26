@@ -6,12 +6,12 @@ entity "pass" as passes {
    *id: ObjectId <<generated PK>>
     --
     purchasedFor: BigDecimal
-    client: MongoClient
+    passOwner: MongoPassOwner
     passType: MongoPassType
     purchasedAt: Instant
 }
 
-entity "client" as clients {
+entity "passOwner" as passOwners {
    *id: ObjectId <<generated PK>>
     --
     firstName: String
@@ -31,6 +31,6 @@ entity "pass_type" as types {
 }
 
 
-clients ||..o{ passes
+passOwners ||..o{ passes
 types ||--o{ passes
 @enduml
