@@ -1,0 +1,36 @@
+@startuml as database
+skinparam linetype ortho
+!pragma layout smetana
+
+entity "pass" as passes {
+   *id: ObjectId <<generated PK>>
+    --
+    purchasedFor: BigDecimal
+    passOwner: MongoPassOwner
+    passType: MongoPassType
+    purchasedAt: Instant
+}
+
+entity "passOwner" as passOwners {
+   *id: ObjectId <<generated PK>>
+    --
+    firstName: String
+    lastName: String
+    phoneNumber: String
+    email: String
+    ownedPasses: List<MongoPass>
+}
+
+entity "pass_type" as types {
+   *id: ObjectId <<generated PK>>
+    --
+    name: String
+    activeFrom: Instant
+    activeUntil: Instant
+    price: BigDecimal
+}
+
+
+passOwners ||..o{ passes
+types ||--o{ passes
+@enduml

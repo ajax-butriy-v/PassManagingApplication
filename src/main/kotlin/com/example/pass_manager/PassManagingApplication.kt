@@ -7,5 +7,6 @@ import org.springframework.boot.runApplication
 class PassManagingApplication
 
 fun main(args: Array<String>) {
-	runApplication<PassManagingApplication>(*args)
+    runApplication<PassManagingApplication>(*args)
 }
+
