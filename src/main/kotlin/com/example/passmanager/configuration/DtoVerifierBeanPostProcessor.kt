@@ -42,7 +42,7 @@ class DtoVerifierBeanPostProcessor : BeanPostProcessor {
                 if (method in targetMethods.methodsWithDto) {
                     getIdViolationsList(args).takeIf { it.isNotEmpty() }?.let { throw InvalidIdTypeException(it) }
                 }
-                proxy.invokeSuper(obj, args ?: emptyArray()) // add try logic
+                proxy.invokeSuper(obj, args ?: emptyArray())
             }
         } ?: bean
     }

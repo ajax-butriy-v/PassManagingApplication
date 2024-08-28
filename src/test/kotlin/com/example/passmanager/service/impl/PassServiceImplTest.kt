@@ -2,9 +2,13 @@ package com.example.passmanager.service.impl
 
 import com.example.passmanager.domain.MongoPass
 import com.example.passmanager.repositories.PassRepository
+import com.example.passmanager.service.PassOwnerService
+import com.example.passmanager.service.PassTypeService
 import com.example.passmanager.util.PassFixture.passFromDb
 import com.example.passmanager.util.PassFixture.passToCreate
 import com.example.passmanager.util.PassFixture.passes
+import com.example.passmanager.util.PassFixture.singlePassType
+import com.example.passmanager.util.PassFixture.singlePassTypeId
 import com.example.passmanager.util.PassOwnerFixture.passOwnerFromDb
 import com.example.passmanager.util.PassOwnerFixture.passOwnerId
 import com.example.passmanager.util.PassOwnerFixture.updatedOwner
@@ -25,14 +29,22 @@ internal class PassServiceImplTest {
     @MockK
     private lateinit var passRepository: PassRepository
 
+    @MockK
+    private lateinit var passOwnerService: PassOwnerService
+
+    @MockK
+    private lateinit var passTypeService: PassTypeService
+
     @InjectMockKs
     private lateinit var passService: PassServiceImpl
 
     @Test
     fun `creation should return new object with id`() {
+        every { passOwnerService.getById(passOwnerId) } returns passOwnerFromDb
+        every { passTypeService.getById(singlePassTypeId) } returns singlePassType
         every { passRepository.insert(any<MongoPass>()) } returns passFromDb
 
-        assertThat(passService.create(passToCreate)).isEqualTo(passFromDb)
+        assertThat(passService.create(passToCreate, passOwnerId, singlePassTypeId)).isEqualTo(passFromDb)
 
         verify { passRepository.insert(any<MongoPass>()) }
     }

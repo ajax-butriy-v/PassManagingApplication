@@ -22,9 +22,9 @@ class PassServiceImpl(
         return passRepository.findByIdOrNull(passId)
     }
 
-    override fun create(newPass: MongoPass): MongoPass {
-        val passOwner = newPass.passOwner?.id?.let { passOwnerService.getById(it) }
-        val passType = newPass.passType?.id?.let { passTypeService.getById(it) }
+    override fun create(newPass: MongoPass, ownerId: ObjectId, passTypeId: ObjectId): MongoPass {
+        val passOwner = passOwnerService.getById(ownerId)
+        val passType = passTypeService.getById(passTypeId)
         return passRepository.insert(newPass.copy(passOwner = passOwner, passType = passType))
     }
 

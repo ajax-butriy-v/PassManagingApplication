@@ -8,10 +8,10 @@ import java.math.BigDecimal
 @ValidIdFormat
 class PassDto(
     @field:Positive(message = "Specify amount of money spent")
-    val purchasedFor: BigDecimal?,
+    val purchasedFor: BigDecimal,
     @field:NotNull(message = "Specify client id")
-    val passOwnerId: String?,
+    val passOwnerId: String,
     @field:NotNull(message = "Specify pass type id")
-    val passTypeId: String?,
+    val passTypeId: String,
 )
 

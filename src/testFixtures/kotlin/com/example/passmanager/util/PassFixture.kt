@@ -19,6 +19,8 @@ object PassFixture {
                 price = BigDecimal.TEN
             )
         }
+    val singlePassType = passTypes.first()
+    val singlePassTypeId = singlePassType.id!!
     val passToCreate = MongoPass(
         id = null,
         purchasedFor = BigDecimal.TEN,

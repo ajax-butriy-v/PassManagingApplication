@@ -32,7 +32,9 @@ class PassController(
 
     @PostMapping
     fun create(@Valid @RequestBody passDto: PassDto): ResponseEntity<PassDto> {
-        val created = passService.create(passDto.toEntity())
+        val passOwnerId = passDto.passOwnerId.toObjectId()
+        val passTypeId = passDto.passTypeId.toObjectId()
+        val created = passService.create(passDto.toEntity(), passOwnerId, passTypeId)
         return ResponseEntity.status(HttpStatus.CREATED).body(created.toDto())
     }
 
