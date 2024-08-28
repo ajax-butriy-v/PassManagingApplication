@@ -21,7 +21,7 @@ class DtoVerifierBeanPostProcessor : BeanPostProcessor {
     override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any {
         val beanClass = bean::class
         if (beanClass.hasAnnotation<RestController>()) {
-            val membersWithDtoAsParam = getMethodsWithAnnotatedParams<ValidIdFormat>(bean)
+            val membersWithDtoAsParam = getMethodsWithAnnotatedParams<ValidObjectIdFormat>(bean)
             if (membersWithDtoAsParam.isNotEmpty()) {
                 beanNameToClassMap[beanName] = DtoAnnotatedMethods(beanClass.java, membersWithDtoAsParam)
             }
@@ -40,7 +40,8 @@ class DtoVerifierBeanPostProcessor : BeanPostProcessor {
         return beanNameToClassMap[beanName]?.let { targetMethods ->
             createEnhancer(bean) { obj, method, args, proxy ->
                 if (method in targetMethods.methodsWithDto) {
-                    getIdViolationsList(args).takeIf { it.isNotEmpty() }?.let { throw InvalidIdTypeException(it) }
+                    val idViolationsList = getIdViolationsList(args)
+                    if (idViolationsList.isNotEmpty()) throw InvalidIdTypeException(idViolationsList)
                 }
                 proxy.invokeSuper(obj, args ?: emptyArray())
             }
@@ -48,17 +49,23 @@ class DtoVerifierBeanPostProcessor : BeanPostProcessor {
     }
 
     private fun getIdViolationsList(args: Array<Any>): List<String> {
-        val dtoParams = args.filter { it::class.hasAnnotation<ValidIdFormat>() }
+        val dtoParams = args.filter { it::class.hasAnnotation<ValidObjectIdFormat>() }
         return dtoParams.flatMap { dto ->
-            dto::class.declaredMemberProperties.filter { it.name.contains(ID, ignoreCase = true) }
-                .map { field ->
-                    field.isAccessible = true
-                    field.getter.call(dto)
-                }
+            getIdFieldsValues(dto)
                 .filterIsInstance<String>()
                 .filter { !ObjectId.isValid(it) }
         }
     }
+
+    private fun getIdFieldsValues(dto: Any): List<Any?> {
+        val dtoProperties = dto::class.declaredMemberProperties
+        return dtoProperties.filter { it.name.contains(ID, ignoreCase = true) }
+            .map { property ->
+                property.isAccessible = true
+                property.getter.call(dto)
+            }
+    }
+
 
     private fun createEnhancer(bean: Any, methodInterceptor: MethodInterceptor): Any {
         val enhancer = Enhancer()
@@ -69,10 +76,11 @@ class DtoVerifierBeanPostProcessor : BeanPostProcessor {
 
 
         val arguments = primaryConstructorParameters.map { parameter ->
-            beanClass.declaredMemberProperties.first { it.name == parameter.name }.let { memberProperty ->
-                memberProperty.isAccessible = true
-                memberProperty.getter.call(bean)
-            }
+            beanClass.declaredMemberProperties.first { it.name == parameter.name }
+                .let { memberProperty ->
+                    memberProperty.isAccessible = true
+                    memberProperty.getter.call(bean)
+                }
         }.toTypedArray()
 
         enhancer.setSuperclass(bean.javaClass)
@@ -81,10 +89,10 @@ class DtoVerifierBeanPostProcessor : BeanPostProcessor {
     }
 
 
+    private data class DtoAnnotatedMethods(val beanClass: Class<*>, val methodsWithDto: Set<Method>)
+
     companion object {
         private const val ID = "Id"
     }
-
-    private data class DtoAnnotatedMethods(val beanClass: Class<*>, val methodsWithDto: Set<Method>)
 }
 

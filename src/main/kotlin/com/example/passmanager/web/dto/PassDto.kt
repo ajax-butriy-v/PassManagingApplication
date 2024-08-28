@@ -1,11 +1,11 @@
 package com.example.passmanager.web.dto
 
-import com.example.passmanager.configuration.ValidIdFormat
+import com.example.passmanager.configuration.ValidObjectIdFormat
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Positive
 import java.math.BigDecimal
 
-@ValidIdFormat
+@ValidObjectIdFormat
 class PassDto(
     @field:Positive(message = "Specify amount of money spent")
     val purchasedFor: BigDecimal,
