@@ -9,7 +9,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 @Service
-class PassTypeServiceImpl(private val passTypeRepository: PassTypeRepository) : PassTypeService {
+internal class PassTypeServiceImpl(private val passTypeRepository: PassTypeRepository) : PassTypeService {
     override fun findById(id: ObjectId): MongoPassType? {
         return passTypeRepository.findByIdOrNull(id)
     }
@@ -25,6 +25,4 @@ class PassTypeServiceImpl(private val passTypeRepository: PassTypeRepository) : 
     override fun deleteById(id: ObjectId) {
         passTypeRepository.deleteById(id)
     }
-
 }
-

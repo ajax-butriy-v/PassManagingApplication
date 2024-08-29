@@ -8,4 +8,3 @@ data class SpentAfterDateDto(
     val afterDate: Instant,
     val total: BigDecimal,
 )
-

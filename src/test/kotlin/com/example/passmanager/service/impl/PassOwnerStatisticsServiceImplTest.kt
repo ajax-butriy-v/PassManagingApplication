@@ -59,4 +59,3 @@ internal class PassOwnerStatisticsServiceImplTest {
         verify { passService.findAllByPassOwnerId(any()) }
     }
 }
-

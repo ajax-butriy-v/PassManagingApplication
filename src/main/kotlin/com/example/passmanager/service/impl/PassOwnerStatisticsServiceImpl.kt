@@ -10,7 +10,7 @@ import java.math.BigDecimal
 import java.time.Instant
 
 @Service
-class PassOwnerStatisticsServiceImpl(
+internal class PassOwnerStatisticsServiceImpl(
     private val passOwnerService: PassOwnerService,
     private val passService: PassService,
 ) : PassOwnerStatisticsService {
@@ -31,4 +31,3 @@ class PassOwnerStatisticsServiceImpl(
         return passTypeWithTotalMap.map { PriceDistribution(it.key, it.value) }
     }
 }
-

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/passes")
-class PassController(
+internal class PassController(
     private val passService: PassService,
     private val passManagementService: PassManagementService,
 ) {
@@ -54,6 +54,4 @@ class PassController(
         passService.deleteById(id.toObjectId())
         return ResponseEntity.noContent().build()
     }
-
 }
-

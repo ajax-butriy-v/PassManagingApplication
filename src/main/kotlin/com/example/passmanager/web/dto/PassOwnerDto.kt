@@ -14,4 +14,3 @@ data class PassOwnerDto(
     @field:Email(message = "Specify valid email")
     val email: String?,
 )
-

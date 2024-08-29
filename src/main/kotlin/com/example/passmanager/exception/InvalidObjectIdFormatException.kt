@@ -1,6 +1,5 @@
 package com.example.passmanager.exception
 
-class InvalidIdTypeException(message: String) : RuntimeException(message) {
+internal class InvalidObjectIdFormatException(message: String) : RuntimeException(message) {
     constructor(idViolations: List<String>) : this("Invalid id formats: $idViolations")
 }
-

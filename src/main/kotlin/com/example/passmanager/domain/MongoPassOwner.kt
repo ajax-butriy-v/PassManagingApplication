@@ -20,4 +20,3 @@ data class MongoPassOwner(
         const val COLLECTION_NAME = "pass_owner"
     }
 }
-

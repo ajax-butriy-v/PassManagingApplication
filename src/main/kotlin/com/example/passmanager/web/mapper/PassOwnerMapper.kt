@@ -3,8 +3,7 @@ package com.example.passmanager.web.mapper
 import com.example.passmanager.domain.MongoPassOwner
 import com.example.passmanager.web.dto.PassOwnerDto
 
-
-object PassOwnerMapper {
+internal object PassOwnerMapper {
     fun MongoPassOwner.toDto(): PassOwnerDto {
         return PassOwnerDto(firstName, lastName, phoneNumber, email)
     }
@@ -29,4 +28,3 @@ object PassOwnerMapper {
         )
     }
 }
-

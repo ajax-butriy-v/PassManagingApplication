@@ -25,7 +25,7 @@ import java.time.Instant
 
 @RestController
 @RequestMapping("/owners")
-class PassOwnerController(
+internal class PassOwnerController(
     private val passOwnerService: PassOwnerService,
     private val passOwnerStatisticsService: PassOwnerStatisticsService,
 ) {
@@ -69,4 +69,3 @@ class PassOwnerController(
         return ResponseEntity.noContent().build()
     }
 }
-

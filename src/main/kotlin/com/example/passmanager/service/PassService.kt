@@ -13,4 +13,3 @@ interface PassService {
     fun findAllByPassOwnerId(passOwnerId: ObjectId): List<MongoPass>
     fun updateByPassOwner(pass: MongoPass, passOwner: MongoPassOwner)
 }
-

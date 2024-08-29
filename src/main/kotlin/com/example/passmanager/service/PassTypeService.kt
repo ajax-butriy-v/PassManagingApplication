@@ -9,4 +9,3 @@ interface PassTypeService {
     fun create(passType: MongoPassType): MongoPassType
     fun deleteById(id: ObjectId)
 }
-

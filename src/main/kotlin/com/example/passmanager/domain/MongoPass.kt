@@ -21,4 +21,3 @@ data class MongoPass(
         const val COLLECTION_NAME = "pass"
     }
 }
-

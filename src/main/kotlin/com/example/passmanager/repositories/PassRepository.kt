@@ -16,4 +16,3 @@ interface PassRepository : MongoRepository<MongoPass, ObjectId> {
     @Update("{ '\$set': { 'passOwner': ?1 } }")
     fun updateMongoPassByPassOwner(pass: MongoPass, passOwner: MongoPassOwner)
 }
-

@@ -1,6 +1,5 @@
 package com.example.passmanager.service.impl
 
-
 import com.example.passmanager.domain.MongoPassOwner
 import com.example.passmanager.repositories.PassOwnerRepository
 import com.example.passmanager.util.PassOwnerFixture.passOwnerFromDb
@@ -65,4 +64,3 @@ internal class PassOwnerServiceImplTest {
         verify { passOwnerService.deleteById(any()) }
     }
 }
-

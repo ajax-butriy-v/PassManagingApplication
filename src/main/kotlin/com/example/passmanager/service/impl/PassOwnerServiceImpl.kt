@@ -9,7 +9,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 @Service
-class PassOwnerServiceImpl(private val passOwnerRepository: PassOwnerRepository) : PassOwnerService {
+internal class PassOwnerServiceImpl(private val passOwnerRepository: PassOwnerRepository) : PassOwnerService {
     override fun findById(passOwnerId: ObjectId): MongoPassOwner? {
         return passOwnerRepository.findByIdOrNull(passOwnerId)
     }
@@ -30,4 +30,3 @@ class PassOwnerServiceImpl(private val passOwnerRepository: PassOwnerRepository)
         passOwnerRepository.deleteById(passOwnerId)
     }
 }
-

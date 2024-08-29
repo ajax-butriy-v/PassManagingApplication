@@ -7,4 +7,3 @@ import org.bson.types.ObjectId
  * when MongoRepository will be implemented using MongoTemplate (which accepts
  * id as String to be used in queries). */
 fun String.toObjectId(): ObjectId = ObjectId(this)
-

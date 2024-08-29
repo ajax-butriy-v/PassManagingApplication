@@ -10,4 +10,3 @@ interface PassOwnerService {
     fun update(passOwnerId: ObjectId, modifiedMongoPassOwner: MongoPassOwner): MongoPassOwner
     fun deleteById(passOwnerId: ObjectId)
 }
-

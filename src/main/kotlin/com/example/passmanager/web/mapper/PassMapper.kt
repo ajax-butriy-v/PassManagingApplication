@@ -4,7 +4,7 @@ import com.example.passmanager.domain.MongoPass
 import com.example.passmanager.web.dto.PassDto
 import java.math.BigDecimal
 
-object PassMapper {
+internal object PassMapper {
     fun MongoPass.toDto(): PassDto {
         return PassDto(purchasedFor ?: BigDecimal.ZERO, passOwner?.id.toString(), passType?.id.toString())
     }
@@ -18,4 +18,3 @@ object PassMapper {
         )
     }
 }
-

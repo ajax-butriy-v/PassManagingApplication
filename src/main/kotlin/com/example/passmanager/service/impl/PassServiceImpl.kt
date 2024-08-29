@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 import java.time.Instant
 
 @Service
-class PassServiceImpl(
+internal class PassServiceImpl(
     private val passRepository: PassRepository,
     private val passOwnerService: PassOwnerService,
     private val passTypeService: PassTypeService,
@@ -47,4 +47,3 @@ class PassServiceImpl(
         passRepository.updateMongoPassByPassOwner(pass, passOwner)
     }
 }
-

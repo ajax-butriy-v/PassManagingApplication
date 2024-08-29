@@ -9,4 +9,3 @@ interface PassOwnerStatisticsService {
     fun calculateSpentAfterDate(afterDate: Instant, passOwnerId: ObjectId): BigDecimal
     fun calculatePriceDistributions(passOwnerId: ObjectId): List<PriceDistribution>
 }
-

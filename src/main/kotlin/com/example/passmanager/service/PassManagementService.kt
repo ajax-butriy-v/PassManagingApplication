@@ -6,4 +6,3 @@ interface PassManagementService {
     fun cancelPass(passOwnerId: ObjectId, passId: ObjectId): Boolean
     fun transferPass(passId: ObjectId, targetPassOwnerId: ObjectId)
 }
-

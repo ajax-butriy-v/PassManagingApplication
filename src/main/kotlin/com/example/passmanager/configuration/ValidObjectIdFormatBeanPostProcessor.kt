@@ -1,6 +1,6 @@
 package com.example.passmanager.configuration
 
-import com.example.passmanager.exception.InvalidIdTypeException
+import com.example.passmanager.exception.InvalidObjectIdFormatException
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.cglib.proxy.Enhancer
@@ -15,57 +15,56 @@ import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.jvmErasure
 
 @Component
-class DtoVerifierBeanPostProcessor : BeanPostProcessor {
-    private val beanNameToClassMap: MutableMap<String, DtoAnnotatedMethods> = mutableMapOf()
+internal class ValidObjectIdFormatBeanPostProcessor : BeanPostProcessor {
+    private val beanMap: MutableMap<String, Set<Method>> = mutableMapOf()
 
     override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any {
         val beanClass = bean::class
         if (beanClass.hasAnnotation<RestController>()) {
-            val membersWithDtoAsParam = getMethodsWithAnnotatedParams<ValidObjectIdFormat>(bean)
-            if (membersWithDtoAsParam.isNotEmpty()) {
-                beanNameToClassMap[beanName] = DtoAnnotatedMethods(beanClass.java, membersWithDtoAsParam)
+            val methodWithAnnotatedFields = getMethodsWithAnnotatedParamFields<ValidObjectIdFormat>(bean)
+            if (methodWithAnnotatedFields.isNotEmpty()) {
+                beanMap[beanName] = methodWithAnnotatedFields
             }
         }
         return bean
     }
 
-    private inline fun <reified T : Annotation> getMethodsWithAnnotatedParams(bean: Any): Set<Method> {
-        val beanClass = bean::class.java
-        return beanClass.methods.filter {
-            it.parameterTypes.any { paramType -> paramType.isAnnotationPresent(T::class.java) }
-        }.toSet()
-    }
-
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any {
-        return beanNameToClassMap[beanName]?.let { targetMethods ->
+        return beanMap[beanName]?.let { methodsWithAnnotatedParamFields ->
             createEnhancer(bean) { obj, method, args, proxy ->
-                if (method in targetMethods.methodsWithDto) {
+                if (method in methodsWithAnnotatedParamFields) {
                     val idViolationsList = getIdViolationsList(args)
-                    if (idViolationsList.isNotEmpty()) throw InvalidIdTypeException(idViolationsList)
+                    if (idViolationsList.isNotEmpty()) throw InvalidObjectIdFormatException(idViolationsList)
                 }
                 proxy.invokeSuper(obj, args ?: emptyArray())
             }
         } ?: bean
     }
 
-    private fun getIdViolationsList(args: Array<Any>): List<String> {
-        val dtoParams = args.filter { it::class.hasAnnotation<ValidObjectIdFormat>() }
-        return dtoParams.flatMap { dto ->
-            getIdFieldsValues(dto)
-                .filterIsInstance<String>()
-                .filter { !ObjectId.isValid(it) }
+    private inline fun <reified T : Annotation> getMethodsWithAnnotatedParamFields(bean: Any): Set<Method> {
+        val beanClass = bean::class.java
+        return beanClass.methods.filterTo(mutableSetOf()) { method ->
+            val fields = method.parameterTypes.flatMap { it.declaredFields.toList() }
+            fields.any { it.isAnnotationPresent(T::class.java) }
         }
     }
 
-    private fun getIdFieldsValues(dto: Any): List<Any?> {
-        val dtoProperties = dto::class.declaredMemberProperties
-        return dtoProperties.filter { it.name.contains(ID, ignoreCase = true) }
-            .map { property ->
-                property.isAccessible = true
-                property.getter.call(dto)
-            }
+    private fun getIdViolationsList(args: Array<Any>): List<String> {
+        val onlyDtosWithAnnotatedFields = args.filter {
+            it.javaClass.declaredFields.any { field -> field.isAnnotationPresent(ValidObjectIdFormat::class.java) }
+        }
+        return onlyDtosWithAnnotatedFields.flatMap { dto -> getIdFieldsValues(dto).filter { !ObjectId.isValid(it) } }
     }
 
+    private fun getIdFieldsValues(dto: Any): List<String> {
+        return dto.javaClass.declaredFields
+            .filter { it.isAnnotationPresent(ValidObjectIdFormat::class.java) }
+            .map { field ->
+                field.isAccessible = true
+                field.get(dto)
+            }
+            .filterIsInstance<String>()
+    }
 
     private fun createEnhancer(bean: Any, methodInterceptor: MethodInterceptor): Any {
         val enhancer = Enhancer()
@@ -73,7 +72,6 @@ class DtoVerifierBeanPostProcessor : BeanPostProcessor {
 
         val primaryConstructorParameters = beanClass.primaryConstructor?.parameters ?: emptyList()
         val argumentTypes = primaryConstructorParameters.map { it.type.jvmErasure.java }.toTypedArray()
-
 
         val arguments = primaryConstructorParameters.map { parameter ->
             beanClass.declaredMemberProperties.first { it.name == parameter.name }
@@ -87,12 +85,4 @@ class DtoVerifierBeanPostProcessor : BeanPostProcessor {
         enhancer.setCallback(methodInterceptor)
         return enhancer.create(argumentTypes, arguments)
     }
-
-
-    private data class DtoAnnotatedMethods(val beanClass: Class<*>, val methodsWithDto: Set<Method>)
-
-    companion object {
-        private const val ID = "Id"
-    }
 }
-

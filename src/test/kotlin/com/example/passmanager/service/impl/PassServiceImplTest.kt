@@ -99,4 +99,3 @@ internal class PassServiceImplTest {
         verify { passRepository.updateMongoPassByPassOwner(any(), any()) }
     }
 }
-
