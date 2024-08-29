@@ -67,7 +67,6 @@ internal class ValidObjectIdFormatBeanPostProcessor : BeanPostProcessor {
     }
 
     private fun createEnhancer(bean: Any, methodInterceptor: MethodInterceptor): Any {
-        val enhancer = Enhancer()
         val beanClass = bean::class
 
         val primaryConstructorParameters = beanClass.primaryConstructor?.parameters ?: emptyList()
@@ -81,8 +80,11 @@ internal class ValidObjectIdFormatBeanPostProcessor : BeanPostProcessor {
                 }
         }.toTypedArray()
 
-        enhancer.setSuperclass(bean.javaClass)
-        enhancer.setCallback(methodInterceptor)
+        val enhancer = Enhancer().apply {
+            setSuperclass(bean.javaClass)
+            setCallback(methodInterceptor)
+        }
+
         return enhancer.create(argumentTypes, arguments)
     }
 }
