@@ -4,6 +4,8 @@ import com.example.passmanager.domain.MongoPass
 import com.example.passmanager.domain.MongoPassType
 import com.example.passmanager.util.PassOwnerFixture.passOwnerFromDb
 import com.example.passmanager.util.PassOwnerFixture.updatedOwner
+import com.example.passmanager.web.dto.PassDto
+import com.example.passmanager.web.mapper.PassMapper.toDto
 import org.bson.types.ObjectId
 import java.math.BigDecimal
 import java.time.Instant
@@ -42,5 +44,13 @@ object PassFixture {
     val passFromDb = passes.first()
     val singlePassId: ObjectId = passFromDb.id!!
     val updatedPass = passFromDb.copy(passOwner = updatedOwner)
+
+    val dtoWithInvalidIdFormats = PassDto(
+        purchasedFor = BigDecimal.TEN,
+        passOwnerId = "not valid",
+        passTypeId = "not valid"
+    )
+
+    val dtoWithValidIdFormats = passFromDb.toDto()
 }
 

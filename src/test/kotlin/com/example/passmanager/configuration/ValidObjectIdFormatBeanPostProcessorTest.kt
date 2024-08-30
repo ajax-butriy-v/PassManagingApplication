@@ -49,7 +49,7 @@ internal class ValidObjectIdFormatBeanPostProcessorTest {
     }
 
     @Test
-    fun `controoledto with invalid fields values should throw custom e`() {
+    fun `controller method with dto, that have valid values, should throw custom runtime exception`() {
         val proxiedController = getProxiedController()
         assertThrows<InvalidObjectIdFormatException> { proxiedController.create(PassFixture.dtoWithInvalidIdFormats) }
     }

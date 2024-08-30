@@ -66,6 +66,7 @@ internal class ValidObjectIdFormatBeanPostProcessor : BeanPostProcessor {
             setTarget(bean)
             addAdvice(methodBeforeAdvice)
         }
+
         return proxyFactory.proxy
     }
 }
