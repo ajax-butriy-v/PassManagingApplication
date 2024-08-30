@@ -2,17 +2,13 @@ package com.example.passmanager.configuration
 
 import com.example.passmanager.exception.InvalidObjectIdFormatException
 import org.bson.types.ObjectId
+import org.springframework.aop.MethodBeforeAdvice
+import org.springframework.aop.framework.ProxyFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
-import org.springframework.cglib.proxy.Enhancer
-import org.springframework.cglib.proxy.MethodInterceptor
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.RestController
 import java.lang.reflect.Method
-import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.hasAnnotation
-import kotlin.reflect.full.primaryConstructor
-import kotlin.reflect.jvm.isAccessible
-import kotlin.reflect.jvm.jvmErasure
 
 @Component
 internal class ValidObjectIdFormatBeanPostProcessor : BeanPostProcessor {
@@ -31,12 +27,11 @@ internal class ValidObjectIdFormatBeanPostProcessor : BeanPostProcessor {
 
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any {
         return beanMap[beanName]?.let { methodsWithAnnotatedParamFields ->
-            createEnhancer(bean) { obj, method, args, proxy ->
+            createEnhancer(bean) { method, args, _ ->
                 if (method in methodsWithAnnotatedParamFields) {
                     val idViolationsList = getIdViolationsList(args)
                     if (idViolationsList.isNotEmpty()) throw InvalidObjectIdFormatException(idViolationsList)
                 }
-                proxy.invokeSuper(obj, args ?: emptyArray())
             }
         } ?: bean
     }
@@ -49,7 +44,7 @@ internal class ValidObjectIdFormatBeanPostProcessor : BeanPostProcessor {
         }
     }
 
-    private fun getIdViolationsList(args: Array<Any>): List<String> {
+    private fun getIdViolationsList(args: Array<out Any>): List<String> {
         val onlyDtosWithAnnotatedFields = args.filter {
             it.javaClass.declaredFields.any { field -> field.isAnnotationPresent(ValidObjectIdFormat::class.java) }
         }
@@ -66,25 +61,11 @@ internal class ValidObjectIdFormatBeanPostProcessor : BeanPostProcessor {
             .filterIsInstance<String>()
     }
 
-    private fun createEnhancer(bean: Any, methodInterceptor: MethodInterceptor): Any {
-        val beanClass = bean::class
-
-        val primaryConstructorParameters = beanClass.primaryConstructor?.parameters ?: emptyList()
-        val argumentTypes = primaryConstructorParameters.map { it.type.jvmErasure.java }.toTypedArray()
-
-        val arguments = primaryConstructorParameters.map { parameter ->
-            beanClass.declaredMemberProperties.first { it.name == parameter.name }
-                .let { memberProperty ->
-                    memberProperty.isAccessible = true
-                    memberProperty.getter.call(bean)
-                }
-        }.toTypedArray()
-
-        val enhancer = Enhancer().apply {
-            setSuperclass(bean.javaClass)
-            setCallback(methodInterceptor)
+    private fun createEnhancer(bean: Any, methodBeforeAdvice: MethodBeforeAdvice): Any {
+        val proxyFactory = ProxyFactory().apply {
+            setTarget(bean)
+            addAdvice(methodBeforeAdvice)
         }
-
-        return enhancer.create(argumentTypes, arguments)
+        return proxyFactory.proxy
     }
 }
