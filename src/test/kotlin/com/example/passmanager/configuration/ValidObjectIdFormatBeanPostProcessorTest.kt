@@ -55,7 +55,7 @@ internal class ValidObjectIdFormatBeanPostProcessorTest {
     }
 
     @Test
-    fun `controller method with dto, that have valid values, should throw custom runtime exception`() {
+    fun `controller method with dto, which has invalid field values, should throw custom runtime exception`() {
         // WHEN
         val proxiedController = getProxiedController()
 
@@ -64,7 +64,7 @@ internal class ValidObjectIdFormatBeanPostProcessorTest {
     }
 
     @Test
-    fun `controller method with dto, that have valid values, should pass`() {
+    fun `controller method with dto, which has valid field values, should pass`() {
         // GIVEN
         every { passService.create(any(), any(), any()) } returns passFromDb
 
