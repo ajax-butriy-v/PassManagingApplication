@@ -37,27 +37,41 @@ internal class ValidObjectIdFormatBeanPostProcessorTest {
 
     @Test
     fun `processing controller with necessary params must be proxied`() {
+        // WHEN
         val beanAfterProcessing = beanPostProcessor.postProcessAfterInitialization(passController, BEAN_NAME)
-        assertTrue(AopUtils.isCglibProxy(beanAfterProcessing))
+
+        // THEN
+        assertTrue(AopUtils.isCglibProxy(beanAfterProcessing), message = "Bean must be proxy")
     }
 
     @Test
     fun `processing bean, which not match BPP logic, must return bean`() {
+        // WHEN
         val beanNotToBeProxied = beanPostProcessor.postProcessAfterInitialization(passService, "passService")
+
+        // THEN
         assertThat(beanNotToBeProxied).isEqualTo(passService)
-        assertFalse(AopUtils.isCglibProxy(beanNotToBeProxied))
+        assertFalse(AopUtils.isCglibProxy(beanNotToBeProxied), message = "Bean must not be proxy")
     }
 
     @Test
     fun `controller method with dto, that have valid values, should throw custom runtime exception`() {
+        // WHEN
         val proxiedController = getProxiedController()
+
+        // THEN
         assertThrows<InvalidObjectIdFormatException> { proxiedController.create(PassFixture.dtoWithInvalidIdFormats) }
     }
 
     @Test
     fun `controller method with dto, that have valid values, should pass`() {
+        // GIVEN
         every { passService.create(any(), any(), any()) } returns passFromDb
+
+        // WHEN
         val proxiedController = getProxiedController()
+
+        // THEN
         assertDoesNotThrow { proxiedController.create(PassFixture.dtoWithValidIdFormats) }
     }
 
