@@ -11,7 +11,6 @@ import com.example.passmanager.util.PassFixture.singlePassType
 import com.example.passmanager.util.PassFixture.singlePassTypeId
 import com.example.passmanager.util.PassOwnerFixture.passOwnerFromDb
 import com.example.passmanager.util.PassOwnerFixture.passOwnerId
-import com.example.passmanager.util.PassOwnerFixture.updatedOwner
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -90,12 +89,12 @@ internal class PassServiceImplTest {
     @Test
     fun updateByPassOwner() {
         // GIVEN
-        justRun { passRepository.updateMongoPassByPassOwner(any(), any()) }
+        every { passRepository.save(any()) } returns passFromDb
 
         // WHEN
-        passService.updateByPassOwner(passFromDb, updatedOwner)
+        passService.update(passFromDb)
 
         // THEN
-        verify { passRepository.updateMongoPassByPassOwner(any(), any()) }
+        verify { passRepository.save(any()) }
     }
 }

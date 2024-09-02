@@ -28,6 +28,10 @@ internal class PassServiceImpl(
         return passRepository.insert(newPass.copy(passOwner = passOwner, passType = passType))
     }
 
+    override fun update(pass: MongoPass): MongoPass {
+        return passRepository.save(pass)
+    }
+
     override fun deleteById(passId: ObjectId) {
         passRepository.deleteById(passId)
     }
@@ -41,9 +45,5 @@ internal class PassServiceImpl(
 
     override fun findAllByPassOwnerId(passOwnerId: ObjectId): List<MongoPass> {
         return passRepository.findAllByPassOwnerId(passOwnerId)
-    }
-
-    override fun updateByPassOwner(pass: MongoPass, passOwner: MongoPassOwner) {
-        passRepository.updateMongoPassByPassOwner(pass, passOwner)
     }
 }

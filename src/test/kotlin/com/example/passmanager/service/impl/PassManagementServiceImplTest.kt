@@ -48,8 +48,8 @@ internal class PassManagementServiceImplTest {
     fun `transfering pass to another client should complete if all ids are valid`() {
         // GIVEN
         every { passService.findById(any()) } returns passFromDb
-        every { passOwnerService.findById(any()) } returns passOwnerFromDb
-        justRun { passService.updateByPassOwner(passFromDb, passOwnerFromDb) }
+        every { passOwnerService.getById(any()) } returns passOwnerFromDb
+        every { passService.update(any()) } returns passFromDb
 
         // WHEN
         passManagementService.transferPass(singlePassId, passOwnerId)
@@ -57,8 +57,8 @@ internal class PassManagementServiceImplTest {
         // THEN
         verifyOrder {
             passService.findById(any())
-            passOwnerService.findById(any())
-            passService.updateByPassOwner(any(), any())
+            passOwnerService.getById(any())
+            passService.update(any())
         }
     }
 }

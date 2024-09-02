@@ -31,7 +31,7 @@ internal class PassOwnerStatisticsServiceImplTest {
     @Test
     fun `calculating spent after date should return positive BigDecimal value if there are passes`() {
         // GIVEN
-        every { passOwnerService.findById(any()) } returns PassOwnerFixture.passOwnerFromDb
+        every { passOwnerService.getById(any()) } returns PassOwnerFixture.passOwnerFromDb
         every { passService.findAllByPassOwnerAndPurchasedAtGreaterThan(any(), any()) } returns passes
 
         // WHEN
@@ -40,7 +40,7 @@ internal class PassOwnerStatisticsServiceImplTest {
 
         // THEN
         verify {
-            passOwnerService.findById(any())
+            passOwnerService.getById(any())
             passService.findAllByPassOwnerAndPurchasedAtGreaterThan(any(), any())
         }
     }

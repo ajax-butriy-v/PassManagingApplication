@@ -23,7 +23,7 @@ internal class PassManagementServiceImpl(
 
     override fun transferPass(passId: ObjectId, targetPassOwnerId: ObjectId) {
         val passInDb = passService.findById(passId) ?: throw PassNotFoundException(passId)
-        val targetPassOwner = passOwnerService.getById(passId)
-        passService.updateByPassOwner(passInDb, targetPassOwner)
+        val targetPassOwner = passOwnerService.getById(targetPassOwnerId)
+        passService.update(passInDb.copy(passOwner = targetPassOwner))
     }
 }
