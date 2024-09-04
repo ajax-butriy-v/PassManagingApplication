@@ -8,6 +8,7 @@ spring:
       host: ${MONGODB_HOST}
       port: ${MONGODB_PORT}
       database: ${MONGODB_DATABASE}
+      authentication-database: admin
 server:
   servlet:
     context-path: /api/v1
