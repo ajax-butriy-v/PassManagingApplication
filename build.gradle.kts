@@ -1,3 +1,4 @@
+import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
 import io.gitlab.arturbosch.detekt.Detekt
 
 plugins {
@@ -6,7 +7,9 @@ plugins {
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.dependency.management)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.delta.coverage)
     `java-test-fixtures`
+    jacoco
 }
 
 group = "com.example"
@@ -54,4 +57,21 @@ tasks.withType<Detekt>().configureEach {
         sarif.required.set(true)
         md.required.set(true)
     }
+}
+
+configure<DeltaCoverageConfiguration> {
+    val targetBranch = project.properties["diffBase"]?.toString() ?: "refs/remotes/origin/main"
+    diffSource.byGit {
+        compareWith(targetBranch)
+    }
+
+    violationRules.failIfCoverageLessThan(0.6)
+    reports {
+        html = true
+        markdown = true
+    }
+}
+
+tasks.named("check") {
+    dependsOn("deltaCoverage")
 }

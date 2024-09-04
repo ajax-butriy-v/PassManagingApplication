@@ -6,6 +6,7 @@ detekt = "1.23.6"
 jackson-module-kotlin = "2.15.0"
 springmockk = "4.0.2"
 junit-platform-launcher = "1.10.0"
+delta-coverage = "2.4.0"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -13,6 +14,7 @@ kotlin-spring-plugin = { id = "org.jetbrains.kotlin.plugin.spring", version.ref 
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
 spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "spring-dependency-management" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+delta-coverage = { id = "io.github.surpsg.delta-coverage", version.ref = "delta-coverage" }
 
 
 [libraries]
