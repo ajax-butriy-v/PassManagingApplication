@@ -1,11 +1,13 @@
 spring:
   application:
-    name: PassManagingApplication
+    name: ${APPLICATION_NAME}
   data:
     mongodb:
-      host: localhost
-      port: 27017
-      database: test_db
+      username: ${MONGODB_USER}
+      password: ${MONGODB_PASSWORD}
+      host: ${MONGODB_HOST}
+      port: ${MONGODB_PORT}
+      database: ${MONGODB_DATABASE}
 server:
   servlet:
     context-path: /api/v1
