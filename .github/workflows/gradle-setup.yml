@@ -1,0 +1,42 @@
+name: Kotlin CI with Gradle
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build with Gradle Wrapper
+        run: ./gradlew build -x deltaCoverage
+
+      - name: Perform Delta coverage
+        if: ${{ github.event_name == 'pull_request' && !cancelled() }}
+        run: ./gradlew deltaCoverage -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF"
+
+      - name: Post comment
+        uses: gw-kit/delta-coverage-plugin/actions/delta-coverage-report@main
+        with:
+          title: 'Delta Coverage Report'
+          delta-coverage-report: build/reports/coverage-reports/delta-coverage/report.md
