@@ -36,7 +36,7 @@ jobs:
         run: ./gradlew deltaCoverage -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF"
 
       - name: Post comment
-        uses: gw-git/delta-coverage-plugin/actions/delta-coverage-report@main
+        uses: gw-git/delta-coverage-plugin/actions/delta-coverage-report@2.4.0
         with:
           title: 'Delta Coverage Report'
           delta-coverage-report: 'build/reports/coverage-reports/delta-coverage/report.md'
