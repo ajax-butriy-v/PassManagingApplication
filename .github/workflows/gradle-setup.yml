@@ -9,6 +9,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      issues: read
+      pull-requests: write
+
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
@@ -30,3 +34,9 @@ jobs:
       - name: Perform Delta coverage
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}
         run: ./gradlew deltaCoverage -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF"
+
+      - name: Post comment
+        uses: gw-git/delta-coverage-plugin/actions/delta-coverage-report@main
+        with:
+          title: 'Delta Coverage Report'
+          delta-coverage-report: 'build/reports/coverage-reports/delta-coverage/report.md'

@@ -16,7 +16,6 @@ spring-dependency-management = { id = "io.spring.dependency-management", version
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 delta-coverage = { id = "io.github.surpsg.delta-coverage", version.ref = "delta-coverage" }
 
-
 [libraries]
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web", version.ref = "spring-boot" }
 jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson-module-kotlin" }
@@ -28,4 +27,3 @@ springmockk = { module = "com.ninja-squad:springmockk", version.ref = "springmoc
 kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platform-launcher" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
-
