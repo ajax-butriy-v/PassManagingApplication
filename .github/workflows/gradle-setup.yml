@@ -27,9 +27,11 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/release' }}
 
       - name: Build with Gradle Wrapper
-        run: ./gradlew build -x deltaCoverage
+        run: ./gradlew build -x deltaCoverage --parallel
 
       - name: Perform Delta coverage
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}
