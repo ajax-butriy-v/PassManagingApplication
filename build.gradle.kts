@@ -57,6 +57,7 @@ tasks.withType<Detekt>().configureEach {
         sarif.required.set(true)
         md.required.set(true)
     }
+    config.from("detekt-config.yml")
 }
 
 configure<DeltaCoverageConfiguration> {
@@ -73,5 +74,5 @@ configure<DeltaCoverageConfiguration> {
 }
 
 tasks.named("check") {
-    dependsOn("deltaCoverage")
+    dependsOn("deltaCoverage", "detektMain", "detektTest")
 }
