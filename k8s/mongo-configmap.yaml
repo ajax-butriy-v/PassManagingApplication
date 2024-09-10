@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongodb-configmap
+data:
+  mongo_uri: "mongodb://root:example@mongodb-service:27017"
+  mongo_port: "27017"
+  mongo_host: "mongodb-service"
+  mongo_database: "test_db"
