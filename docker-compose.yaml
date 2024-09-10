@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: app
     env_file:
       - .env
     environment:
@@ -10,15 +11,21 @@ services:
       MONGODB_PORT: ${MONGODB_PORT}
       MONGODB_HOST: ${MONGODB_HOST}
       MONGODB_DATABASE: ${MONGODB_DATABASE}
-      MONGODB_USER: ${MONGODB_USER}
-      MONGODB_PASSWORD: ${MONGODB_PASSWORD}
+      MONGODB_USER: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGODB_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     ports:
       - "8080:8080"
     depends_on:
       - mongo
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 3s
+      timeout: 3s
+      retries: 3
   mongo:
     image: mongo
     restart: always
+    container_name: mongo
     env_file:
       - .env
     environment:
@@ -30,6 +37,7 @@ services:
       - db_data:/data/db
   mongo-express:
     image: mongo-express
+    container_name: mongo-express
     depends_on:
       - mongo
     restart: always
@@ -38,10 +46,8 @@ services:
     env_file:
       - .env
     environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: ${ME_CONFIG_MONGODB_ADMINUSERNAME}
-      ME_CONFIG_MONGODB_ADMINPASSWORD: ${ME_CONFIG_MONGODB_ADMINPASSWORD}
+      ME_CONFIG_MONGODB_AUTH_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      ME_CONFIG_MONGODB_AUTH_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
       ME_CONFIG_MONGODB_URL: ${ME_CONFIG_MONGODB_URL}
-      ME_CONFIG_BASICAUTH: ${ME_CONFIG_BASICAUTH}
-
 volumes:
   db_data:
