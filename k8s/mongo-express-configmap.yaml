@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongo-express-configmap
+data:
+  me_config_mongo_uri: "mongodb://root:example@mongodb-service:27017"
+

@@ -32,17 +32,17 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   key: mongo_port
-                  name: mongodb-configmap
+                  name: pass-manager-app-configmap
             - name: MONGODB_HOST
               valueFrom:
                 configMapKeyRef:
                   key: mongo_host
-                  name: mongodb-configmap
+                  name: pass-manager-app-configmap
             - name: MONGODB_DATABASE
               valueFrom:
                 configMapKeyRef:
                   key: mongo_database
-                  name: mongodb-configmap
+                  name: pass-manager-app-configmap
             - name: MONGODB_USER
               valueFrom:
                 secretKeyRef:
