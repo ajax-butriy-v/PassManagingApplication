@@ -5,7 +5,7 @@ minikube addons enable ingress
 
 
 kubectl apply -f mongo-secret.yaml
-kubectl apply -f mongo-configmap.yaml
+kubectl apply -f mongo-express-configmap.yaml
 kubectl apply -f app-configmap.yaml
 kubectl apply -f mongo.yaml
 kubectl apply -f mongo-express.yaml
