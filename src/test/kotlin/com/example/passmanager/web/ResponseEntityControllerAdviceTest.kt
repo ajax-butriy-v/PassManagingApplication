@@ -84,7 +84,6 @@ internal class ResponseEntityControllerAdviceTest {
             .andExpect(jsonPath("$.message", `is`("Could not find pass by id $singlePassId")))
     }
 
-
     @Test
     fun `non-existing pass owner by id value should result in handled not found custom exception`() {
         val nonExistingOwnerId = passOwnerId

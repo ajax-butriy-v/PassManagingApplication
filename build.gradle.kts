@@ -58,6 +58,7 @@ tasks.withType<Detekt>().configureEach {
         md.required.set(true)
     }
     config.from("detekt-config.yml")
+    buildUponDefaultConfig = true
 }
 
 configure<DeltaCoverageConfiguration> {
