@@ -32,7 +32,6 @@ spec:
                 secretKeyRef:
                   key: mongo-root-password
                   name: mongodb-secret
-      restartPolicy: Always
 ---
 apiVersion: v1
 kind: Service
