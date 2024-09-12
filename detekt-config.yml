@@ -1,0 +1,3 @@
+style:
+  VarCouldBeVal:
+    excludes: "**/test/**"

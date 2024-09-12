@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-express-deployment
+  labels:
+    app: mongo-express
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo-express
+  template:
+    metadata:
+      name: mongo-express
+      labels:
+        app: mongo-express
+    spec:
+      containers:
+        - name: mongo-express
+          image: mongo-express
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8081
+              protocol: TCP
+          env:
+            - name: ME_CONFIG_BASICAUTH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: mongo-root-username
+                  name: mongodb-secret
+            - name: ME_CONFIG_BASICAUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: mongo-root-password
+                  name: mongodb-secret
+            - name: MONGO_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: mongo_host
+                  name: pass-manager-app-configmap
+            - name: MONGO_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: mongo_port
+                  name: pass-manager-app-configmap
+            - name: ME_CONFIG_MONGODB_URL
+              value: mongodb://$(ME_CONFIG_BASICAUTH_USERNAME):$(ME_CONFIG_BASICAUTH_PASSWORD)@$(MONGO_HOST):$(MONGO_PORT)
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-express-service
+  labels:
+    app: mongo-express-service
+spec:
+  selector:
+    app: mongo-express
+  type: NodePort
+  ports:
+    - port: 8081
+      protocol: TCP
+      targetPort: 8081
+      nodePort: 30000

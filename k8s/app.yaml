@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+  labels:
+    app: app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      name: app
+      labels:
+        app: app
+    spec:
+      containers:
+        - name: app
+          image: passmanagingapplication-app
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: APPLICATION_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: application_name
+                  name: pass-manager-app-configmap
+            - name: MONGODB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: mongo_port
+                  name: pass-manager-app-configmap
+            - name: MONGODB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: mongo_host
+                  name: pass-manager-app-configmap
+            - name: MONGODB_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  key: mongo_database
+                  name: pass-manager-app-configmap
+            - name: MONGODB_USER
+              valueFrom:
+                secretKeyRef:
+                  key: mongo-root-username
+                  name: mongodb-secret
+            - name: MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: mongo-root-password
+                  name: mongodb-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service
+spec:
+  selector:
+    app: app
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
