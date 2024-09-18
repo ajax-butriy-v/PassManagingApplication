@@ -23,6 +23,7 @@ import org.springframework.stereotype.Repository
 import java.math.BigDecimal
 import java.time.LocalDate
 
+@Suppress("TooManyFunctions")
 @Repository
 class PassRepositoryImpl(private val mongoTemplate: MongoTemplate) : PassRepository {
     override fun findByOwnerAndPurchasedAfter(passOwnerId: String, afterDate: LocalDate): List<MongoPass> {

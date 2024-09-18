@@ -1,5 +1,6 @@
 package com.example.passmanager.service.impl
 
+import com.example.passmanager.exception.PassNotFoundException
 import com.example.passmanager.repositories.PassRepository
 import com.example.passmanager.service.PassOwnerService
 import com.example.passmanager.service.PassTypeService
@@ -19,7 +20,9 @@ import io.mockk.justRun
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import java.math.BigDecimal
 import java.time.LocalDate
 
 @ExtendWith(MockKExtension::class)
@@ -76,7 +79,7 @@ internal class PassServiceImplTest {
     }
 
     @Test
-    fun findAllByPassOwnerId() {
+    fun `finding all passes by pass owner id should return all corresponding passes`() {
         every { passRepository.findAllByPassOwnerId(any()) } returns passes
 
         val passesByOwner = passService.findAllByPassOwnerId(passOwnerIdFromDb)
@@ -86,14 +89,76 @@ internal class PassServiceImplTest {
     }
 
     @Test
-    fun updateByPassOwner() {
+    fun `updating pass should return updated object`() {
+        val changedPass = passFromDb.copy(purchasedFor = BigDecimal.valueOf(200))
+
         // GIVEN
-        every { passRepository.save(any()) } returns passFromDb
+        every { passRepository.save(any()) } returns changedPass
 
         // WHEN
-        passService.update(passFromDb)
+        val actual = passService.update(changedPass)
+        assertThat(actual).isEqualTo(changedPass)
 
         // THEN
         verify { passRepository.save(any()) }
+    }
+
+    @Test
+    fun `get by id should return pass if it exists`() {
+        // GIVEN
+        every { passRepository.findById(any()) } returns passFromDb
+
+        // WHEN
+        assertThat(passService.getById(singlePassId)).isEqualTo(passFromDb)
+
+        // THEN
+        verify { passRepository.findById(any()) }
+    }
+
+    @Test
+    fun `get by id should throw exception if pass not exist`() {
+        // GIVEN
+        every { passRepository.findById(any()) } returns null
+
+        // WHEN
+        assertThrows<PassNotFoundException> { passService.getById(singlePassId) }
+    }
+
+    @Test
+    fun `deleting all passes by pass owner id should delete all corresponding passes`() {
+        // GIVEN
+        justRun { passRepository.deleteAllByOwnerId(any()) }
+
+        // WHEN
+        passService.deleteAllByOwnerId(singlePassId)
+
+        // THEN
+        verify { passRepository.deleteAllByOwnerId(any()) }
+    }
+
+    @Test
+    fun `finding all by pass owner and purchased at should return corresponding passes`() {
+        // GIVEN
+        every { passRepository.findByOwnerAndPurchasedAfter(any(), any()) } returns passes
+
+        // WHEN
+        val actual = passService.findAllByPassOwnerAndPurchasedAtGreaterThan(passOwnerIdFromDb, LocalDate.now())
+        assertThat(actual).isEqualTo(passes)
+
+        // THEN
+        verify { passRepository.findByOwnerAndPurchasedAfter(any(), any()) }
+    }
+
+    @Test
+    fun `finding all passes by pass owner id should return corresponding passes`() {
+        // GIVEN
+        every { passRepository.findAllByPassOwnerId(any()) } returns passes
+
+        // WHEN
+        val actual = passService.findAllByPassOwnerId(passOwnerIdFromDb)
+        assertThat(actual).isEqualTo(passes)
+
+        // THEN
+        verify { passRepository.findAllByPassOwnerId(any()) }
     }
 }

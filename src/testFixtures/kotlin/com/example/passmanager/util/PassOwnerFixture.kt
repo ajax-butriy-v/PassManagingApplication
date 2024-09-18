@@ -2,6 +2,7 @@ package com.example.passmanager.util
 
 
 import com.example.passmanager.domain.MongoPassOwner
+import com.example.passmanager.web.dto.PassOwnerDto
 import org.bson.types.ObjectId
 
 object PassOwnerFixture {
@@ -16,5 +17,12 @@ object PassOwnerFixture {
 
     val passOwnerFromDb = passOwnerToCreate.copy(id = id)
     val passOwnerIdFromDb = id.toString()
+
+    val passOwnerDto = PassOwnerDto(
+        firstName = passOwnerFromDb.firstName,
+        lastName = passOwnerFromDb.lastName,
+        phoneNumber = passOwnerFromDb.phoneNumber,
+        email = passOwnerFromDb.email
+    )
 }
 
