@@ -40,7 +40,6 @@ internal class PassOwnerMapperTest {
         val actual = passOwnerFromDb.partialUpdate(partiallyUpdatedDto)
         assertThat(actual.firstName).isEqualTo("Updated")
         assertThat(actual).isNotEqualTo(passOwnerFromDb)
-
     }
 
     @Test

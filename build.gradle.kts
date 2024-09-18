@@ -36,6 +36,8 @@ dependencies {
     }
     testImplementation(libs.springmockk)
     testImplementation(libs.kotlin.test.junit5)
+    testImplementation(libs.spring.boot.testcontainers)
+    testImplementation(libs.testcontainers.mongodb)
     testRuntimeOnly(libs.junit.platform.launcher)
     detektPlugins(libs.detekt.formatting)
 }

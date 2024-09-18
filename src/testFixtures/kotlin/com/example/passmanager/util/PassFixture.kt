@@ -7,15 +7,21 @@ import com.example.passmanager.web.dto.PassDto
 import com.example.passmanager.web.mapper.PassMapper.toDto
 import org.bson.types.ObjectId
 import java.math.BigDecimal
+import java.time.Clock
 import java.time.Instant
+import java.time.ZoneId
+
 
 object PassFixture {
-    private val passTypes = listOf("First type", "Second type", "Third type")
+    private val clock = Clock.fixed(Instant.now(), ZoneId.of("UTC"))
+    private val instant = clock.instant()
+
+    val passTypes = listOf("First type", "Second type", "Third type")
         .map {
             MongoPassType(
                 id = ObjectId.get(),
-                activeFrom = Instant.MIN,
-                activeTo = Instant.MAX,
+                activeFrom = instant,
+                activeTo = instant.plusSeconds(1_000_000),
                 name = it,
                 price = BigDecimal.TEN
             )
@@ -26,8 +32,8 @@ object PassFixture {
         id = null,
         purchasedFor = BigDecimal.TEN,
         passOwner = passOwnerFromDb,
-        passType = null,
-        purchasedAt = Instant.now(),
+        passType = passTypes.first(),
+        purchasedAt = instant,
     )
 
     val passes = passTypes.map {
@@ -36,7 +42,7 @@ object PassFixture {
             purchasedFor = BigDecimal.TEN,
             passOwner = passOwnerFromDb,
             passType = it,
-            purchasedAt = Instant.now(),
+            purchasedAt = instant,
         )
     }
 

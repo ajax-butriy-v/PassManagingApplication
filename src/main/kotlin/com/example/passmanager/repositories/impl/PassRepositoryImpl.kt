@@ -8,7 +8,6 @@ import com.example.passmanager.web.dto.PriceDistribution
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.aggregate
-import org.springframework.data.mongodb.core.aggregation.AccumulatorOperators.Sum
 import org.springframework.data.mongodb.core.aggregation.Aggregation.group
 import org.springframework.data.mongodb.core.aggregation.Aggregation.match
 import org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation
@@ -74,10 +73,12 @@ class PassRepositoryImpl(private val mongoTemplate: MongoTemplate) : PassReposit
     override fun sumPurchasedAtAfterDate(passOwnerId: String, afterDate: LocalDate): BigDecimal {
         val aggregation = newAggregation(
             getPassesByOwnerAndPurchasedAfterPipeline(passOwnerId, afterDate)
-                .add(project().and(Sum.sumOf("purchasedFor")).`as`("total"))
+                .add(group().sum("purchasedFor").`as`("total"))
+                .add(project("total").andExclude("_id"))
                 .operations
         )
         val aggregationResults = mongoTemplate.aggregate<SumResult>(aggregation, COLLECTION_NAME)
+
         return aggregationResults.uniqueMappedResult?.total ?: BigDecimal.ZERO
     }
 
@@ -96,8 +97,7 @@ class PassRepositoryImpl(private val mongoTemplate: MongoTemplate) : PassReposit
 
     private fun getPassesByOwnerAndPurchasedAfterPipeline(passOwnerId: String, date: LocalDate): AggregationPipeline {
         return AggregationPipeline.of(
-            match(where("passOwner._id").`is`(ObjectId(passOwnerId))),
-            match(where("purchasedAt").gt(date))
+            match(where("passOwner._id").`is`(ObjectId(passOwnerId)).andOperator(where("purchasedAt").gt(date))),
         )
     }
 
