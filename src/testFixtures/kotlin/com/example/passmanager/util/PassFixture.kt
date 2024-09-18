@@ -3,7 +3,6 @@ package com.example.passmanager.util
 import com.example.passmanager.domain.MongoPass
 import com.example.passmanager.domain.MongoPassType
 import com.example.passmanager.util.PassOwnerFixture.passOwnerFromDb
-import com.example.passmanager.util.PassOwnerFixture.updatedOwner
 import com.example.passmanager.web.dto.PassDto
 import com.example.passmanager.web.mapper.PassMapper.toDto
 import org.bson.types.ObjectId
@@ -22,7 +21,7 @@ object PassFixture {
             )
         }
     val singlePassType = passTypes.first()
-    val singlePassTypeId = singlePassType.id!!
+    val singlePassTypeId = singlePassType.id!!.toString()
     val passToCreate = MongoPass(
         id = null,
         purchasedFor = BigDecimal.TEN,
@@ -42,8 +41,7 @@ object PassFixture {
     }
 
     val passFromDb = passes.first()
-    val singlePassId: ObjectId = passFromDb.id!!
-    val updatedPass = passFromDb.copy(passOwner = updatedOwner)
+    val singlePassId = passFromDb.id.toString()
 
     val dtoWithInvalidIdFormats = PassDto(
         purchasedFor = BigDecimal.TEN,

@@ -1,10 +1,10 @@
 package com.example.passmanager.web.dto
 
 import java.math.BigDecimal
-import java.time.Instant
+import java.time.LocalDate
 
 data class SpentAfterDateDto(
     val passOwnerId: String,
-    val afterDate: Instant,
+    val afterDate: LocalDate,
     val total: BigDecimal,
 )

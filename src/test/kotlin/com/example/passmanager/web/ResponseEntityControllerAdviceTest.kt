@@ -7,7 +7,9 @@ import com.example.passmanager.exception.PassTypeNotFoundException
 import com.example.passmanager.util.PassFixture.dtoWithInvalidIdFormats
 import com.example.passmanager.util.PassFixture.dtoWithValidIdFormats
 import com.example.passmanager.util.PassFixture.singlePassId
-import com.example.passmanager.util.PassOwnerFixture.passOwnerId
+import com.example.passmanager.util.PassFixture.singlePassTypeId
+import com.example.passmanager.util.PassOwnerFixture.id
+import com.example.passmanager.util.PassOwnerFixture.passOwnerIdFromDb
 import com.example.passmanager.web.ResponseEntityControllerAdvice.handleBadRequest
 import com.example.passmanager.web.ResponseEntityControllerAdvice.handleNotFound
 import com.example.passmanager.web.controller.PassController
@@ -27,7 +29,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import java.time.Instant
+import java.time.LocalDate
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
@@ -77,7 +79,7 @@ internal class ResponseEntityControllerAdviceTest {
         every { passController.transferPass(any(), any()) } throws PassNotFoundException(nonExistingPassId)
 
         // WHEN
-        val resultActions = mockMvc.perform(post("/{url}/$singlePassId/transfer/$passOwnerId", PASSES_URL))
+        val resultActions = mockMvc.perform(post("/{url}/$singlePassId/transfer/$id", PASSES_URL))
 
         // THEN
         resultActions.andExpect(status().isNotFound)
@@ -86,7 +88,7 @@ internal class ResponseEntityControllerAdviceTest {
 
     @Test
     fun `non-existing pass owner by id value should result in handled not found custom exception`() {
-        val nonExistingOwnerId = passOwnerId
+        val nonExistingOwnerId = passOwnerIdFromDb
 
         // GIVEN
         every { passOwnerController.calculateSpentAfterDate(any(), any()) } throws PassOwnerNotFoundException(
@@ -96,7 +98,7 @@ internal class ResponseEntityControllerAdviceTest {
         // WHEN
         val resultActions = mockMvc.perform(
             get("/{url}/{id}/spent", OWNERS_URL, nonExistingOwnerId)
-                .param("afterDate", Instant.now().toString())
+                .param("afterDate", LocalDate.now().toString())
         )
 
         // THEN
@@ -106,7 +108,7 @@ internal class ResponseEntityControllerAdviceTest {
 
     @Test
     fun `non-existing pass type by id value should result in handled not found custom exception`() {
-        val nonExistingPassTypeId = passOwnerId
+        val nonExistingPassTypeId = singlePassTypeId
 
         // GIVEN
         every { passController.create(any()) } throws PassTypeNotFoundException(nonExistingPassTypeId)

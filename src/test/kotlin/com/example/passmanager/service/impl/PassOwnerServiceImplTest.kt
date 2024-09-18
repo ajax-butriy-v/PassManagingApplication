@@ -2,8 +2,9 @@ package com.example.passmanager.service.impl
 
 import com.example.passmanager.domain.MongoPassOwner
 import com.example.passmanager.repositories.PassOwnerRepository
+import com.example.passmanager.repositories.PassRepository
 import com.example.passmanager.util.PassOwnerFixture.passOwnerFromDb
-import com.example.passmanager.util.PassOwnerFixture.passOwnerId
+import com.example.passmanager.util.PassOwnerFixture.passOwnerIdFromDb
 import com.example.passmanager.util.PassOwnerFixture.passOwnerToCreate
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -14,12 +15,14 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.data.repository.findByIdOrNull
 
 @ExtendWith(MockKExtension::class)
 internal class PassOwnerServiceImplTest {
     @MockK
     private lateinit var passOwnerRepository: PassOwnerRepository
+
+    @MockK
+    private lateinit var passRepository: PassRepository
 
     @InjectMockKs
     private lateinit var passOwnerService: PassOwnerServiceImpl
@@ -39,7 +42,7 @@ internal class PassOwnerServiceImplTest {
         every { passOwnerRepository.save(any()) } returns passOwnerFromDb.copy(firstName = "Changed")
 
         // WHEN
-        val updated = passOwnerService.update(passOwnerId, passOwnerFromDb.copy(firstName = "Changed"))
+        val updated = passOwnerService.update(passOwnerIdFromDb, passOwnerFromDb.copy(firstName = "Changed"))
         assertThat(updated.firstName).isEqualTo("Changed")
 
         // THEN
@@ -48,19 +51,23 @@ internal class PassOwnerServiceImplTest {
 
     @Test
     fun `find by id should return object with specified id`() {
-        every { passOwnerRepository.findByIdOrNull(any()) } returns passOwnerFromDb
+        every { passOwnerRepository.findById(any()) } returns passOwnerFromDb
 
-        assertThat(passOwnerService.findById(passOwnerId)).isEqualTo(passOwnerFromDb)
+        assertThat(passOwnerService.findById(passOwnerIdFromDb)).isEqualTo(passOwnerFromDb)
 
-        verify { passOwnerRepository.findByIdOrNull(any()) }
+        verify { passOwnerRepository.findById(any()) }
     }
 
     @Test
     fun `delete by id should delete object`() {
         justRun { passOwnerRepository.deleteById(any()) }
+        justRun { passRepository.deleteAllByOwnerId(any()) }
 
-        passOwnerService.deleteById(passOwnerId)
+        passOwnerService.deleteById(passOwnerIdFromDb)
 
-        verify { passOwnerService.deleteById(any()) }
+        verify {
+            passOwnerRepository.deleteById(any())
+            passRepository.deleteAllByOwnerId(any())
+        }
     }
 }

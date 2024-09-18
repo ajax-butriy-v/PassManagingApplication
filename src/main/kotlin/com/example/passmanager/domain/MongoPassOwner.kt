@@ -13,8 +13,7 @@ data class MongoPassOwner(
     val firstName: String?,
     val lastName: String?,
     val phoneNumber: String?,
-    val email: String?,
-    val ownedPasses: List<MongoPass>?,
+    val email: String?
 ) {
     companion object {
         const val COLLECTION_NAME = "pass_owner"

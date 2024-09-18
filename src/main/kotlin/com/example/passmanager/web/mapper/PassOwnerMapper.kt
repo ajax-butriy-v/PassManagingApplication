@@ -14,8 +14,7 @@ internal object PassOwnerMapper {
             id = null,
             lastName = lastName,
             phoneNumber = phoneNumber,
-            email = email,
-            ownedPasses = null
+            email = email
         )
     }
 
