@@ -4,6 +4,7 @@ spring:
   data:
     mongodb:
       uri: mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}:${MONGODB_PORT}/${MONGODB_DATABASE}?authSource=admin
+      auto-index-creation: true
 server:
   servlet:
     context-path: /api/v1

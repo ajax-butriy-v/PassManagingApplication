@@ -19,11 +19,11 @@ class PassOwnerRepositoryImpl(private val mongoTemplate: MongoTemplate) : PassOw
         return mongoTemplate.insert(newMongoPassOwner)
     }
 
-    override fun save(modifiedMongoPassOwner: MongoPassOwner): MongoPassOwner {
-        return mongoTemplate.save(modifiedMongoPassOwner)
-    }
-
     override fun deleteById(passOwnerId: String) {
         mongoTemplate.remove<MongoPassOwner>(query(where("_id").`is`(passOwnerId)))
+    }
+
+    override fun save(newPassOwner: MongoPassOwner): MongoPassOwner {
+        return mongoTemplate.save(newPassOwner, MongoPassOwner.COLLECTION_NAME)
     }
 }

@@ -26,7 +26,7 @@ internal class PassServiceImpl(
     override fun create(newPass: MongoPass, ownerId: String, passTypeId: String): MongoPass {
         val passOwner = passOwnerService.getById(ownerId)
         val passType = passTypeService.getById(passTypeId)
-        return passRepository.insert(newPass.copy(passOwner = passOwner, passType = passType))
+        return passRepository.insert(newPass.copy(passOwnerId = passOwner.id, passTypeId = passType.id))
     }
 
     override fun update(pass: MongoPass): MongoPass {

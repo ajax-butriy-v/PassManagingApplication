@@ -31,8 +31,8 @@ object PassFixture {
     val passToCreate = MongoPass(
         id = null,
         purchasedFor = BigDecimal.TEN,
-        passOwner = passOwnerFromDb,
-        passType = passTypes.first(),
+        passOwnerId = passOwnerFromDb.id,
+        passTypeId = singlePassType.id,
         purchasedAt = instant,
     )
 
@@ -40,8 +40,8 @@ object PassFixture {
         MongoPass(
             id = ObjectId.get(),
             purchasedFor = BigDecimal.TEN,
-            passOwner = passOwnerFromDb,
-            passType = it,
+            passOwnerId = passOwnerFromDb.id,
+            passTypeId = it.id,
             purchasedAt = instant,
         )
     }

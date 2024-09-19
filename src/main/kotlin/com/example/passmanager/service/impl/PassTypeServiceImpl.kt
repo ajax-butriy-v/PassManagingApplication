@@ -20,6 +20,10 @@ internal class PassTypeServiceImpl(private val passTypeRepository: PassTypeRepos
         return passTypeRepository.insert(passType)
     }
 
+    override fun update(modifiedPassType: MongoPassType): MongoPassType {
+        return passTypeRepository.save(modifiedPassType)
+    }
+
     override fun deleteById(id: String) {
         passTypeRepository.deleteById(id)
     }

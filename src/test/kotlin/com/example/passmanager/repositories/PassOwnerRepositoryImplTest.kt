@@ -2,6 +2,7 @@ package com.example.passmanager.repositories
 
 import com.example.passmanager.domain.MongoPassOwner
 import com.example.passmanager.testcontainers.WithMongoTestContainer
+import com.example.passmanager.util.OptimisticLockTestUtils.getOptimisticLocksAmount
 import com.example.passmanager.util.PassOwnerFixture.passOwnerFromDb
 import com.example.passmanager.util.PassOwnerFixture.passOwnerIdFromDb
 import com.example.passmanager.util.PassOwnerFixture.passOwnerToCreate
@@ -17,6 +18,7 @@ import org.springframework.data.mongodb.core.query.Query.query
 import org.springframework.data.mongodb.core.remove
 import kotlin.test.AfterTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 
 @SpringBootTest
@@ -35,13 +37,13 @@ class PassOwnerRepositoryImplTest {
 
     @Test
     fun `test finding pass owner by id`() {
-        mongoTemplate.insert(passOwnerFromDb)
+        val inserted = mongoTemplate.insert(passOwnerToCreate)
 
         // GIVEN
-        val passOwnerById = passOwnerRepository.findById(passOwnerIdFromDb)
+        val passOwnerById = passOwnerRepository.findById(inserted.id.toString())
 
         // WHEN
-        assertThat(passOwnerById?.id.toString()).isNotNull().isEqualTo(passOwnerIdFromDb)
+        assertThat(passOwnerById?.id).isNotNull().isEqualTo(inserted.id)
     }
 
     @Test
@@ -56,11 +58,11 @@ class PassOwnerRepositoryImplTest {
 
     @Test
     fun `test saving pass owner into collection`() {
-        mongoTemplate.insert(passOwnerFromDb)
+        val inserted = mongoTemplate.insert(passOwnerToCreate)
 
         // GIVEN
         val changedFirstName = "Changed first name"
-        val updatedPassOwner = passOwnerFromDb.copy(firstName = changedFirstName)
+        val updatedPassOwner = inserted.copy(firstName = changedFirstName)
         val saved = passOwnerRepository.save(updatedPassOwner)
 
         // WHEN
@@ -69,7 +71,7 @@ class PassOwnerRepositoryImplTest {
 
     @Test
     fun `test deleting pass from collection`() {
-        mongoTemplate.insert(passOwnerFromDb)
+        mongoTemplate.insert(passOwnerToCreate)
 
         // GIVEN
         passOwnerRepository.deleteById(passOwnerIdFromDb)
@@ -79,5 +81,24 @@ class PassOwnerRepositoryImplTest {
             message = "pass owner must not exist in collection after deletion",
             { mongoTemplate.exists<MongoPassOwner>(query(where("id").`is`(passOwnerFromDb))) }
         )
+    }
+
+    @Test
+    fun `testing optimistic lock handling while save()`() {
+        // GIVEN
+        val insertedPassOwner = passOwnerRepository.insert(passOwnerToCreate)
+        val firstNames = listOf("Firstname1", "Firstname2")
+        assertEquals(1, insertedPassOwner.version)
+
+        // WHEN
+        val tasks = firstNames.map {
+            Runnable { passOwnerRepository.save(insertedPassOwner.copy(firstName = it)) }
+        }
+        val optimisticLocks = getOptimisticLocksAmount(tasks)
+
+        // THEN
+        val updatedPass = passOwnerRepository.findById(insertedPassOwner.id.toString())
+        assertEquals(2, updatedPass?.version)
+        assertEquals(1, optimisticLocks)
     }
 }

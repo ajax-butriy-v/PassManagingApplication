@@ -25,8 +25,8 @@ internal class PassOwnerServiceImpl(
         return passOwnerRepository.insert(newMongoPassOwner)
     }
 
-    override fun update(passOwnerId: String, modifiedMongoPassOwner: MongoPassOwner): MongoPassOwner {
-        return passOwnerRepository.save(modifiedMongoPassOwner)
+    override fun update(newPassOwner: MongoPassOwner): MongoPassOwner {
+        return passOwnerRepository.save(newPassOwner)
     }
 
     override fun deleteById(passOwnerId: String) {

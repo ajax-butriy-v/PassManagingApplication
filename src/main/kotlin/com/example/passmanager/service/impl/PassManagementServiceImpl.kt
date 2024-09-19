@@ -19,6 +19,6 @@ internal class PassManagementServiceImpl(
     override fun transferPass(passId: String, targetPassOwnerId: String) {
         val passInDb = passService.getById(passId)
         val targetPassOwner = passOwnerService.getById(targetPassOwnerId)
-        passService.update(passInDb.copy(passOwner = targetPassOwner))
+        passService.update(passInDb.copy(passOwnerId = targetPassOwner.id))
     }
 }

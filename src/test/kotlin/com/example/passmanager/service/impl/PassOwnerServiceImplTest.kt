@@ -42,7 +42,7 @@ internal class PassOwnerServiceImplTest {
         every { passOwnerRepository.save(any()) } returns passOwnerFromDb.copy(firstName = "Changed")
 
         // WHEN
-        val updated = passOwnerService.update(passOwnerIdFromDb, passOwnerFromDb.copy(firstName = "Changed"))
+        val updated = passOwnerService.update(passOwnerFromDb.copy(firstName = "Changed"))
         assertThat(updated.firstName).isEqualTo("Changed")
 
         // THEN

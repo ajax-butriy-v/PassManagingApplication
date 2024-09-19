@@ -2,9 +2,11 @@ package com.example.passmanager.repositories
 
 import com.example.passmanager.domain.MongoPass
 import com.example.passmanager.domain.MongoPassOwner
+import com.example.passmanager.domain.MongoPassType
 import com.example.passmanager.testcontainers.WithMongoTestContainer
-import com.example.passmanager.util.PassFixture.passFromDb
+import com.example.passmanager.util.OptimisticLockTestUtils.getOptimisticLocksAmount
 import com.example.passmanager.util.PassFixture.passToCreate
+import com.example.passmanager.util.PassFixture.passTypes
 import com.example.passmanager.util.PassFixture.passes
 import com.example.passmanager.util.PassFixture.singlePassId
 import com.example.passmanager.util.PassOwnerFixture.passOwnerFromDb
@@ -25,6 +27,7 @@ import java.time.LocalDate
 import java.time.ZoneId
 import kotlin.test.AfterTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 
 @SpringBootTest
@@ -41,6 +44,7 @@ class PassRepositoryImplTest {
     fun clearData() {
         mongoTemplate.remove<MongoPass>(Query())
         mongoTemplate.remove<MongoPassOwner>(Query())
+        mongoTemplate.remove<MongoPassType>()
     }
 
     @Test
@@ -66,11 +70,11 @@ class PassRepositoryImplTest {
 
     @Test
     fun `test saving pass in collection`() {
-        mongoTemplate.insertAll(passes)
+        val inserted = mongoTemplate.insert(passToCreate)
 
         // GIVEN
         val changedPrice = BigDecimal.TEN
-        val updatedPass = passFromDb.copy(purchasedFor = changedPrice)
+        val updatedPass = inserted.copy(purchasedFor = changedPrice)
         val saved = passRepository.save(updatedPass)
 
         // WHEN
@@ -129,13 +133,14 @@ class PassRepositoryImplTest {
     @Test
     fun `test finding by owner and purchased after`() {
         mongoTemplate.insertAll(passes)
+
         // GIVEN
         val afterDate = LocalDate.now()
         val passes = passRepository.findByOwnerAndPurchasedAfter(passOwnerIdFromDb, LocalDate.now())
 
         // WHEN
         assertThat(passes).hasSize(3)
-            .allMatch({ it.passOwner?.id.toString() == passOwnerIdFromDb })
+            .allMatch({ it.passOwnerId.toString() == passOwnerIdFromDb })
             .allMatch({
                 val dateToInstant = afterDate.atStartOfDay(ZoneId.systemDefault()).toInstant()
                 it.purchasedAt?.isAfter(dateToInstant) == true
@@ -152,7 +157,7 @@ class PassRepositoryImplTest {
 
         // WHEN
         assertThat(passesByOwnerId).hasSize(3)
-            .allMatch({ it.passOwner?.id.toString() == passOwnerIdFromDb })
+            .allMatch({ it.passOwnerId.toString() == passOwnerIdFromDb })
     }
 
     @Test
@@ -170,10 +175,10 @@ class PassRepositoryImplTest {
     @Test
     fun `test getting passes price distributions`() {
         mongoTemplate.insertAll(passes)
+        mongoTemplate.insertAll(passTypes)
 
         // GIVEN
         val priceDistributions = passRepository.getPassesPriceDistribution(passOwnerIdFromDb)
-
         // WHEN
         assertThat(priceDistributions).hasSize(3)
             .allMatch({ it.spentForPassType == BigDecimal.TEN })
@@ -201,5 +206,24 @@ class PassRepositoryImplTest {
 
         // WHEN
         assertThat(sum).isEqualTo(BigDecimal.ZERO)
+    }
+
+    @Test
+    fun `testing optimistic lock handling while save()`() {
+        // GIVEN
+        val createdPass = passRepository.insert(passToCreate)
+        val priceChangingList = listOf(BigDecimal.valueOf(20), BigDecimal.valueOf(30))
+        assertEquals(1, createdPass.version)
+
+        // WHEN
+        val tasks = priceChangingList.map {
+            Runnable { passRepository.save(createdPass.copy(purchasedFor = it)) }
+        }
+        val optimisticLocks = getOptimisticLocksAmount(tasks)
+
+        // THEN
+        val updatedPass = passRepository.findById(createdPass.id.toString())
+        assertEquals(2, updatedPass?.version)
+        assertEquals(1, optimisticLocks)
     }
 }

@@ -55,10 +55,10 @@ internal class PassOwnerController(
         @Valid @RequestBody dto: PassOwnerDto,
         @PathVariable("id") ownerId: String,
     ): ResponseEntity<PassOwnerDto> {
-        return passOwnerService.findById(ownerId)?.let {
-            val mappedOwner = it.partialUpdate(dto)
-            val updatedInDb = passOwnerService.update(ownerId, mappedOwner)
-            ResponseEntity.ok(updatedInDb.toDto())
+        return passOwnerService.findById(ownerId)?.let { passOwnerInDb ->
+            val partiallyUpdated = passOwnerInDb.partialUpdate(dto)
+            val updated = passOwnerService.update(partiallyUpdated)
+            return ResponseEntity.ok(updated.toDto())
         } ?: ResponseEntity.notFound().build()
     }
 
