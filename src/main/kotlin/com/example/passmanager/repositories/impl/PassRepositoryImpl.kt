@@ -18,6 +18,7 @@ import org.springframework.data.mongodb.core.aggregation.LookupOperation
 import org.springframework.data.mongodb.core.findById
 import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query.query
+import org.springframework.data.mongodb.core.query.isEqualTo
 import org.springframework.data.mongodb.core.remove
 import org.springframework.stereotype.Repository
 import java.math.BigDecimal
@@ -32,8 +33,7 @@ class PassRepositoryImpl(private val mongoTemplate: MongoTemplate) : PassReposit
         val aggregation = newAggregation(
             getPassesByOwnerAndPurchasedAfterPipeline(passOwnerId, afterDate).operations
         )
-        val aggregationResults = mongoTemplate.aggregate<MongoPass>(aggregation, COLLECTION_NAME)
-        return aggregationResults.mappedResults
+        return mongoTemplate.aggregate<MongoPass>(aggregation, COLLECTION_NAME).mappedResults
     }
 
     override fun findAllByPassOwnerId(passOwnerId: String): List<MongoPass> {
@@ -59,18 +59,18 @@ class PassRepositoryImpl(private val mongoTemplate: MongoTemplate) : PassReposit
     }
 
     override fun deleteById(passId: String) {
-        mongoTemplate.remove<MongoPass>(query(where("_id").`is`(passId)))
+        mongoTemplate.remove<MongoPass>(query(where("_id").isEqualTo(passId)))
     }
 
     override fun deleteAllByOwnerId(passOwnerId: String) {
-        mongoTemplate.remove<MongoPass>(query(where("passOwner._id").`is`(ObjectId(passOwnerId))))
+        mongoTemplate.remove<MongoPass>(query(where("passOwnerId").isEqualTo(ObjectId(passOwnerId))))
     }
 
     override fun deleteByIdAndOwnerId(passId: String, passOwnerId: String): Boolean {
         val deleteResult = mongoTemplate.remove<MongoPass>(
-            query(where("passOwner._id").`is`(ObjectId(passOwnerId)).andOperator(where("_id").`is`(passId)))
+            query(where("passOwnerId").isEqualTo(ObjectId(passOwnerId)).andOperator(where("_id").isEqualTo(passId)))
         )
-        return deleteResult.wasAcknowledged()
+        return deleteResult.deletedCount > 0
     }
 
     override fun sumPurchasedAtAfterDate(passOwnerId: String, afterDate: LocalDate): BigDecimal {
@@ -81,13 +81,12 @@ class PassRepositoryImpl(private val mongoTemplate: MongoTemplate) : PassReposit
                 .operations
         )
         val aggregationResults = mongoTemplate.aggregate<SumResult>(aggregation, COLLECTION_NAME)
-
         return aggregationResults.uniqueMappedResult?.total ?: BigDecimal.ZERO
     }
 
     override fun getPassesPriceDistribution(passOwnerId: String): List<PriceDistribution> {
         val aggregation = newAggregation(
-            match(where("passOwnerId").`is`(ObjectId(passOwnerId))),
+            match(where("passOwnerId").isEqualTo(ObjectId(passOwnerId))),
             lookup().from(PASS_TYPE_COLLECTION)
                 .localField("passTypeId")
                 .foreignField("_id")
@@ -102,7 +101,7 @@ class PassRepositoryImpl(private val mongoTemplate: MongoTemplate) : PassReposit
 
     private fun getPassesByOwnerAndPurchasedAfterPipeline(passOwnerId: String, date: LocalDate): AggregationPipeline {
         return AggregationPipeline.of(
-            match(where("passOwnerId").`is`(ObjectId(passOwnerId)).andOperator(where("purchasedAt").gt(date))),
+            match(where("passOwnerId").isEqualTo(ObjectId(passOwnerId)).andOperator(where("purchasedAt").gt(date))),
         )
     }
 
@@ -113,7 +112,7 @@ class PassRepositoryImpl(private val mongoTemplate: MongoTemplate) : PassReposit
             .foreignField("passOwnerId")
             .`as`("passes")
         return AggregationPipeline.of(
-            match(where("_id").`is`(passOwnerId)),
+            match(where("_id").isEqualTo(passOwnerId)),
             lookupOperation,
             project("passes").andExclude("_id")
         )

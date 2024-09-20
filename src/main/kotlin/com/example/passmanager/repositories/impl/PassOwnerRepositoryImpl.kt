@@ -6,13 +6,14 @@ import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.findById
 import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query.query
+import org.springframework.data.mongodb.core.query.isEqualTo
 import org.springframework.data.mongodb.core.remove
 import org.springframework.stereotype.Repository
 
 @Repository
 class PassOwnerRepositoryImpl(private val mongoTemplate: MongoTemplate) : PassOwnerRepository {
     override fun findById(passOwnerId: String): MongoPassOwner? {
-        return mongoTemplate.findById<MongoPassOwner>(passOwnerId)
+        return mongoTemplate.findById(passOwnerId)
     }
 
     override fun insert(newMongoPassOwner: MongoPassOwner): MongoPassOwner {
@@ -20,10 +21,10 @@ class PassOwnerRepositoryImpl(private val mongoTemplate: MongoTemplate) : PassOw
     }
 
     override fun deleteById(passOwnerId: String) {
-        mongoTemplate.remove<MongoPassOwner>(query(where("_id").`is`(passOwnerId)))
+        mongoTemplate.remove<MongoPassOwner>(query(where("_id").isEqualTo(passOwnerId)))
     }
 
     override fun save(newPassOwner: MongoPassOwner): MongoPassOwner {
-        return mongoTemplate.save(newPassOwner, MongoPassOwner.COLLECTION_NAME)
+        return mongoTemplate.save(newPassOwner)
     }
 }

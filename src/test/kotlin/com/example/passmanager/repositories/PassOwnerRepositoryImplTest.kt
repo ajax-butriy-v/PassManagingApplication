@@ -3,20 +3,17 @@ package com.example.passmanager.repositories
 import com.example.passmanager.domain.MongoPassOwner
 import com.example.passmanager.testcontainers.WithMongoTestContainer
 import com.example.passmanager.util.OptimisticLockTestUtils.getOptimisticLocksAmount
-import com.example.passmanager.util.PassOwnerFixture.passOwnerFromDb
-import com.example.passmanager.util.PassOwnerFixture.passOwnerIdFromDb
+import com.example.passmanager.util.PassOwnerFixture.getOwnerWithUniqueFields
 import com.example.passmanager.util.PassOwnerFixture.passOwnerToCreate
 import org.assertj.core.api.Assertions.assertThat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.data.mongodb.core.count
 import org.springframework.data.mongodb.core.exists
+import org.springframework.data.mongodb.core.findById
 import org.springframework.data.mongodb.core.query.Criteria.where
-import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Query.query
-import org.springframework.data.mongodb.core.remove
-import kotlin.test.AfterTest
+import org.springframework.data.mongodb.core.query.isEqualTo
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -30,39 +27,37 @@ class PassOwnerRepositoryImplTest {
     @Autowired
     private lateinit var passOwnerRepository: PassOwnerRepository
 
-    @AfterTest
-    fun clearData() {
-        mongoTemplate.remove<MongoPassOwner>(Query())
-    }
-
     @Test
     fun `test finding pass owner by id`() {
-        val inserted = mongoTemplate.insert(passOwnerToCreate)
-
         // GIVEN
-        val passOwnerById = passOwnerRepository.findById(inserted.id.toString())
+        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
+        val insertedPassOwnerId = insertedPassOwner.id
 
         // WHEN
-        assertThat(passOwnerById?.id).isNotNull().isEqualTo(inserted.id)
+        val passOwnerById = passOwnerRepository.findById(insertedPassOwnerId.toString())
+
+        // THEN
+        assertThat(passOwnerById?.id).isNotNull().isEqualTo(insertedPassOwnerId)
     }
 
     @Test
     fun `test inserting pass owner into collection`() {
-        // GIVEN
-        val inserted = passOwnerRepository.insert(passOwnerToCreate)
-
         // WHEN
-        assertThat(inserted.id).isNotNull()
-        assertThat(mongoTemplate.count<MongoPassOwner>()).isEqualTo(1)
+        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
+        val insertedPassOwnerId = insertedPassOwner.id
+
+        // THEN
+        assertThat(mongoTemplate.findById<MongoPassOwner>(insertedPassOwnerId!!)).isEqualTo(insertedPassOwner)
     }
 
     @Test
     fun `test saving pass owner into collection`() {
-        val inserted = mongoTemplate.insert(passOwnerToCreate)
-
         // GIVEN
+        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
         val changedFirstName = "Changed first name"
-        val updatedPassOwner = inserted.copy(firstName = changedFirstName)
+        val updatedPassOwner = insertedPassOwner.copy(firstName = changedFirstName)
+
+        // WHEN
         val saved = passOwnerRepository.save(updatedPassOwner)
 
         // WHEN
@@ -71,16 +66,17 @@ class PassOwnerRepositoryImplTest {
 
     @Test
     fun `test deleting pass from collection`() {
-        mongoTemplate.insert(passOwnerToCreate)
-
         // GIVEN
-        passOwnerRepository.deleteById(passOwnerIdFromDb)
+        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
+        val insertedPassOwnerId = insertedPassOwner.id
 
         // WHEN
-        assertFalse(
-            message = "pass owner must not exist in collection after deletion",
-            { mongoTemplate.exists<MongoPassOwner>(query(where("id").`is`(passOwnerFromDb))) }
-        )
+        passOwnerRepository.deleteById(insertedPassOwnerId.toString())
+
+        // THEN
+        assertFalse("pass owner must not exist in collection after deletion") {
+            mongoTemplate.exists<MongoPassOwner>(query(where("_id").isEqualTo(insertedPassOwnerId)))
+        }
     }
 
     @Test

@@ -6,7 +6,7 @@ import com.example.passmanager.service.PassOwnerService
 import com.example.passmanager.service.PassTypeService
 import com.example.passmanager.util.PassFixture.passFromDb
 import com.example.passmanager.util.PassFixture.passToCreate
-import com.example.passmanager.util.PassFixture.passes
+import com.example.passmanager.util.PassFixture.passesFromDb
 import com.example.passmanager.util.PassFixture.singlePassId
 import com.example.passmanager.util.PassFixture.singlePassType
 import com.example.passmanager.util.PassFixture.singlePassTypeId
@@ -70,7 +70,7 @@ internal class PassServiceImplTest {
 
     @Test
     fun `should return all passes for owner after particular date`() {
-        every { passRepository.findByOwnerAndPurchasedAfter(any(), any()) } returns passes
+        every { passRepository.findByOwnerAndPurchasedAfter(any(), any()) } returns passesFromDb
 
         val afterDateList = passService.findAllByPassOwnerAndPurchasedAtGreaterThan(passOwnerIdFromDb, LocalDate.MIN)
         assertThat(afterDateList).size().isEqualTo(3)
@@ -80,7 +80,7 @@ internal class PassServiceImplTest {
 
     @Test
     fun `finding all passes by pass owner id should return all corresponding passes`() {
-        every { passRepository.findAllByPassOwnerId(any()) } returns passes
+        every { passRepository.findAllByPassOwnerId(any()) } returns passesFromDb
 
         val passesByOwner = passService.findAllByPassOwnerId(passOwnerIdFromDb)
         assertThat(passesByOwner).size().isEqualTo(3)
@@ -139,11 +139,11 @@ internal class PassServiceImplTest {
     @Test
     fun `finding all by pass owner and purchased at should return corresponding passes`() {
         // GIVEN
-        every { passRepository.findByOwnerAndPurchasedAfter(any(), any()) } returns passes
+        every { passRepository.findByOwnerAndPurchasedAfter(any(), any()) } returns passesFromDb
 
         // WHEN
         val actual = passService.findAllByPassOwnerAndPurchasedAtGreaterThan(passOwnerIdFromDb, LocalDate.now())
-        assertThat(actual).isEqualTo(passes)
+        assertThat(actual).isEqualTo(passesFromDb)
 
         // THEN
         verify { passRepository.findByOwnerAndPurchasedAfter(any(), any()) }
@@ -152,11 +152,11 @@ internal class PassServiceImplTest {
     @Test
     fun `finding all passes by pass owner id should return corresponding passes`() {
         // GIVEN
-        every { passRepository.findAllByPassOwnerId(any()) } returns passes
+        every { passRepository.findAllByPassOwnerId(any()) } returns passesFromDb
 
         // WHEN
         val actual = passService.findAllByPassOwnerId(passOwnerIdFromDb)
-        assertThat(actual).isEqualTo(passes)
+        assertThat(actual).isEqualTo(passesFromDb)
 
         // THEN
         verify { passRepository.findAllByPassOwnerId(any()) }

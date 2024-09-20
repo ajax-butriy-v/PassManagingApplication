@@ -8,3 +8,11 @@ spring:
 server:
   servlet:
     context-path: /api/v1
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          mongodb:
+            core:
+              MongoTemplate: DEBUG

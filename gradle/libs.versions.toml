@@ -8,6 +8,7 @@ springmockk = "4.0.2"
 junit-platform-launcher = "1.10.0"
 delta-coverage = "2.4.0"
 mongodb-testcontainer = "1.20.1"
+faker = "2.0.0-rc.6"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -30,3 +31,4 @@ kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", versi
 testcontainers-mongodb = { module = "org.testcontainers:mongodb", version.ref = "mongodb-testcontainer" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platform-launcher" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+faker = { module = "io.github.serpro69:kotlin-faker", version.ref = "faker" }

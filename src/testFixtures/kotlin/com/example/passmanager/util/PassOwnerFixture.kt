@@ -3,6 +3,7 @@ package com.example.passmanager.util
 
 import com.example.passmanager.domain.MongoPassOwner
 import com.example.passmanager.web.dto.PassOwnerDto
+import io.github.serpro69.kfaker.Faker
 import org.bson.types.ObjectId
 
 object PassOwnerFixture {
@@ -24,5 +25,14 @@ object PassOwnerFixture {
         phoneNumber = passOwnerFromDb.phoneNumber,
         email = passOwnerFromDb.email
     )
+
+    fun getOwnerWithUniqueFields(): MongoPassOwner {
+        return Faker().run {
+            passOwnerToCreate.copy(
+                email = internet.safeEmail(),
+                phoneNumber = string.numerify("#".repeat(10))
+            )
+        }
+    }
 }
 

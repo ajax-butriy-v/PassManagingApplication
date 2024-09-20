@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.findById
 import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query.query
+import org.springframework.data.mongodb.core.query.isEqualTo
 import org.springframework.data.mongodb.core.remove
 import org.springframework.stereotype.Repository
 
@@ -24,6 +25,6 @@ class PassTypeRepositoryImpl(private val mongoTemplate: MongoTemplate) : PassTyp
     }
 
     override fun deleteById(passOwnerId: String) {
-        mongoTemplate.remove<MongoPassType>(query(where("_id").`is`(passOwnerId)))
+        mongoTemplate.remove<MongoPassType>(query(where("_id").isEqualTo(passOwnerId)))
     }
 }

@@ -3,22 +3,20 @@ package com.example.passmanager.repositories
 import com.example.passmanager.domain.MongoPassType
 import com.example.passmanager.testcontainers.WithMongoTestContainer
 import com.example.passmanager.util.OptimisticLockTestUtils.getOptimisticLocksAmount
+import com.example.passmanager.util.PassFixture.passTypeToCreate
 import com.example.passmanager.util.PassFixture.singlePassType
-import com.example.passmanager.util.PassFixture.singlePassTypeId
 import org.assertj.core.api.Assertions.assertThat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.data.mongodb.core.count
 import org.springframework.data.mongodb.core.exists
 import org.springframework.data.mongodb.core.query.Criteria.where
-import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Query.query
-import org.springframework.data.mongodb.core.remove
-import kotlin.test.AfterTest
+import org.springframework.data.mongodb.core.query.isEqualTo
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @SpringBootTest
 @WithMongoTestContainer
@@ -29,39 +27,39 @@ class PassTypeRepositoryImplTest {
     @Autowired
     private lateinit var passTypeRepository: PassTypeRepository
 
-    @AfterTest
-    fun clearData() {
-        mongoTemplate.remove<MongoPassType>(Query())
-    }
-
     @Test
     fun `test finding pass type by id`() {
-        mongoTemplate.insert(singlePassType)
-
         // GIVEN
-        val passTypeById = passTypeRepository.findById(singlePassTypeId)
+        val insertedPassType = mongoTemplate.insert(passTypeToCreate)
+        val insertedPassTypeId = insertedPassType.id
 
         // WHEN
-        assertThat(passTypeById?.id.toString()).isNotNull().isEqualTo(singlePassTypeId)
+        val passTypeById = passTypeRepository.findById(insertedPassTypeId.toString())
+
+        // THEN
+        assertThat(passTypeById?.id).isNotNull().isEqualTo(insertedPassTypeId)
     }
 
     @Test
     fun `test inserting pass type into collection`() {
-        // GIVEN
-        val inserted = passTypeRepository.insert(singlePassType)
-
         // WHEN
-        assertThat(inserted.id).isNotNull()
-        assertThat(mongoTemplate.count<MongoPassType>()).isEqualTo(1)
+        val insertedPassType = mongoTemplate.insert(passTypeToCreate)
+        val insertedPassTypeId = insertedPassType.id
+
+        // THEN
+        assertTrue("pass type must be persisted in db after creation") {
+            mongoTemplate.exists<MongoPassType>(query(where("id").isEqualTo(insertedPassTypeId)))
+        }
     }
 
     @Test
     fun `test saving pass type into collection`() {
-        val inserted = mongoTemplate.insert(singlePassType.copy(id = null))
-
         // GIVEN
+        val insertedPassType = mongoTemplate.insert(passTypeToCreate)
         val changedTypeName = "Changed name"
-        val updatedPassType = inserted.copy(name = changedTypeName)
+        val updatedPassType = insertedPassType.copy(name = changedTypeName)
+
+        // WHEN
         val saved = passTypeRepository.save(updatedPassType)
 
         // WHEN
@@ -70,16 +68,17 @@ class PassTypeRepositoryImplTest {
 
     @Test
     fun `test deleting pass type from collection`() {
-        mongoTemplate.insert(singlePassType)
-
         // GIVEN
-        passTypeRepository.deleteById(singlePassTypeId)
+        val insertedPassType = mongoTemplate.insert(passTypeToCreate)
+        val insertedPassTypeId = insertedPassType.id
 
         // WHEN
-        assertFalse(
-            message = "pass owner must not exist in collection after deletion",
-            { mongoTemplate.exists<MongoPassType>(query(where("id").`is`(singlePassType))) }
-        )
+        passTypeRepository.deleteById(insertedPassTypeId.toString())
+
+        // WHEN
+        assertFalse("pass owner must not exist in collection after deletion") {
+            mongoTemplate.exists<MongoPassType>(query(where("_id").isEqualTo(insertedPassTypeId)))
+        }
     }
 
     @Test

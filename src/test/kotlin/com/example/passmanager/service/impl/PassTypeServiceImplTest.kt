@@ -59,8 +59,6 @@ class PassTypeServiceImplTest {
 
         passTypeService.deleteById(singlePassTypeId)
 
-        verify {
-            passTypeRepository.deleteById(any())
-        }
+        verify { passTypeRepository.deleteById(any()) }
     }
 }
