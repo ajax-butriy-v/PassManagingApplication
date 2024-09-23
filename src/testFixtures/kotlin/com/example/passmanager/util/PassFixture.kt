@@ -45,6 +45,7 @@ object PassFixture {
     val passFromDb = passesFromDb.first()
     val singlePassId = passFromDb.id.toString()
 
+    val dto = passFromDb.toDto()
     val dtoWithInvalidIdFormats = PassDto(
         purchasedFor = BigDecimal.TEN,
         passOwnerId = "not valid",

@@ -183,13 +183,14 @@ class PassRepositoryImplTest {
     }
 
     @Test
-    fun `getting sum of purchased passes for non-existent pass owner should return zero sum`() {
+    fun `getting sum of purchased passes for pass owner with no passes should return zero sum`() {
         // GIVEN
-        mongoTemplate.insertAll(passesToCreate)
+        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
+        val insertedPassOwnerId = insertedPassOwner.id
         val afterDate = LocalDate.now()
 
         // WHEN
-        val sum = passRepository.sumPurchasedAtAfterDate(ObjectId.get().toString(), afterDate)
+        val sum = passRepository.sumPurchasedAtAfterDate(insertedPassOwnerId.toString(), afterDate)
 
         // THEN
         assertThat(sum).isEqualTo(BigDecimal.ZERO)

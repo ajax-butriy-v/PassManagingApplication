@@ -14,8 +14,9 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregat
 import org.springframework.data.mongodb.core.aggregation.Aggregation.project
 import org.springframework.data.mongodb.core.aggregation.Aggregation.unwind
 import org.springframework.data.mongodb.core.aggregation.AggregationPipeline
-import org.springframework.data.mongodb.core.aggregation.LookupOperation
+import org.springframework.data.mongodb.core.find
 import org.springframework.data.mongodb.core.findById
+import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query.query
 import org.springframework.data.mongodb.core.query.isEqualTo
@@ -23,7 +24,6 @@ import org.springframework.data.mongodb.core.remove
 import org.springframework.stereotype.Repository
 import java.math.BigDecimal
 import java.time.LocalDate
-import com.example.passmanager.domain.MongoPassOwner.Companion.COLLECTION_NAME as PASS_OWNER_COLLECTION
 import com.example.passmanager.domain.MongoPassType.Companion.COLLECTION_NAME as PASS_TYPE_COLLECTION
 
 @Suppress("TooManyFunctions")
@@ -37,13 +37,7 @@ class PassRepositoryImpl(private val mongoTemplate: MongoTemplate) : PassReposit
     }
 
     override fun findAllByPassOwnerId(passOwnerId: String): List<MongoPass> {
-        val pipelineStages = getPassesLookUpAggregationPipeline(passOwnerId).operations
-        val aggregationResults =
-            mongoTemplate.aggregate<ProjectionResult>(
-                newAggregation(pipelineStages),
-                PASS_OWNER_COLLECTION
-            )
-        return aggregationResults.uniqueMappedResult?.passes.orEmpty()
+        return mongoTemplate.find<MongoPass>(query(getCriteriaByOwnerId(passOwnerId)))
     }
 
     override fun findById(passId: String): MongoPass? {
@@ -63,7 +57,7 @@ class PassRepositoryImpl(private val mongoTemplate: MongoTemplate) : PassReposit
     }
 
     override fun deleteAllByOwnerId(passOwnerId: String) {
-        mongoTemplate.remove<MongoPass>(query(where(MongoPass::passOwnerId.name).isEqualTo(ObjectId(passOwnerId))))
+        mongoTemplate.remove<MongoPass>(query(getCriteriaByOwnerId(passOwnerId)))
     }
 
     override fun sumPurchasedAtAfterDate(passOwnerId: String, afterDate: LocalDate): BigDecimal {
@@ -74,7 +68,8 @@ class PassRepositoryImpl(private val mongoTemplate: MongoTemplate) : PassReposit
                 .operations
         )
         val aggregationResults = mongoTemplate.aggregate<SumResult>(aggregation, COLLECTION_NAME)
-        return aggregationResults.uniqueMappedResult?.total ?: BigDecimal.ZERO
+        val total = aggregationResults.uniqueMappedResult?.total
+        return total ?: BigDecimal.ZERO
     }
 
     override fun getPassesPriceDistribution(passOwnerId: String): List<PriceDistribution> {
@@ -94,27 +89,13 @@ class PassRepositoryImpl(private val mongoTemplate: MongoTemplate) : PassReposit
 
     private fun getPassesByOwnerAndPurchasedAfterPipeline(passOwnerId: String, date: LocalDate): AggregationPipeline {
         return AggregationPipeline.of(
-            match(
-                where(MongoPass::passOwnerId.name).isEqualTo(ObjectId(passOwnerId))
-                    .andOperator(where(MongoPass::purchasedAt.name).gte(date))
-            ),
+            match(getCriteriaByOwnerId(passOwnerId).andOperator(where(MongoPass::purchasedAt.name).gte(date))),
         )
     }
 
-    private fun getPassesLookUpAggregationPipeline(passOwnerId: String): AggregationPipeline {
-        val lookupOperation = LookupOperation.newLookup()
-            .from(COLLECTION_NAME)
-            .localField("_id")
-            .foreignField(MongoPass::passOwnerId.name)
-            .`as`("passes")
-        return AggregationPipeline.of(
-            match(where("_id").isEqualTo(passOwnerId)),
-            lookupOperation,
-            project("passes").andExclude("_id")
-        )
+    private fun getCriteriaByOwnerId(passOwnerId: String): Criteria {
+        return where(MongoPass::passOwnerId.name).isEqualTo(ObjectId(passOwnerId))
     }
-
-    internal data class ProjectionResult(val passes: List<MongoPass>)
 
     internal data class SumResult(val total: BigDecimal)
 }
