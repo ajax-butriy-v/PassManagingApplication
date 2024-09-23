@@ -11,11 +11,11 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.justRun
 import io.mockk.verify
 import io.mockk.verifyOrder
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.Test
-import kotlin.test.assertTrue
 
 @ExtendWith(MockKExtension::class)
 internal class PassManagementServiceImplTest {
@@ -34,14 +34,17 @@ internal class PassManagementServiceImplTest {
     @Test
     fun `cancel pass should delete pass from client list if client id and pass is are valid`() {
         // GIVEN
-        every { passRepository.deleteByIdAndOwnerId(any(), any()) } returns true
+        every { passOwnerService.getById(any()) } returns passOwnerFromDb
+        justRun { passRepository.deleteById(any()) }
+
         // WHEN
-        assertTrue("Pass, which belongs to owner, should be deleted") {
-            passManagementService.cancelPass(passOwnerIdFromDb, singlePassId)
-        }
+        passManagementService.cancelPass(passOwnerIdFromDb, singlePassId)
 
         // THEN
-        verify { passRepository.deleteByIdAndOwnerId(any(), any()) }
+        verify {
+            passOwnerService.getById(any())
+            passRepository.deleteById(any())
+        }
     }
 
     @Test

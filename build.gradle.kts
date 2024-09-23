@@ -30,6 +30,9 @@ dependencies {
     implementation(libs.jackson.module.kotlin)
     implementation(libs.spring.boot.starter.data.mongodb)
     implementation(libs.spring.boot.starter.validation)
+    implementation(libs.faker)
+    implementation(libs.mongock.springboot.v3)
+    implementation(libs.mongock.mongodb.springdata.v4.driver)
     developmentOnly(libs.spring.boot.docker.compose)
     testImplementation(libs.spring.boot.starter.test) {
         exclude(module = "mockito-core")

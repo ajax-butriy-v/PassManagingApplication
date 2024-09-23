@@ -28,7 +28,7 @@ class PassOwnerRepositoryImplTest {
     private lateinit var passOwnerRepository: PassOwnerRepository
 
     @Test
-    fun `test finding pass owner by id`() {
+    fun `finding pass by existing id should return pass owner by id`() {
         // GIVEN
         val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
         val insertedPassOwnerId = insertedPassOwner.id
@@ -41,7 +41,7 @@ class PassOwnerRepositoryImplTest {
     }
 
     @Test
-    fun `test inserting pass owner into collection`() {
+    fun `inserting pass owner in collection should return created pass owner`() {
         // WHEN
         val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
         val insertedPassOwnerId = insertedPassOwner.id
@@ -51,7 +51,7 @@ class PassOwnerRepositoryImplTest {
     }
 
     @Test
-    fun `test saving pass owner into collection`() {
+    fun `saving pass owner in collection show update existing pass owner by id`() {
         // GIVEN
         val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
         val changedFirstName = "Changed first name"
@@ -65,7 +65,7 @@ class PassOwnerRepositoryImplTest {
     }
 
     @Test
-    fun `test deleting pass from collection`() {
+    fun `deleting pass owner by id should delete pass owner from collection`() {
         // GIVEN
         val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
         val insertedPassOwnerId = insertedPassOwner.id
@@ -80,7 +80,7 @@ class PassOwnerRepositoryImplTest {
     }
 
     @Test
-    fun `testing optimistic lock handling while save()`() {
+    fun `optimistic lock handling while save() should throw exception if version was changed by another thread()`() {
         // GIVEN
         val insertedPassOwner = passOwnerRepository.insert(passOwnerToCreate)
         val firstNames = listOf("Firstname1", "Firstname2")

@@ -73,7 +73,6 @@ internal class ValidObjectIdFormatBeanPostProcessorTest {
         val proxiedController = getProxiedController()
 
         // THEN
-        println(dtoWithValidIdFormats)
         assertDoesNotThrow { proxiedController.create(dtoWithValidIdFormats) }
     }
 

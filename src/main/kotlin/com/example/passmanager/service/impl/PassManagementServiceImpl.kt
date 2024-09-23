@@ -12,8 +12,9 @@ internal class PassManagementServiceImpl(
     private val passService: PassService,
     private val passRepository: PassRepository,
 ) : PassManagementService {
-    override fun cancelPass(passOwnerId: String, passId: String): Boolean {
-        return passRepository.deleteByIdAndOwnerId(passId, passOwnerId)
+    override fun cancelPass(passOwnerId: String, passId: String) {
+        val passOwner = passOwnerService.getById(passOwnerId)
+        passOwner.let { passRepository.deleteById(passId) }
     }
 
     override fun transferPass(passId: String, targetPassOwnerId: String) {

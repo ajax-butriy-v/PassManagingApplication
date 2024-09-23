@@ -4,7 +4,8 @@ spring:
   data:
     mongodb:
       uri: mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}:${MONGODB_PORT}/${MONGODB_DATABASE}?authSource=admin
-      auto-index-creation: true
+mongock:
+  migration-scan-package: com.example.passmanager.migration
 server:
   servlet:
     context-path: /api/v1

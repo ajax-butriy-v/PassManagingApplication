@@ -35,7 +35,7 @@ class PassRepositoryImplTest {
     private lateinit var passRepository: PassRepository
 
     @Test
-    fun `test finding pass by id`() {
+    fun `finding pass by existing id should return pass by id`() {
         // GIVEN
         val inserted = mongoTemplate.insert(passToCreate)
 
@@ -47,7 +47,7 @@ class PassRepositoryImplTest {
     }
 
     @Test
-    fun `test inserting pass in collection`() {
+    fun `inserting pass in collection should return created pass`() {
         // WHEN
         val inserted = passRepository.insert(passToCreate)
         val insertedId = inserted.id
@@ -59,7 +59,7 @@ class PassRepositoryImplTest {
     }
 
     @Test
-    fun `test saving pass in collection`() {
+    fun `saving pass in collection show update existing pass by id`() {
         // GIVEN
         val inserted = mongoTemplate.insert(passToCreate)
         val changedPrice = BigDecimal.TEN
@@ -73,7 +73,7 @@ class PassRepositoryImplTest {
     }
 
     @Test
-    fun `test deleting pass by id`() {
+    fun `deleting pass by id should delete pass from collection`() {
         // GIVEN
         val inserted = mongoTemplate.insert(passToCreate)
         val insertedId = inserted.id
@@ -88,7 +88,7 @@ class PassRepositoryImplTest {
     }
 
     @Test
-    fun `test deleting all passes by owner id`() {
+    fun `deleting all passes by owner id should delete all owner's passes`() {
         // GIVEN
         val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
         val insertedPassOwnerId = insertedPassOwner.id
@@ -104,29 +104,7 @@ class PassRepositoryImplTest {
     }
 
     @Test
-    fun `test deleting pass by id and owner id`() {
-        // GIVEN
-        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
-        val insertedPassOwnerId = insertedPassOwner.id
-        val insertedPass = mongoTemplate.insert(passToCreate.copy(passOwnerId = insertedPassOwnerId))
-        val insertedPassId = insertedPass.id
-
-        // WHEN
-        passRepository.deleteByIdAndOwnerId(insertedPassId.toString(), insertedPassOwnerId.toString())
-
-        // THEN
-        assertFalse("pass must not exist in db after deletion") {
-            mongoTemplate.exists<MongoPass>(
-                query(
-                    where("passOwnerId").isEqualTo(insertedPassOwnerId)
-                        .andOperator(where("_id").isEqualTo(insertedPassId))
-                )
-            )
-        }
-    }
-
-    @Test
-    fun `test finding by owner and purchased after`() {
+    fun `finding by owner and purchased after should return corresponding passes`() {
         // GIVEN
         val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
         val insertedPassOwnerId = insertedPassOwner.id
@@ -172,7 +150,7 @@ class PassRepositoryImplTest {
     }
 
     @Test
-    fun `test getting passes price distributions`() {
+    fun `getting passes price distributions should return correct distribution per type`() {
         // GIVEN
         val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
         val insertedPassOwnerId = insertedPassOwner.id
@@ -190,7 +168,7 @@ class PassRepositoryImplTest {
     }
 
     @Test
-    fun `test getting sum of purchased passes for pass owner`() {
+    fun `getting sum of purchased passes for pass owner should return correct sum`() {
         // GIVEN
         val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
         val insertedPassOwnerId = insertedPassOwner.id
@@ -218,7 +196,7 @@ class PassRepositoryImplTest {
     }
 
     @Test
-    fun `testing optimistic lock handling while save()`() {
+    fun `optimistic lock handling while save() should throw exception if version was changed by another thread`() {
         // GIVEN
         val createdPass = passRepository.insert(passToCreate)
         val priceChangingList = listOf(BigDecimal.valueOf(20), BigDecimal.valueOf(30))

@@ -13,7 +13,6 @@ interface PassRepository {
     fun save(pass: MongoPass): MongoPass
     fun deleteById(passId: String)
     fun deleteAllByOwnerId(passOwnerId: String)
-    fun deleteByIdAndOwnerId(passId: String, passOwnerId: String): Boolean
     fun sumPurchasedAtAfterDate(passOwnerId: String, afterDate: LocalDate): BigDecimal
     fun getPassesPriceDistribution(passOwnerId: String): List<PriceDistribution>
 }

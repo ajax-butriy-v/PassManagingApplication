@@ -36,8 +36,9 @@ internal class PassController(
     }
 
     @PostMapping("/{id}/cancel/{owner-id}")
-    fun cancelPass(@PathVariable id: String, @PathVariable("owner-id") ownerId: String): ResponseEntity<Boolean> {
-        return passManagementService.cancelPass(ownerId, id).let { ResponseEntity.ok(it) }
+    fun cancelPass(@PathVariable id: String, @PathVariable("owner-id") ownerId: String): ResponseEntity<Unit> {
+        passManagementService.cancelPass(ownerId, id)
+        return ResponseEntity.ok().build()
     }
 
     @PostMapping("/{id}/transfer/{owner-id}")

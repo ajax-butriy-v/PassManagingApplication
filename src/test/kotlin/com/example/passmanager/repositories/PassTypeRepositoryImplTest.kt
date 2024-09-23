@@ -28,7 +28,7 @@ class PassTypeRepositoryImplTest {
     private lateinit var passTypeRepository: PassTypeRepository
 
     @Test
-    fun `test finding pass type by id`() {
+    fun `finding pass type by existing id should return pass type by id`() {
         // GIVEN
         val insertedPassType = mongoTemplate.insert(passTypeToCreate)
         val insertedPassTypeId = insertedPassType.id
@@ -41,7 +41,7 @@ class PassTypeRepositoryImplTest {
     }
 
     @Test
-    fun `test inserting pass type into collection`() {
+    fun `inserting pass type in collection should return created pass type`() {
         // WHEN
         val insertedPassType = mongoTemplate.insert(passTypeToCreate)
         val insertedPassTypeId = insertedPassType.id
@@ -53,7 +53,7 @@ class PassTypeRepositoryImplTest {
     }
 
     @Test
-    fun `test saving pass type into collection`() {
+    fun `saving pass type in collection show update existing pass type by id`() {
         // GIVEN
         val insertedPassType = mongoTemplate.insert(passTypeToCreate)
         val changedTypeName = "Changed name"
@@ -67,7 +67,7 @@ class PassTypeRepositoryImplTest {
     }
 
     @Test
-    fun `test deleting pass type from collection`() {
+    fun `deleting pass type by id should delete pass type from collection`() {
         // GIVEN
         val insertedPassType = mongoTemplate.insert(passTypeToCreate)
         val insertedPassTypeId = insertedPassType.id
@@ -82,7 +82,7 @@ class PassTypeRepositoryImplTest {
     }
 
     @Test
-    fun `testing optimistic lock handling while save()`() {
+    fun `optimistic lock handling while save() should throw exception if version was changed by another thread`() {
         // GIVEN
         val insertedPassType = passTypeRepository.insert(singlePassType)
         val typeNames = listOf("First", "Second", "Third")

@@ -5,7 +5,6 @@ import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.TypeAlias
 import org.springframework.data.annotation.Version
-import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
 
 @TypeAlias("PassOwner")
@@ -14,9 +13,7 @@ data class MongoPassOwner(
     @Id val id: ObjectId?,
     val firstName: String?,
     val lastName: String?,
-    @Indexed(name = "phone_number_index", unique = true)
     val phoneNumber: String?,
-    @Indexed(name = "email_index", unique = true)
     val email: String?,
     @Version
     val version: Long = 0,
