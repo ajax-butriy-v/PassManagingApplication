@@ -4,6 +4,7 @@ import com.example.passmanager.domain.MongoPassType.Companion.COLLECTION_NAME
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.TypeAlias
+import org.springframework.data.annotation.Version
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
 import org.springframework.data.mongodb.core.mapping.FieldType
@@ -19,6 +20,8 @@ data class MongoPassType(
     val name: String?,
     @Field(targetType = FieldType.DECIMAL128)
     val price: BigDecimal?,
+    @Version
+    val version: Long = 0,
 ) {
     companion object {
         const val COLLECTION_NAME = "pass_type"

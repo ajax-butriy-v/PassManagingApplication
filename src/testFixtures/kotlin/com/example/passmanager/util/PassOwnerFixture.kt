@@ -2,20 +2,37 @@ package com.example.passmanager.util
 
 
 import com.example.passmanager.domain.MongoPassOwner
+import com.example.passmanager.web.dto.PassOwnerDto
+import io.github.serpro69.kfaker.Faker
 import org.bson.types.ObjectId
 
 object PassOwnerFixture {
-    val passOwnerId: ObjectId = ObjectId.get()
+    val id: ObjectId = ObjectId.get()
     val passOwnerToCreate = MongoPassOwner(
         id = null,
         firstName = "First Name",
         lastName = "Last Name",
         phoneNumber = "+123456789",
         email = "example@gmail.com",
-        ownedPasses = null
     )
 
-    val passOwnerFromDb = passOwnerToCreate.copy(id = passOwnerId)
-    val updatedOwner = passOwnerFromDb.copy(id = ObjectId.get(), firstName = "Another one")
+    val passOwnerFromDb = passOwnerToCreate.copy(id = id)
+    val passOwnerIdFromDb = id.toString()
+
+    val passOwnerDto = PassOwnerDto(
+        firstName = passOwnerFromDb.firstName,
+        lastName = passOwnerFromDb.lastName,
+        phoneNumber = passOwnerFromDb.phoneNumber,
+        email = passOwnerFromDb.email
+    )
+
+    fun getOwnerWithUniqueFields(): MongoPassOwner {
+        return Faker().run {
+            passOwnerToCreate.copy(
+                email = internet.safeEmail(),
+                phoneNumber = string.numerify("#".repeat(10))
+            )
+        }
+    }
 }
 

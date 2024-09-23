@@ -4,17 +4,15 @@ import com.example.passmanager.domain.MongoPassType
 import com.example.passmanager.exception.PassTypeNotFoundException
 import com.example.passmanager.repositories.PassTypeRepository
 import com.example.passmanager.service.PassTypeService
-import org.bson.types.ObjectId
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 @Service
 internal class PassTypeServiceImpl(private val passTypeRepository: PassTypeRepository) : PassTypeService {
-    override fun findById(id: ObjectId): MongoPassType? {
-        return passTypeRepository.findByIdOrNull(id)
+    override fun findById(id: String): MongoPassType? {
+        return passTypeRepository.findById(id)
     }
 
-    override fun getById(id: ObjectId): MongoPassType {
+    override fun getById(id: String): MongoPassType {
         return findById(id) ?: throw PassTypeNotFoundException(id)
     }
 
@@ -22,7 +20,11 @@ internal class PassTypeServiceImpl(private val passTypeRepository: PassTypeRepos
         return passTypeRepository.insert(passType)
     }
 
-    override fun deleteById(id: ObjectId) {
+    override fun update(modifiedPassType: MongoPassType): MongoPassType {
+        return passTypeRepository.save(modifiedPassType)
+    }
+
+    override fun deleteById(id: String) {
         passTypeRepository.deleteById(id)
     }
 }

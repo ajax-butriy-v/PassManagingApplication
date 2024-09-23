@@ -4,6 +4,7 @@ import com.example.passmanager.exception.InvalidObjectIdFormatException
 import com.example.passmanager.service.PassManagementService
 import com.example.passmanager.service.PassService
 import com.example.passmanager.util.PassFixture
+import com.example.passmanager.util.PassFixture.dtoWithValidIdFormats
 import com.example.passmanager.util.PassFixture.passFromDb
 import com.example.passmanager.web.controller.PassController
 import io.mockk.every
@@ -72,7 +73,7 @@ internal class ValidObjectIdFormatBeanPostProcessorTest {
         val proxiedController = getProxiedController()
 
         // THEN
-        assertDoesNotThrow { proxiedController.create(PassFixture.dtoWithValidIdFormats) }
+        assertDoesNotThrow { proxiedController.create(dtoWithValidIdFormats) }
     }
 
     private fun getProxiedController(): PassController {

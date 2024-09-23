@@ -1,12 +1,18 @@
 package com.example.passmanager.repositories
 
 import com.example.passmanager.domain.MongoPass
-import com.example.passmanager.domain.MongoPassOwner
-import org.bson.types.ObjectId
-import org.springframework.data.mongodb.repository.MongoRepository
-import java.time.Instant
+import com.example.passmanager.web.dto.PriceDistribution
+import java.math.BigDecimal
+import java.time.LocalDate
 
-interface PassRepository : MongoRepository<MongoPass, ObjectId> {
-    fun findAllByPassOwnerAndPurchasedAtGreaterThan(mongoPassOwner: MongoPassOwner, afterDate: Instant): List<MongoPass>
-    fun findAllByPassOwnerId(passOwnerId: ObjectId): List<MongoPass>
+interface PassRepository {
+    fun findByOwnerAndPurchasedAfter(passOwnerId: String, afterDate: LocalDate): List<MongoPass>
+    fun findAllByPassOwnerId(passOwnerId: String): List<MongoPass>
+    fun findById(passId: String): MongoPass?
+    fun insert(newPass: MongoPass): MongoPass
+    fun save(pass: MongoPass): MongoPass
+    fun deleteById(passId: String)
+    fun deleteAllByOwnerId(passOwnerId: String)
+    fun sumPurchasedAtAfterDate(passOwnerId: String, afterDate: LocalDate): BigDecimal
+    fun getPassesPriceDistribution(passOwnerId: String): List<PriceDistribution>
 }

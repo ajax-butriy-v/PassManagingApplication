@@ -17,11 +17,6 @@ services:
       - "8080:8080"
     depends_on:
       - mongo
-    healthcheck:
-      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
-      interval: 3s
-      timeout: 3s
-      retries: 3
   mongo:
     image: mongo
     restart: always
@@ -35,6 +30,11 @@ services:
       - "27017:27017"
     volumes:
       - db_data:/data/db
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 3s
+      timeout: 3s
+      retries: 3
   mongo-express:
     image: mongo-express
     container_name: mongo-express
@@ -51,3 +51,4 @@ services:
       ME_CONFIG_MONGODB_URL: ${ME_CONFIG_MONGODB_URL}
 volumes:
   db_data:
+

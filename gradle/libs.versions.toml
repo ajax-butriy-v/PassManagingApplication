@@ -7,6 +7,9 @@ jackson-module-kotlin = "2.15.0"
 springmockk = "4.0.2"
 junit-platform-launcher = "1.10.0"
 delta-coverage = "2.4.0"
+mongodb-testcontainer = "1.20.1"
+faker = "1.16.0"
+mongock = "5.4.4"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -22,8 +25,13 @@ jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-
 spring-boot-starter-data-mongodb = { module = "org.springframework.boot:spring-boot-starter-data-mongodb", version.ref = "spring-boot" }
 spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation", version.ref = "spring-boot" }
 spring-boot-docker-compose = { module = "org.springframework.boot:spring-boot-docker-compose", version.ref = "spring-boot" }
+spring-boot-testcontainers = { module = "org.springframework.boot:spring-boot-testcontainers", version.ref = "spring-boot" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "spring-boot" }
 springmockk = { module = "com.ninja-squad:springmockk", version.ref = "springmockk" }
 kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
+testcontainers-mongodb = { module = "org.testcontainers:mongodb", version.ref = "mongodb-testcontainer" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platform-launcher" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+faker = { module = "io.github.serpro69:kotlin-faker", version.ref = "faker" }
+mongock-springboot-v3 = { group = "io.mongock", name = "mongock-springboot-v3", version.ref = "mongock" }
+mongock-mongodb-springdata-v4-driver = { group = "io.mongock", name = "mongodb-springdata-v4-driver", version.ref = "mongock" }

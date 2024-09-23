@@ -4,6 +4,7 @@ import com.example.passmanager.domain.MongoPassOwner.Companion.COLLECTION_NAME
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.TypeAlias
+import org.springframework.data.annotation.Version
 import org.springframework.data.mongodb.core.mapping.Document
 
 @TypeAlias("PassOwner")
@@ -14,7 +15,8 @@ data class MongoPassOwner(
     val lastName: String?,
     val phoneNumber: String?,
     val email: String?,
-    val ownedPasses: List<MongoPass>?,
+    @Version
+    val version: Long = 0,
 ) {
     companion object {
         const val COLLECTION_NAME = "pass_owner"

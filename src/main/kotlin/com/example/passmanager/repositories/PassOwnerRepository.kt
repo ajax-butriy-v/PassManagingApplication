@@ -1,7 +1,10 @@
 package com.example.passmanager.repositories
 
 import com.example.passmanager.domain.MongoPassOwner
-import org.bson.types.ObjectId
-import org.springframework.data.mongodb.repository.MongoRepository
 
-interface PassOwnerRepository : MongoRepository<MongoPassOwner, ObjectId>
+interface PassOwnerRepository {
+    fun findById(passOwnerId: String): MongoPassOwner?
+    fun insert(newMongoPassOwner: MongoPassOwner): MongoPassOwner
+    fun deleteById(passOwnerId: String)
+    fun save(newPassOwner: MongoPassOwner): MongoPassOwner
+}

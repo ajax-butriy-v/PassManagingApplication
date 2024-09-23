@@ -3,12 +3,17 @@ spring:
     name: ${APPLICATION_NAME}
   data:
     mongodb:
-      username: ${MONGODB_USER}
-      password: ${MONGODB_PASSWORD}
-      host: ${MONGODB_HOST}
-      port: ${MONGODB_PORT}
-      database: ${MONGODB_DATABASE}
-      authentication-database: admin
+      uri: mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}:${MONGODB_PORT}/${MONGODB_DATABASE}?authSource=admin
+mongock:
+  migration-scan-package: com.example.passmanager.migration
 server:
   servlet:
     context-path: /api/v1
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          mongodb:
+            core:
+              MongoTemplate: DEBUG

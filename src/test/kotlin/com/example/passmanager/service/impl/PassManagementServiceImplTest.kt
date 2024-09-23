@@ -1,19 +1,19 @@
 package com.example.passmanager.service.impl
 
+import com.example.passmanager.repositories.PassRepository
 import com.example.passmanager.service.PassOwnerService
 import com.example.passmanager.service.PassService
 import com.example.passmanager.util.PassFixture.passFromDb
-import com.example.passmanager.util.PassFixture.passes
 import com.example.passmanager.util.PassFixture.singlePassId
 import com.example.passmanager.util.PassOwnerFixture.passOwnerFromDb
-import com.example.passmanager.util.PassOwnerFixture.passOwnerId
+import com.example.passmanager.util.PassOwnerFixture.passOwnerIdFromDb
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.justRun
+import io.mockk.verify
 import io.mockk.verifyOrder
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.Test
 
@@ -25,38 +25,41 @@ internal class PassManagementServiceImplTest {
     @MockK
     private lateinit var passService: PassService
 
+    @MockK
+    private lateinit var passRepository: PassRepository
+
     @InjectMockKs
     private lateinit var passManagementService: PassManagementServiceImpl
 
     @Test
     fun `cancel pass should delete pass from client list if client id and pass is are valid`() {
         // GIVEN
-        every { passService.findAllByPassOwnerId(any()) } returns passes
-        justRun { passService.deleteById(any()) }
+        every { passOwnerService.getById(any()) } returns passOwnerFromDb
+        justRun { passRepository.deleteById(any()) }
 
         // WHEN
-        assertTrue { passManagementService.cancelPass(passOwnerId, singlePassId) }
+        passManagementService.cancelPass(passOwnerIdFromDb, singlePassId)
 
         // THEN
-        verifyOrder {
-            passService.findAllByPassOwnerId(any())
-            passService.deleteById(any())
+        verify {
+            passOwnerService.getById(any())
+            passRepository.deleteById(any())
         }
     }
 
     @Test
-    fun `transfering pass to another client should complete if all ids are valid`() {
+    fun `transferring pass to another client should complete if all ids are valid`() {
         // GIVEN
-        every { passService.findById(any()) } returns passFromDb
+        every { passService.getById(any()) } returns passFromDb
         every { passOwnerService.getById(any()) } returns passOwnerFromDb
         every { passService.update(any()) } returns passFromDb
 
         // WHEN
-        passManagementService.transferPass(singlePassId, passOwnerId)
+        passManagementService.transferPass(singlePassId, passOwnerIdFromDb)
 
         // THEN
         verifyOrder {
-            passService.findById(any())
+            passService.getById(any())
             passOwnerService.getById(any())
             passService.update(any())
         }

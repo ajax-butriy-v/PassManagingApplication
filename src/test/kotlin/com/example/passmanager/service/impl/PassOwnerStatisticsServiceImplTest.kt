@@ -1,10 +1,9 @@
 package com.example.passmanager.service.impl
 
+import com.example.passmanager.repositories.PassRepository
 import com.example.passmanager.service.PassOwnerService
-import com.example.passmanager.service.PassService
-import com.example.passmanager.util.PassFixture.passes
 import com.example.passmanager.util.PassOwnerFixture
-import com.example.passmanager.util.PassOwnerFixture.passOwnerId
+import com.example.passmanager.util.PassOwnerFixture.passOwnerIdFromDb
 import com.example.passmanager.web.dto.PriceDistribution
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -14,7 +13,7 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
-import java.time.Instant
+import java.time.LocalDate
 import kotlin.test.Test
 
 @ExtendWith(MockKExtension::class)
@@ -23,7 +22,7 @@ internal class PassOwnerStatisticsServiceImplTest {
     private lateinit var passOwnerService: PassOwnerService
 
     @MockK
-    private lateinit var passService: PassService
+    private lateinit var passRepository: PassRepository
 
     @InjectMockKs
     private lateinit var passOwnerStatisticsService: PassOwnerStatisticsServiceImpl
@@ -32,30 +31,31 @@ internal class PassOwnerStatisticsServiceImplTest {
     fun `calculating spent after date should return positive BigDecimal value if there are passes`() {
         // GIVEN
         every { passOwnerService.getById(any()) } returns PassOwnerFixture.passOwnerFromDb
-        every { passService.findAllByPassOwnerAndPurchasedAtGreaterThan(any(), any()) } returns passes
+        every { passRepository.sumPurchasedAtAfterDate(any(), any()) } returns BigDecimal.valueOf(30)
 
         // WHEN
-        assertThat(passOwnerStatisticsService.calculateSpentAfterDate(Instant.now(), passOwnerId))
+        assertThat(passOwnerStatisticsService.calculateSpentAfterDate(LocalDate.now(), passOwnerIdFromDb))
             .isEqualTo(BigDecimal.valueOf(30))
 
         // THEN
         verify {
             passOwnerService.getById(any())
-            passService.findAllByPassOwnerAndPurchasedAtGreaterThan(any(), any())
+            passRepository.sumPurchasedAtAfterDate(any(), any())
         }
     }
 
     @Test
     fun `calculating price distribution for client should return valid result list`() {
+        val priceDistributions = listOf("First type", "Second type", "Third type")
+            .map { PriceDistribution(it, BigDecimal.TEN) }
         // GIVEN
-        every { passService.findAllByPassOwnerId(any()) } returns passes
+        every { passRepository.getPassesPriceDistribution(any()) } returns priceDistributions
 
         // WHEN
-        val priceDistributions = passOwnerStatisticsService.calculatePriceDistributions(passOwnerId)
-        val expected = listOf("First type", "Second type", "Third type").map { PriceDistribution(it, BigDecimal.TEN) }
-        assertThat(priceDistributions).isEqualTo(expected)
+        val actual = passOwnerStatisticsService.calculatePriceDistributions(passOwnerIdFromDb)
+        assertThat(actual).isEqualTo(priceDistributions)
 
         // THEN
-        verify { passService.findAllByPassOwnerId(any()) }
+        verify { passRepository.getPassesPriceDistribution(any()) }
     }
 }

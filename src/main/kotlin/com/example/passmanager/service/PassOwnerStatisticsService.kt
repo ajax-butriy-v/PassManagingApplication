@@ -1,11 +1,10 @@
 package com.example.passmanager.service
 
 import com.example.passmanager.web.dto.PriceDistribution
-import org.bson.types.ObjectId
 import java.math.BigDecimal
-import java.time.Instant
+import java.time.LocalDate
 
 interface PassOwnerStatisticsService {
-    fun calculateSpentAfterDate(afterDate: Instant, passOwnerId: ObjectId): BigDecimal
-    fun calculatePriceDistributions(passOwnerId: ObjectId): List<PriceDistribution>
+    fun calculateSpentAfterDate(afterDate: LocalDate, passOwnerId: String): BigDecimal
+    fun calculatePriceDistributions(passOwnerId: String): List<PriceDistribution>
 }
