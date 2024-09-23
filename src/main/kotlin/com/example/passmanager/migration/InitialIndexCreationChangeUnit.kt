@@ -9,7 +9,6 @@ import org.bson.Document
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Sort.Direction.ASC
-import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.index.CompoundIndexDefinition
 import org.springframework.data.mongodb.core.index.Index
@@ -17,7 +16,8 @@ import org.springframework.data.mongodb.core.indexOps
 
 @ChangeUnit(id = "Create indexes", order = "1", author = "Vitalii Butriy")
 internal class InitialIndexCreationChangeUnit(private val mongoTemplate: MongoTemplate) {
-    private lateinit var passOwnerIdAndPurchasedAtIndex: String
+    private lateinit var passOwnerIdAndPurchasedAtIndexName: String
+    private lateinit var passOwnerIndexNames: List<String>
 
     @Execution
     fun createIndexes() {
@@ -27,20 +27,32 @@ internal class InitialIndexCreationChangeUnit(private val mongoTemplate: MongoTe
                 .append(MongoPass::purchasedAt.name, 1)
         )
         mongoTemplate.indexOps<MongoPass>().ensureIndex(passOwnerIdAndPurchasedAtIndexDefinition).also { indexName ->
-            passOwnerIdAndPurchasedAtIndex = indexName
+            passOwnerIdAndPurchasedAtIndexName = indexName
         }
-
-        mongoTemplate.indexOps<MongoPassOwner>().ensureIndex(Index(MongoPassOwner::email.name, DESC).unique())
-        mongoTemplate.indexOps<MongoPassOwner>().ensureIndex(Index(MongoPassOwner::phoneNumber.name, ASC).unique())
+        passOwnerIndexNames = mongoTemplate.indexOps<MongoPassOwner>().run {
+            listOf(
+                ensureIndex(Index(MongoPassOwner::email.name, ASC).unique()),
+                ensureIndex(Index(MongoPassOwner::phoneNumber.name, ASC).unique())
+            )
+        }
     }
 
     @RollbackExecution
     fun dropIndexesInCaseOfFailure() {
         log.info("Rolling back ${this::class.simpleName}")
 
-        mongoTemplate.indexOps<MongoPass>().dropIndex(passOwnerIdAndPurchasedAtIndex)
-        mongoTemplate.indexOps<MongoPassOwner>().dropIndex(MongoPassOwner::email.name)
-        mongoTemplate.indexOps<MongoPassOwner>().dropIndex(MongoPassOwner::phoneNumber.name)
+        val allPassIndexNames = indexNames<MongoPass>()
+        if (allPassIndexNames.contains(passOwnerIdAndPurchasedAtIndexName)) {
+            mongoTemplate.indexOps<MongoPass>().dropIndex(passOwnerIdAndPurchasedAtIndexName)
+        }
+
+        val passOwnerIndexOperations = mongoTemplate.indexOps<MongoPassOwner>()
+        passOwnerIndexNames.filter { it in indexNames<MongoPassOwner>() }
+            .forEach { passOwnerIndexOperations.dropIndex(it) }
+    }
+
+    private inline fun <reified T> indexNames(): List<String> {
+        return mongoTemplate.indexOps(T::class.java).indexInfo.map { it.name }
     }
 
     companion object {
