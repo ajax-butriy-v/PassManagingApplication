@@ -1,6 +1,7 @@
 package com.example.passmanager.service.impl
 
 import com.example.passmanager.domain.MongoPassOwner
+import com.example.passmanager.exception.PassOwnerNotFoundException
 import com.example.passmanager.repositories.PassOwnerRepository
 import com.example.passmanager.repositories.PassRepository
 import com.example.passmanager.util.PassOwnerFixture.passOwnerFromDb
@@ -14,8 +15,10 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import reactor.kotlin.test.test
+import reactor.kotlin.test.verifyError
 
 @ExtendWith(MockKExtension::class)
 internal class PassOwnerServiceImplTest {
@@ -94,5 +97,35 @@ internal class PassOwnerServiceImplTest {
             passOwnerRepository.deleteById(any())
             passRepository.deleteAllByOwnerId(any())
         }
+    }
+
+    @Test
+    fun `get by id should return value if object is present in db`() {
+        // GIVEN
+        every { passOwnerRepository.findById(any()) } returns passOwnerFromDb.toMono()
+
+        // WHEN
+        val ownerById = passOwnerService.getById(passOwnerIdFromDb)
+
+        // THEN
+        ownerById.test()
+            .expectNext(passOwnerFromDb)
+            .verifyComplete()
+
+        verify { passOwnerRepository.findById(any()) }
+    }
+
+    @Test
+    fun `get by id should return throw error if object is not present in db`() {
+        // GIVEN
+        every { passOwnerRepository.findById(any()) } returns Mono.empty()
+
+        // WHEN
+        val ownerById = passOwnerService.getById(passOwnerIdFromDb)
+
+        // THEN
+        ownerById.test().verifyError<PassOwnerNotFoundException>()
+
+        verify { passOwnerRepository.findById(any()) }
     }
 }

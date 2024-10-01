@@ -1,5 +1,7 @@
 package com.example.passmanager.service.impl
 
+import com.example.passmanager.exception.PassOwnerNotFoundException
+import com.example.passmanager.exception.PassTypeNotFoundException
 import com.example.passmanager.repositories.PassTypeRepository
 import com.example.passmanager.util.PassFixture.singlePassType
 import com.example.passmanager.util.PassFixture.singlePassTypeId
@@ -11,8 +13,10 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import reactor.kotlin.test.test
+import reactor.kotlin.test.verifyError
 
 @ExtendWith(MockKExtension::class)
 class PassTypeServiceImplTest {
@@ -83,5 +87,35 @@ class PassTypeServiceImplTest {
             .verifyComplete()
 
         verify { passTypeRepository.deleteById(any()) }
+    }
+
+    @Test
+    fun `get by id should return value if object is present in db`() {
+        // GIVEN
+        every { passTypeRepository.findById(any()) } returns singlePassType.toMono()
+
+        // WHEN
+        val passTypeById = passTypeService.getById(singlePassTypeId)
+
+        // THEN
+        passTypeById.test()
+            .expectNext(singlePassType)
+            .verifyComplete()
+
+        verify { passTypeRepository.findById(any()) }
+    }
+
+    @Test
+    fun `get by id should return throw error if object is not present in db`() {
+        // GIVEN
+        every { passTypeRepository.findById(any()) } returns Mono.empty()
+
+        // WHEN
+        val passTypeById = passTypeService.getById(singlePassTypeId)
+
+        // THEN
+        passTypeById.test().verifyError<PassTypeNotFoundException>()
+
+        verify { passTypeRepository.findById(any()) }
     }
 }

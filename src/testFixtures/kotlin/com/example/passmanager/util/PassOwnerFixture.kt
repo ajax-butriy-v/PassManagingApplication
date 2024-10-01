@@ -12,7 +12,7 @@ object PassOwnerFixture {
         id = null,
         firstName = "First Name",
         lastName = "Last Name",
-        phoneNumber = "+123456789",
+        phoneNumber = "1234567890",
         email = "example@gmail.com",
     )
 
