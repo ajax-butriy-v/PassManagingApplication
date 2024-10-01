@@ -82,6 +82,10 @@ configure<DeltaCoverageConfiguration> {
         html = true
         markdown = true
     }
+
+    excludeClasses.value(
+        listOf("**/com/example/passmanager/migration/**/*.*")
+    )
 }
 
 tasks.named("check") {

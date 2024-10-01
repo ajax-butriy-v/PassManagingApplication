@@ -1,6 +1,5 @@
 package com.example.passmanager.service.impl
 
-import com.example.passmanager.exception.PassOwnerNotFoundException
 import com.example.passmanager.exception.PassTypeNotFoundException
 import com.example.passmanager.repositories.PassTypeRepository
 import com.example.passmanager.util.PassFixture.singlePassType

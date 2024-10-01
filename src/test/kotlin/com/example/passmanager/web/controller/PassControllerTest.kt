@@ -4,7 +4,6 @@ import com.example.passmanager.service.PassManagementService
 import com.example.passmanager.service.PassService
 import com.example.passmanager.util.PassFixture.dtoWithValidIdFormats
 import com.example.passmanager.util.PassFixture.passFromDb
-import com.example.passmanager.util.PassFixture.passToCreate
 import com.example.passmanager.util.PassFixture.singlePassId
 import com.example.passmanager.util.PassOwnerFixture.passOwnerIdFromDb
 import com.example.passmanager.web.dto.PassDto
@@ -35,7 +34,6 @@ class PassControllerTest {
 
     @MockkBean
     private lateinit var passManagementService: PassManagementService
-
 
     @Test
     fun `find by id should return pass by id`() {

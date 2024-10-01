@@ -11,7 +11,6 @@ import com.example.passmanager.web.mapper.PassOwnerMapper.toDto
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
-import net.bytebuddy.asm.Advice.Local
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -61,10 +60,10 @@ class PassOwnerControllerTest {
         val afterDate = LocalDate.now()
         every { passOwnerStatisticsService.calculateSpentAfterDate(any(), any()) } returns sum.toMono()
 
-
         // WHEN // THEN
         webTestClient.get()
-            .uri { uriBuilder -> uriBuilder.path("$URL/$passOwnerIdFromDb/spent")
+            .uri { uriBuilder ->
+                uriBuilder.path("$URL/$passOwnerIdFromDb/spent")
                     .queryParam("afterDate", afterDate)
                     .build()
             }
@@ -78,7 +77,7 @@ class PassOwnerControllerTest {
     fun `updating pass owner should return partially updated object`() {
         // GIVEN
         val partiallyUpdated = passOwnerFromDb.copy(firstName = "updated")
-        every { passOwnerService.getById(any())} returns passOwnerFromDb.toMono()
+        every { passOwnerService.getById(any()) } returns passOwnerFromDb.toMono()
         every { passOwnerService.update(any()) } returns partiallyUpdated.toMono()
 
         // WHEN // THEN
