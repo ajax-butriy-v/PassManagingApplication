@@ -7,14 +7,17 @@ import com.example.passmanager.util.PassFixture
 import com.example.passmanager.util.PassFixture.dtoWithValidIdFormats
 import com.example.passmanager.util.PassFixture.passFromDb
 import com.example.passmanager.web.controller.PassController
+import com.example.passmanager.web.mapper.PassMapper.toDto
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.assertDoesNotThrow
-import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.aop.support.AopUtils
+import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
+import reactor.kotlin.test.test
+import reactor.kotlin.test.verifyError
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFalse
@@ -57,23 +60,30 @@ internal class ValidObjectIdFormatBeanPostProcessorTest {
 
     @Test
     fun `controller method with dto, which has invalid field values, should throw custom runtime exception`() {
-        // WHEN
+        // GIVEN
         val proxiedController = getProxiedController()
 
+        // WHEN
+        val created = Mono.defer { proxiedController.create(PassFixture.dtoWithInvalidIdFormats) }
+
         // THEN
-        assertThrows<InvalidObjectIdFormatException> { proxiedController.create(PassFixture.dtoWithInvalidIdFormats) }
+        created.test().verifyError<InvalidObjectIdFormatException>()
     }
 
     @Test
     fun `controller method with dto, which has valid field values, should pass`() {
         // GIVEN
-        every { passService.create(any(), any(), any()) } returns passFromDb
-
-        // WHEN
+        every { passService.create(any(), any(), any()) } returns passFromDb.toMono()
         val proxiedController = getProxiedController()
 
+        // WHEN
+        val created = Mono.defer { proxiedController.create(dtoWithValidIdFormats) }
+
         // THEN
-        assertDoesNotThrow { proxiedController.create(dtoWithValidIdFormats) }
+        created.mapNotNull { it.body }
+            .test()
+            .expectNext(passFromDb.toDto())
+            .verifyComplete()
     }
 
     private fun getProxiedController(): PassController {

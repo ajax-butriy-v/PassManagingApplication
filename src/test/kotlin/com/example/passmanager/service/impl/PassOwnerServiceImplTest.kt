@@ -10,11 +10,12 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import io.mockk.justRun
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import reactor.kotlin.core.publisher.toMono
+import reactor.kotlin.test.test
 
 @ExtendWith(MockKExtension::class)
 internal class PassOwnerServiceImplTest {
@@ -29,9 +30,16 @@ internal class PassOwnerServiceImplTest {
 
     @Test
     fun `creation should return new object with id`() {
-        every { passOwnerRepository.insert(any<MongoPassOwner>()) } returns passOwnerFromDb
+        // GIVEN
+        every { passOwnerRepository.insert(any<MongoPassOwner>()) } returns passOwnerFromDb.toMono()
 
-        assertThat(passOwnerService.create(passOwnerToCreate)).isEqualTo(passOwnerFromDb)
+        // WHEN
+        val created = passOwnerService.create(passOwnerToCreate)
+
+        // THEN
+        created.test()
+            .assertNext { assertThat(it).usingRecursiveAssertion().isEqualTo(passOwnerFromDb) }
+            .verifyComplete()
 
         verify { passOwnerRepository.insert(any<MongoPassOwner>()) }
     }
@@ -39,31 +47,48 @@ internal class PassOwnerServiceImplTest {
     @Test
     fun `partial update with unique values should update object`() {
         // GIVEN
-        every { passOwnerRepository.save(any()) } returns passOwnerFromDb.copy(firstName = "Changed")
+        every { passOwnerRepository.save(any()) } returns passOwnerFromDb.copy(firstName = "Changed").toMono()
 
         // WHEN
         val updated = passOwnerService.update(passOwnerFromDb.copy(firstName = "Changed"))
-        assertThat(updated.firstName).isEqualTo("Changed")
 
         // THEN
+        updated.test()
+            .assertNext { assertThat(it.firstName).isEqualTo("Changed") }
+            .verifyComplete()
+
         verify { passOwnerRepository.save(any()) }
     }
 
     @Test
     fun `find by id should return object with specified id`() {
-        every { passOwnerRepository.findById(any()) } returns passOwnerFromDb
+        // GIVEN
+        every { passOwnerRepository.findById(any()) } returns passOwnerFromDb.toMono()
 
-        assertThat(passOwnerService.findById(passOwnerIdFromDb)).isEqualTo(passOwnerFromDb)
+        // WHEN
+        val ownerById = passOwnerService.findById(passOwnerIdFromDb)
+
+        // THEN
+        ownerById.test()
+            .assertNext { assertThat(it).usingRecursiveAssertion().isEqualTo(passOwnerFromDb) }
+            .verifyComplete()
 
         verify { passOwnerRepository.findById(any()) }
     }
 
     @Test
     fun `delete by id should delete object`() {
-        justRun { passOwnerRepository.deleteById(any()) }
-        justRun { passRepository.deleteAllByOwnerId(any()) }
+        // GIVEN
+        every { passOwnerRepository.deleteById(any()) } returns Unit.toMono()
+        every { passRepository.deleteAllByOwnerId(any()) } returns Unit.toMono()
 
-        passOwnerService.deleteById(passOwnerIdFromDb)
+        // WHEN
+        val delete = passOwnerService.deleteById(passOwnerIdFromDb)
+
+        // THEN
+        delete.test()
+            .expectNext(Unit)
+            .verifyComplete()
 
         verify {
             passOwnerRepository.deleteById(any())

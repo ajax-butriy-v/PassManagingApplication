@@ -7,6 +7,8 @@ import com.example.passmanager.service.PassOwnerService
 import com.example.passmanager.service.PassService
 import com.example.passmanager.service.PassTypeService
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.time.LocalDate
 
 @Service
@@ -15,40 +17,40 @@ internal class PassServiceImpl(
     private val passTypeService: PassTypeService,
     private val passRepository: PassRepository,
 ) : PassService {
-    override fun findById(passId: String): MongoPass? {
+    override fun findById(passId: String): Mono<MongoPass> {
         return passRepository.findById(passId)
     }
 
-    override fun getById(passId: String): MongoPass {
-        return findById(passId) ?: throw PassNotFoundException(passId)
+    override fun getById(passId: String): Mono<MongoPass> {
+        return findById(passId).switchIfEmpty(Mono.error(PassNotFoundException(passId)))
     }
 
-    override fun create(newPass: MongoPass, ownerId: String, passTypeId: String): MongoPass {
-        val passOwner = passOwnerService.getById(ownerId)
-        val passType = passTypeService.getById(passTypeId)
-        return passRepository.insert(newPass.copy(passOwnerId = passOwner.id, passTypeId = passType.id))
+    override fun create(newPass: MongoPass, ownerId: String, passTypeId: String): Mono<MongoPass> {
+        return Mono.zip(passOwnerService.getById(ownerId), passTypeService.getById(passTypeId))
+            .map { tuple -> tuple.t1.id to tuple.t2.id }
+            .flatMap { passRepository.insert(newPass.copy(passOwnerId = it.first, passTypeId = it.second)) }
     }
 
-    override fun update(pass: MongoPass): MongoPass {
+    override fun update(pass: MongoPass): Mono<MongoPass> {
         return passRepository.save(pass)
     }
 
-    override fun deleteById(passId: String) {
-        passRepository.deleteById(passId)
+    override fun deleteById(passId: String): Mono<Unit> {
+        return passRepository.deleteById(passId)
     }
 
-    override fun deleteAllByOwnerId(passOwnerId: String) {
-        passRepository.deleteAllByOwnerId(passOwnerId)
+    override fun deleteAllByOwnerId(passOwnerId: String): Mono<Unit> {
+        return passRepository.deleteAllByOwnerId(passOwnerId)
     }
 
     override fun findAllByPassOwnerAndPurchasedAtGreaterThan(
         passOwnerId: String,
         afterDate: LocalDate,
-    ): List<MongoPass> {
+    ): Flux<MongoPass> {
         return passRepository.findByOwnerAndPurchasedAfter(passOwnerId, afterDate)
     }
 
-    override fun findAllByPassOwnerId(passOwnerId: String): List<MongoPass> {
+    override fun findAllByPassOwnerId(passOwnerId: String): Flux<MongoPass> {
         return passRepository.findAllByPassOwnerId(passOwnerId)
     }
 }

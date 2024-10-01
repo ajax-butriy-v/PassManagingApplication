@@ -16,4 +16,4 @@ logging:
         data:
           mongodb:
             core:
-              MongoTemplate: DEBUG
+              ReactiveMongoTemplate: DEBUG

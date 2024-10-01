@@ -16,12 +16,15 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import io.mockk.justRun
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toFlux
+import reactor.kotlin.core.publisher.toMono
+import reactor.kotlin.test.test
+import reactor.kotlin.test.verifyError
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -41,124 +44,179 @@ internal class PassServiceImplTest {
 
     @Test
     fun `creation should return new object with id`() {
-        every { passOwnerService.getById(passOwnerIdFromDb) } returns passOwnerFromDb
-        every { passTypeService.getById(singlePassTypeId) } returns singlePassType
-        every { passRepository.insert(any()) } returns passFromDb
+        // GIVEN
+        every { passOwnerService.getById(passOwnerIdFromDb) } returns passOwnerFromDb.toMono()
+        every { passTypeService.getById(singlePassTypeId) } returns singlePassType.toMono()
+        every { passRepository.insert(any()) } returns passFromDb.toMono()
 
-        assertThat(passService.create(passToCreate, passOwnerIdFromDb, singlePassTypeId)).isEqualTo(passFromDb)
+        // WHEN
+        val created = passService.create(passToCreate, passOwnerIdFromDb, singlePassTypeId)
+
+        // THEN
+        created.test()
+            .expectNext(passFromDb)
+            .verifyComplete()
 
         verify { passRepository.insert(any()) }
     }
 
     @Test
     fun `find by id should return object with specified id`() {
-        every { passRepository.findById(any()) } returns passFromDb
+        // GIVEN
+        every { passRepository.findById(any()) } returns passFromDb.toMono()
 
-        assertThat(passService.findById(singlePassId)).isEqualTo(passFromDb)
+        // WHEN
+        val foundById = passService.findById(singlePassId)
+
+        // THEN
+        foundById.test()
+            .assertNext { passFromDb }
+            .verifyComplete()
 
         verify { passRepository.findById(any()) }
     }
 
     @Test
     fun `delete by id should delete object`() {
-        justRun { passRepository.deleteById(any()) }
+        // GIVEN
+        every { passRepository.deleteById(any()) } returns Unit.toMono()
 
-        passService.deleteById(singlePassId)
+        // WHEN
+        val delete = passService.deleteById(singlePassId)
 
+        // THEN
+        delete.test()
+            .expectNext(Unit)
+            .verifyComplete()
         verify { passService.deleteById(any()) }
     }
 
     @Test
     fun `should return all passes for owner after particular date`() {
-        every { passRepository.findByOwnerAndPurchasedAfter(any(), any()) } returns passesFromDb
+        // GIVEN
+        every { passRepository.findByOwnerAndPurchasedAfter(any(), any()) } returns passesFromDb.toFlux()
 
+        // WHEN
         val afterDateList = passService.findAllByPassOwnerAndPurchasedAtGreaterThan(passOwnerIdFromDb, LocalDate.MIN)
-        assertThat(afterDateList).size().isEqualTo(3)
+
+        // THEN
+        afterDateList.collectList()
+            .test()
+            .assertNext { assertThat(it).hasSize(3) }
+            .verifyComplete()
 
         verify { passRepository.findByOwnerAndPurchasedAfter(any(), any()) }
     }
 
     @Test
     fun `finding all passes by pass owner id should return all corresponding passes`() {
-        every { passRepository.findAllByPassOwnerId(any()) } returns passesFromDb
+        // GIVEN
+        every { passRepository.findAllByPassOwnerId(any()) } returns passesFromDb.toFlux()
 
+        // WHEN
         val passesByOwner = passService.findAllByPassOwnerId(passOwnerIdFromDb)
-        assertThat(passesByOwner).size().isEqualTo(3)
+
+        // THEN
+        passesByOwner.collectList()
+            .test()
+            .assertNext { assertThat(it).hasSize(3) }
+            .verifyComplete()
 
         verify { passRepository.findAllByPassOwnerId(any()) }
     }
 
     @Test
     fun `updating pass should return updated object`() {
-        val changedPass = passFromDb.copy(purchasedFor = BigDecimal.valueOf(200))
-
         // GIVEN
-        every { passRepository.save(any()) } returns changedPass
+        val changedPass = passFromDb.copy(purchasedFor = BigDecimal.valueOf(200))
+        every { passRepository.save(any()) } returns changedPass.toMono()
 
         // WHEN
         val actual = passService.update(changedPass)
-        assertThat(actual).isEqualTo(changedPass)
 
         // THEN
+        actual.test()
+            .expectNext(changedPass)
+            .verifyComplete()
+
         verify { passRepository.save(any()) }
     }
 
     @Test
     fun `get by id should return pass if it exists`() {
         // GIVEN
-        every { passRepository.findById(any()) } returns passFromDb
+        every { passRepository.findById(any()) } returns passFromDb.toMono()
 
         // WHEN
-        assertThat(passService.getById(singlePassId)).isEqualTo(passFromDb)
+        val passById = passService.getById(singlePassId)
 
         // THEN
+        passById.test()
+            .expectNext(passFromDb)
+            .verifyComplete()
+
         verify { passRepository.findById(any()) }
     }
 
     @Test
     fun `get by id should throw exception if pass not exist`() {
         // GIVEN
-        every { passRepository.findById(any()) } returns null
+        every { passRepository.findById(any()) } returns Mono.empty()
 
         // WHEN
-        assertThrows<PassNotFoundException> { passService.getById(singlePassId) }
+        val passById = passService.getById(singlePassId)
+
+        // THEN
+        passById.test().verifyError<PassNotFoundException>()
     }
 
     @Test
     fun `deleting all passes by pass owner id should delete all corresponding passes`() {
         // GIVEN
-        justRun { passRepository.deleteAllByOwnerId(any()) }
+        every { passRepository.deleteAllByOwnerId(any()) } returns Unit.toMono()
 
         // WHEN
-        passService.deleteAllByOwnerId(singlePassId)
+        val delete = passService.deleteAllByOwnerId(singlePassId)
 
         // THEN
+        delete.test()
+            .expectNext(Unit)
+            .verifyComplete()
+
         verify { passRepository.deleteAllByOwnerId(any()) }
     }
 
     @Test
     fun `finding all by pass owner and purchased at should return corresponding passes`() {
         // GIVEN
-        every { passRepository.findByOwnerAndPurchasedAfter(any(), any()) } returns passesFromDb
+        every { passRepository.findByOwnerAndPurchasedAfter(any(), any()) } returns passesFromDb.toFlux()
 
         // WHEN
         val actual = passService.findAllByPassOwnerAndPurchasedAtGreaterThan(passOwnerIdFromDb, LocalDate.now())
-        assertThat(actual).isEqualTo(passesFromDb)
 
         // THEN
+        actual.collectList()
+            .test()
+            .expectNext(passesFromDb)
+            .verifyComplete()
+
         verify { passRepository.findByOwnerAndPurchasedAfter(any(), any()) }
     }
 
     @Test
     fun `finding all passes by pass owner id should return corresponding passes`() {
         // GIVEN
-        every { passRepository.findAllByPassOwnerId(any()) } returns passesFromDb
+        every { passRepository.findAllByPassOwnerId(any()) } returns passesFromDb.toFlux()
 
         // WHEN
         val actual = passService.findAllByPassOwnerId(passOwnerIdFromDb)
-        assertThat(actual).isEqualTo(passesFromDb)
 
         // THEN
+        actual.collectList()
+            .test()
+            .expectNext(passesFromDb)
+            .verifyComplete()
+
         verify { passRepository.findAllByPassOwnerId(any()) }
     }
 }

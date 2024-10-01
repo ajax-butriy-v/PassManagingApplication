@@ -5,7 +5,7 @@ import com.example.passmanager.domain.MongoPass.Companion.COLLECTION_NAME
 import com.example.passmanager.repositories.PassRepository
 import com.example.passmanager.web.dto.PriceDistribution
 import org.bson.types.ObjectId
-import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.aggregate
 import org.springframework.data.mongodb.core.aggregation.Aggregation.group
 import org.springframework.data.mongodb.core.aggregation.Aggregation.lookup
@@ -22,45 +22,49 @@ import org.springframework.data.mongodb.core.query.Query.query
 import org.springframework.data.mongodb.core.query.isEqualTo
 import org.springframework.data.mongodb.core.remove
 import org.springframework.stereotype.Repository
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.math.BigDecimal
 import java.time.LocalDate
 import com.example.passmanager.domain.MongoPassType.Companion.COLLECTION_NAME as PASS_TYPE_COLLECTION
 
 @Suppress("TooManyFunctions")
 @Repository
-class PassRepositoryImpl(private val mongoTemplate: MongoTemplate) : PassRepository {
-    override fun findByOwnerAndPurchasedAfter(passOwnerId: String, afterDate: LocalDate): List<MongoPass> {
+class PassRepositoryImpl(private val mongoTemplate: ReactiveMongoTemplate) : PassRepository {
+    override fun findByOwnerAndPurchasedAfter(passOwnerId: String, afterDate: LocalDate): Flux<MongoPass> {
         val aggregation = newAggregation(
             getPassesByOwnerAndPurchasedAfterPipeline(passOwnerId, afterDate).operations
         )
-        return mongoTemplate.aggregate<MongoPass>(aggregation, COLLECTION_NAME).mappedResults
+        return mongoTemplate.aggregate<MongoPass>(aggregation, COLLECTION_NAME)
     }
 
-    override fun findAllByPassOwnerId(passOwnerId: String): List<MongoPass> {
+    override fun findAllByPassOwnerId(passOwnerId: String): Flux<MongoPass> {
         return mongoTemplate.find<MongoPass>(query(getCriteriaByOwnerId(passOwnerId)))
     }
 
-    override fun findById(passId: String): MongoPass? {
+    override fun findById(passId: String): Mono<MongoPass> {
         return mongoTemplate.findById<MongoPass>(passId)
     }
 
-    override fun insert(newPass: MongoPass): MongoPass {
+    override fun insert(newPass: MongoPass): Mono<MongoPass> {
         return mongoTemplate.insert(newPass)
     }
 
-    override fun save(pass: MongoPass): MongoPass {
+    override fun save(pass: MongoPass): Mono<MongoPass> {
         return mongoTemplate.save(pass)
     }
 
-    override fun deleteById(passId: String) {
-        mongoTemplate.remove<MongoPass>(query(where("_id").isEqualTo(passId)))
+    override fun deleteById(passId: String): Mono<Unit> {
+        val query = query(where("_id").isEqualTo(passId))
+        return mongoTemplate.remove<MongoPass>(query).thenReturn(Unit)
     }
 
-    override fun deleteAllByOwnerId(passOwnerId: String) {
-        mongoTemplate.remove<MongoPass>(query(getCriteriaByOwnerId(passOwnerId)))
+    override fun deleteAllByOwnerId(passOwnerId: String): Mono<Unit> {
+        val query = query(getCriteriaByOwnerId(passOwnerId))
+        return mongoTemplate.remove<MongoPass>(query).thenReturn(Unit)
     }
 
-    override fun sumPurchasedAtAfterDate(passOwnerId: String, afterDate: LocalDate): BigDecimal {
+    override fun sumPurchasedAtAfterDate(passOwnerId: String, afterDate: LocalDate): Mono<BigDecimal> {
         val aggregation = newAggregation(
             getPassesByOwnerAndPurchasedAfterPipeline(passOwnerId, afterDate)
                 .add(group().sum(MongoPass::purchasedFor.name).`as`("total"))
@@ -68,11 +72,12 @@ class PassRepositoryImpl(private val mongoTemplate: MongoTemplate) : PassReposit
                 .operations
         )
         val aggregationResults = mongoTemplate.aggregate<SumResult>(aggregation, COLLECTION_NAME)
-        val total = aggregationResults.uniqueMappedResult?.total
-        return total ?: BigDecimal.ZERO
+        return aggregationResults.singleOrEmpty()
+            .map { it.total }
+            .switchIfEmpty(Mono.just(BigDecimal.ZERO))
     }
 
-    override fun getPassesPriceDistribution(passOwnerId: String): List<PriceDistribution> {
+    override fun getPassesPriceDistribution(passOwnerId: String): Flux<PriceDistribution> {
         val aggregation = newAggregation(
             match(where(MongoPass::passOwnerId.name).isEqualTo(ObjectId(passOwnerId))),
             lookup().from(PASS_TYPE_COLLECTION)
@@ -83,8 +88,7 @@ class PassRepositoryImpl(private val mongoTemplate: MongoTemplate) : PassReposit
             group("types.name").sum("types.price").`as`("spentForPassType"),
             project("spentForPassType").and("_id").`as`("typeName").andExclude("_id")
         )
-        val aggregationResults = mongoTemplate.aggregate<PriceDistribution>(aggregation, COLLECTION_NAME)
-        return aggregationResults.mappedResults
+        return mongoTemplate.aggregate<PriceDistribution>(aggregation, COLLECTION_NAME)
     }
 
     private fun getPassesByOwnerAndPurchasedAfterPipeline(passOwnerId: String, date: LocalDate): AggregationPipeline {

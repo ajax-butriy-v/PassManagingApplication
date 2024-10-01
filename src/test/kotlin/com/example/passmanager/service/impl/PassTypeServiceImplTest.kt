@@ -7,11 +7,12 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import io.mockk.justRun
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import reactor.kotlin.core.publisher.toMono
+import reactor.kotlin.test.test
 
 @ExtendWith(MockKExtension::class)
 class PassTypeServiceImplTest {
@@ -23,9 +24,16 @@ class PassTypeServiceImplTest {
 
     @Test
     fun `creation should return new object with id`() {
-        every { passTypeRepository.insert(any()) } returns singlePassType
+        // GIVEN
+        every { passTypeRepository.insert(any()) } returns singlePassType.toMono()
 
-        assertThat(passTypeService.create(singlePassType)).isEqualTo(singlePassType)
+        // WHEN
+        val createdPassType = passTypeService.create(singlePassType)
+
+        // THEN
+        createdPassType.test()
+            .expectNext(singlePassType)
+            .verifyComplete()
 
         verify { passTypeRepository.insert(any()) }
     }
@@ -34,30 +42,45 @@ class PassTypeServiceImplTest {
     fun `partial update with unique values should update object`() {
         // GIVEN
         val passTypeWithChangedName = singlePassType.copy(name = "Changed")
-        every { passTypeRepository.save(any()) } returns passTypeWithChangedName
+        every { passTypeRepository.save(any()) } returns passTypeWithChangedName.toMono()
 
         // WHEN
         val updated = passTypeService.update(passTypeWithChangedName)
-        assertThat(updated.name).isEqualTo("Changed")
 
         // THEN
+        updated.test()
+            .assertNext { assertThat(it.name).isEqualTo("Changed") }
+            .verifyComplete()
         verify { passTypeRepository.save(any()) }
     }
 
     @Test
     fun `find by id should return object with specified id`() {
-        every { passTypeRepository.findById(any()) } returns singlePassType
+        // GIVEN
+        every { passTypeRepository.findById(any()) } returns singlePassType.toMono()
 
-        assertThat(passTypeService.findById(singlePassTypeId)).isEqualTo(singlePassType)
+        // WHEN
+        val passTypeById = passTypeService.findById(singlePassTypeId)
 
+        // THEN
+        passTypeById.test()
+            .expectNext(singlePassType)
+            .verifyComplete()
         verify { passTypeRepository.findById(any()) }
     }
 
     @Test
     fun `delete by id should delete object`() {
-        justRun { passTypeRepository.deleteById(any()) }
+        // GIVEN
+        every { passTypeRepository.deleteById(any()) } returns Unit.toMono()
 
-        passTypeService.deleteById(singlePassTypeId)
+        // WHEN
+        val delete = passTypeService.deleteById(singlePassTypeId)
+
+        // THEN
+        delete.test()
+            .expectNext(Unit)
+            .verifyComplete()
 
         verify { passTypeRepository.deleteById(any()) }
     }

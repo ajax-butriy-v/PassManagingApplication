@@ -1,6 +1,8 @@
 package com.example.passmanager.service
 
+import reactor.core.publisher.Mono
+
 interface PassManagementService {
-    fun cancelPass(passOwnerId: String, passId: String)
-    fun transferPass(passId: String, targetPassOwnerId: String)
+    fun cancelPass(passOwnerId: String, passId: String): Mono<Unit>
+    fun transferPass(passId: String, targetPassOwnerId: String): Mono<Unit>
 }

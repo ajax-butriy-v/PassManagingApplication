@@ -5,6 +5,7 @@ import com.example.passmanager.service.PassManagementService
 import com.example.passmanager.service.PassOwnerService
 import com.example.passmanager.service.PassService
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
 
 @Service
 internal class PassManagementServiceImpl(
@@ -12,14 +13,14 @@ internal class PassManagementServiceImpl(
     private val passService: PassService,
     private val passRepository: PassRepository,
 ) : PassManagementService {
-    override fun cancelPass(passOwnerId: String, passId: String) {
-        val passOwner = passOwnerService.getById(passOwnerId)
-        passOwner.let { passRepository.deleteById(passId) }
+    override fun cancelPass(passOwnerId: String, passId: String): Mono<Unit> {
+        return passOwnerService.getById(passOwnerId).then(passRepository.deleteById(passId))
     }
 
-    override fun transferPass(passId: String, targetPassOwnerId: String) {
-        val passInDb = passService.getById(passId)
-        val targetPassOwner = passOwnerService.getById(targetPassOwnerId)
-        passService.update(passInDb.copy(passOwnerId = targetPassOwner.id))
+    override fun transferPass(passId: String, targetPassOwnerId: String): Mono<Unit> {
+        return Mono.zip(passService.getById(passId), passOwnerService.getById(targetPassOwnerId))
+            .map { tuple -> tuple.t1 to tuple.t2.id }
+            .flatMap { passService.update(it.first.copy(passOwnerId = it.second)) }
+            .thenReturn(Unit)
     }
 }
