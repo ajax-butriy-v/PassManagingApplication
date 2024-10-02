@@ -40,8 +40,8 @@ internal class InitialIndexCreationChangeUnit(private val mongoTemplate: Reactiv
         Flux.merge(indexNamesFlux<MongoPass>(), indexNamesFlux<MongoPassOwner>())
             .filter { indexNameToCollectionNameMap.containsKey(it) }
             .flatMap { indexName ->
-                val value = indexNameToCollectionNameMap.get(indexName).orEmpty()
-                mongoTemplate.indexOps(value).dropIndex(indexName)
+                val collectionName = indexNameToCollectionNameMap[indexName].orEmpty()
+                mongoTemplate.indexOps(collectionName).dropIndex(indexName)
             }
             .subscribe()
     }

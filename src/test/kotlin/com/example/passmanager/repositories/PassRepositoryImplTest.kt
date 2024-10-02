@@ -26,7 +26,7 @@ import kotlin.test.assertFalse
 
 @SpringBootTest
 @WithMongoTestContainer
-class PassRepositoryImplTest {
+internal class PassRepositoryImplTest {
 
     @Autowired
     private lateinit var mongoTemplate: ReactiveMongoTemplate

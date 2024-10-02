@@ -27,7 +27,7 @@ import java.time.LocalDate
 @ExtendWith(MockKExtension::class)
 @WebFluxTest(PassOwnerController::class)
 @ActiveProfiles("test")
-class PassOwnerControllerTest {
+internal class PassOwnerControllerTest {
     @Autowired
     private lateinit var webTestClient: WebTestClient
 

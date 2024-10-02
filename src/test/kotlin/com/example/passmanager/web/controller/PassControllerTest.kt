@@ -24,7 +24,7 @@ import reactor.kotlin.core.publisher.toMono
 @ExtendWith(MockKExtension::class)
 @WebFluxTest(PassController::class)
 @ActiveProfiles("test")
-class PassControllerTest {
+internal class PassControllerTest {
 
     @Autowired
     private lateinit var webTestClient: WebTestClient
