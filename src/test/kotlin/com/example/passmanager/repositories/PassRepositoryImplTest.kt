@@ -11,6 +11,7 @@ import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
+import org.springframework.data.mongodb.core.aggregation.Fields
 import org.springframework.data.mongodb.core.exists
 import org.springframework.data.mongodb.core.findById
 import org.springframework.data.mongodb.core.query.Criteria.where
@@ -22,7 +23,6 @@ import java.time.LocalDate
 import java.time.ZoneId
 import kotlin.test.Test
 import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
 
 @SpringBootTest
 @WithMongoTestContainer
@@ -37,32 +37,32 @@ class PassRepositoryImplTest {
     @Test
     fun `finding pass by existing id should return pass by id`() {
         // GIVEN
-        val insertedPass = mongoTemplate.insert(passToCreate)
+        val insertedPass = mongoTemplate.insert(passToCreate).block()
 
         // WHEN
-        val passById = insertedPass
-            .mapNotNull { it.id.toString() }
-            .flatMap { insertedPassId -> passRepository.findById(insertedPassId) }
+        val passById = passRepository.findById(insertedPass!!.id.toString())
 
         // THEN
         passById.test()
-            .assertNext { assertNotNull(it) }
+            .assertNext {
+                assertThat(it).usingRecursiveComparison()
+                    .ignoringFields(MongoPass::purchasedAt.name)
+                    .isEqualTo(insertedPass)
+            }
             .verifyComplete()
     }
 
     @Test
     fun `inserting pass in collection should return created pass`() {
-        // WHEN
+        // GIVEN // WHEN
         val insertedPass = mongoTemplate.insert(passToCreate)
 
         // THEN
         insertedPass
-            .mapNotNull { it.id }
             .test()
-            .assertNext { passId ->
-                mongoTemplate.findById<MongoPass>(passId!!)
-                    .mapNotNull { it.id }
-                    .doOnNext { id -> assertThat(passId).isEqualTo(id) }
+            .assertNext { pass ->
+                mongoTemplate.findById<MongoPass>(pass!!)
+                    .doOnNext { passById -> assertThat(pass).usingRecursiveComparison().isEqualTo(passById) }
                     .subscribe()
             }
             .verifyComplete()
@@ -87,19 +87,14 @@ class PassRepositoryImplTest {
     @Test
     fun `deleting pass by id should delete pass from collection`() {
         // GIVEN
-        // Cache the result to avoid re-triggering insert
-        val insertedPass = mongoTemplate.insert(passToCreate).cache()
+        val insertedPass = mongoTemplate.insert(passToCreate).block()
+        val insertedPassId = insertedPass!!.id
 
         // WHEN
-        insertedPass
-            .mapNotNull { it.id.toString() }
-            .flatMap { passId -> passRepository.deleteById(passId) }
-            .subscribe()
+        val delete = passRepository.deleteById(insertedPassId.toString())
 
         // THEN
-        insertedPass
-            .mapNotNull { it.id }
-            .flatMap { mongoTemplate.exists<MongoPass>(query(where("_id").isEqualTo(it))) }
+        delete.then(mongoTemplate.exists<MongoPass>(query(where(Fields.UNDERSCORE_ID).isEqualTo(insertedPassId))))
             .test()
             .assertNext { exists -> assertFalse("pass must not exist in collection after deletion") { exists } }
             .verifyComplete()
@@ -108,19 +103,19 @@ class PassRepositoryImplTest {
     @Test
     fun `deleting all passes by owner id should delete all owner's passes`() {
         // GIVEN
-        // Cache the result to avoid re-triggering insert
-        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields()).cache()
-        insertedPassOwner
-            .map { owner -> passesToCreate.map { it.copy(passOwnerId = owner.id) } }
-            .map { passes -> mongoTemplate.insertAll(passes) }
-            .subscribe()
+        val passOwner = mongoTemplate.insert(getOwnerWithUniqueFields()).block()
+        val passOwnerId = passOwner!!.id
+        passesToCreate.map { it.copy(passOwnerId = passOwnerId) }
+            .also { mongoTemplate.insertAll(it).subscribe() }
 
         // WHEN
-        val monoPassOwnerId = insertedPassOwner.mapNotNull { it.id.toString() }
-        monoPassOwnerId.flatMap { passRepository.deleteAllByOwnerId(it) }.subscribe()
+        val deleteAll = passRepository.deleteAllByOwnerId(passOwnerId.toString())
 
-        // THEN
-        monoPassOwnerId.flatMap { mongoTemplate.exists<MongoPass>(query(where("passOwnerId").isEqualTo(it))) }
+        // THEN`
+        val existsByOwnerId = mongoTemplate.exists<MongoPass>(
+            query(where(MongoPass::passOwnerId.name).isEqualTo(passOwnerId.toString()))
+        )
+        deleteAll.then(existsByOwnerId)
             .test()
             .assertNext { exists -> assertFalse("all owner passes must not exist in db after deletion") { exists } }
             .verifyComplete()
@@ -221,21 +216,13 @@ class PassRepositoryImplTest {
     @Test
     fun `getting sum of purchased passes for pass owner should return correct sum`() {
         // GIVEN
-        // Cache the result to avoid re-triggering insert
-        val passOwnerMono = mongoTemplate.insert(getOwnerWithUniqueFields()).cache()
-        passOwnerMono.subscribe()
-
-        passOwnerMono
-            .map { owner -> passesToCreate.map { it.copy(passOwnerId = owner.id) } }
-            .flatMapMany { passes -> mongoTemplate.insertAll(passes) }
-            .subscribe()
-
+        val passOwner = mongoTemplate.insert(getOwnerWithUniqueFields()).block()
+        val passOwnerId = passOwner!!.id
         val afterDate = LocalDate.now()
+        passesToCreate.map { it.copy(passOwnerId = passOwnerId) }.also { mongoTemplate.insertAll(it).subscribe() }
 
         // WHEN
-        val sum = passOwnerMono
-            .mapNotNull { it.id.toString() }
-            .flatMap { passRepository.sumPurchasedAtAfterDate(it, afterDate) }
+        val sum = passRepository.sumPurchasedAtAfterDate(passOwnerId.toString(), afterDate)
 
         // THEN
         sum.test()

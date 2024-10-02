@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
+import org.springframework.data.mongodb.core.aggregation.Fields
 import org.springframework.data.mongodb.core.exists
 import org.springframework.data.mongodb.core.findById
 import org.springframework.data.mongodb.core.query.Criteria.where
@@ -15,7 +16,6 @@ import org.springframework.data.mongodb.core.query.isEqualTo
 import reactor.kotlin.test.test
 import kotlin.test.Test
 import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
 
 @SpringBootTest
 @WithMongoTestContainer
@@ -29,32 +29,35 @@ class PassTypeRepositoryImplTest {
     @Test
     fun `finding pass type by existing id should return pass type by id`() {
         // GIVEN
-        val insertedPassType = mongoTemplate.insert(passTypeToCreate)
+        val insertedPassType = mongoTemplate.insert(passTypeToCreate).block()
 
         // WHEN
-        val passTypeById = insertedPassType
-            .mapNotNull { it.id.toString() }
-            .flatMap { passTypeId -> passTypeRepository.findById(passTypeId) }
+        val passTypeById = passTypeRepository.findById(insertedPassType!!.id.toString())
 
         // THEN
         passTypeById.test()
-            .assertNext { assertNotNull(it) }
+            .assertNext {
+                assertThat(it)
+                    .usingRecursiveComparison()
+                    .ignoringFields(MongoPassType::activeFrom.name, MongoPassType::activeTo.name)
+                    .isEqualTo(insertedPassType)
+            }
             .verifyComplete()
     }
 
     @Test
     fun `inserting pass type in collection should return created pass type`() {
-        // WHEN
+        // GIVEN // WHEN
         val insertedPassType = mongoTemplate.insert(passTypeToCreate)
 
         // THEN
         insertedPassType
-            .mapNotNull { it.id }
             .test()
-            .assertNext { passTypeId ->
-                mongoTemplate.findById<MongoPassType>(passTypeId!!)
-                    .mapNotNull { it.id }
-                    .doOnNext { id -> assertThat(passTypeId).isEqualTo(id) }
+            .assertNext { passType ->
+                mongoTemplate.findById<MongoPassType>(passType!!)
+                    .doOnNext { passTypeById ->
+                        assertThat(passType).usingRecursiveComparison().isEqualTo(passTypeById)
+                    }
                     .subscribe()
             }
             .verifyComplete()
@@ -79,19 +82,17 @@ class PassTypeRepositoryImplTest {
     @Test
     fun `deleting pass type by id should delete pass type from collection`() {
         // GIVEN
-        // Cache the result to avoid re-triggering insert
-        val insertedPassType = mongoTemplate.insert(passTypeToCreate).cache()
+        val insertedPassType = mongoTemplate.insert(passTypeToCreate).block()
+        val insertedPassTypeId = insertedPassType!!.id
 
         // WHEN
-        insertedPassType
-            .mapNotNull { it.id.toString() }
-            .flatMap { passTypeId -> passTypeRepository.deleteById(passTypeId) }
-            .subscribe()
+        val delete = passTypeRepository.deleteById(insertedPassTypeId.toString())
 
         // THEN
-        insertedPassType
-            .mapNotNull { it.id }
-            .flatMap { mongoTemplate.exists<MongoPassType>(query(where("_id").isEqualTo(it))) }
+        val existsById = mongoTemplate.exists<MongoPassType>(
+            query(where(Fields.UNDERSCORE_ID).isEqualTo(insertedPassTypeId))
+        )
+        delete.then(existsById)
             .test()
             .assertNext { exists -> assertFalse("pass type must not exist in collection after deletion") { exists } }
             .verifyComplete()

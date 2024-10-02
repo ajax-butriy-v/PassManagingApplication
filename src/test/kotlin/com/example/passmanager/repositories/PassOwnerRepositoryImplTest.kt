@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
+import org.springframework.data.mongodb.core.aggregation.Fields
 import org.springframework.data.mongodb.core.exists
 import org.springframework.data.mongodb.core.findById
 import org.springframework.data.mongodb.core.query.Criteria.where
@@ -15,7 +16,6 @@ import org.springframework.data.mongodb.core.query.isEqualTo
 import reactor.kotlin.test.test
 import kotlin.test.Test
 import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
 
 @SpringBootTest
 @WithMongoTestContainer
@@ -29,32 +29,30 @@ class PassOwnerRepositoryImplTest {
     @Test
     fun `finding pass by existing id should return pass owner by id`() {
         // GIVEN
-        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
+        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields()).block()
 
         // WHEN
-        val passOwnerById = insertedPassOwner
-            .mapNotNull { it.id.toString() }
-            .flatMap { insertedPassOwnerId -> passOwnerRepository.findById(insertedPassOwnerId) }
+        val passOwnerById = passOwnerRepository.findById(insertedPassOwner!!.id.toString())
 
         // THEN
         passOwnerById.test()
-            .assertNext { assertNotNull(it) }
+            .assertNext { assertThat(it).usingRecursiveComparison().isEqualTo(insertedPassOwner) }
             .verifyComplete()
     }
 
     @Test
     fun `inserting pass owner in collection should return created pass owner`() {
-        // WHEN
+        // GIVEN // WHEN
         val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
 
         // THEN
         insertedPassOwner
-            .mapNotNull { it.id }
             .test()
-            .assertNext { ownerId ->
-                mongoTemplate.findById<MongoPassOwner>(ownerId!!)
-                    .mapNotNull { it.id }
-                    .doOnNext { id -> assertThat(ownerId).isEqualTo(id) }
+            .assertNext { ownerIdAfterInsert ->
+                mongoTemplate.findById<MongoPassOwner>(ownerIdAfterInsert!!)
+                    .doOnNext { ownerById ->
+                        assertThat(ownerIdAfterInsert).usingRecursiveComparison().isEqualTo(ownerById)
+                    }
                     .subscribe()
             }
             .verifyComplete()
@@ -79,19 +77,17 @@ class PassOwnerRepositoryImplTest {
     @Test
     fun `deleting pass owner by id should delete pass owner from collection`() {
         // GIVEN
-        // Cache the result to avoid re-triggering insert
-        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields()).cache()
+        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields()).block()
+        val insertedPassOwnerId = insertedPassOwner!!.id
 
         // WHEN
-        insertedPassOwner
-            .mapNotNull { it.id.toString() }
-            .flatMap { ownerId -> passOwnerRepository.deleteById(ownerId) }
-            .subscribe()
+        val delete = passOwnerRepository.deleteById(insertedPassOwnerId.toString())
 
         // THEN
-        insertedPassOwner
-            .mapNotNull { it.id }
-            .flatMap { mongoTemplate.exists<MongoPassOwner>(query(where("_id").isEqualTo(it))) }
+        val existsById = mongoTemplate.exists<MongoPassOwner>(
+            query(where(Fields.UNDERSCORE_ID).isEqualTo(insertedPassOwnerId))
+        )
+        delete.then(existsById)
             .test()
             .assertNext { exists -> assertFalse("Pass owner must not exist in collection after deletion") { exists } }
             .verifyComplete()

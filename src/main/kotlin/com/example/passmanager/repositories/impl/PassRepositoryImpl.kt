@@ -74,7 +74,7 @@ class PassRepositoryImpl(private val mongoTemplate: ReactiveMongoTemplate) : Pas
         val aggregationResults = mongoTemplate.aggregate<SumResult>(aggregation, COLLECTION_NAME)
         return aggregationResults.singleOrEmpty()
             .map { it.total }
-            .switchIfEmpty(Mono.just(BigDecimal.ZERO))
+            .defaultIfEmpty(BigDecimal.ZERO)
     }
 
     override fun getPassesPriceDistribution(passOwnerId: String): Flux<PriceDistribution> {

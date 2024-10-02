@@ -77,7 +77,7 @@ internal class ValidObjectIdFormatBeanPostProcessorTest {
         val proxiedController = getProxiedController()
 
         // WHEN
-        val created = Mono.defer { proxiedController.create(dtoWithValidIdFormats) }
+        val created = proxiedController.create(dtoWithValidIdFormats)
 
         // THEN
         created.mapNotNull { it.body }

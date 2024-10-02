@@ -19,8 +19,7 @@ internal class PassManagementServiceImpl(
 
     override fun transferPass(passId: String, targetPassOwnerId: String): Mono<Unit> {
         return Mono.zip(passService.getById(passId), passOwnerService.getById(targetPassOwnerId))
-            .map { tuple -> tuple.t1 to tuple.t2.id }
-            .flatMap { passService.update(it.first.copy(passOwnerId = it.second)) }
+            .flatMap { passService.update(it.t1.copy(passOwnerId = it.t2.id)) }
             .thenReturn(Unit)
     }
 }
