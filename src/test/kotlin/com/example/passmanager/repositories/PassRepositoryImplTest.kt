@@ -62,7 +62,7 @@ class PassRepositoryImplTest {
             .test()
             .assertNext { pass ->
                 mongoTemplate.findById<MongoPass>(pass!!)
-                    .doOnNext { passById -> assertThat(pass).usingRecursiveComparison().isEqualTo(passById) }
+                    .doOnNext { passById -> assertThat(pass).isEqualTo(passById) }
                     .subscribe()
             }
             .verifyComplete()

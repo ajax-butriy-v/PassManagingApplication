@@ -36,7 +36,7 @@ class PassOwnerRepositoryImplTest {
 
         // THEN
         passOwnerById.test()
-            .assertNext { assertThat(it).usingRecursiveComparison().isEqualTo(insertedPassOwner) }
+            .assertNext { assertThat(it).isEqualTo(insertedPassOwner) }
             .verifyComplete()
     }
 
@@ -51,7 +51,7 @@ class PassOwnerRepositoryImplTest {
             .assertNext { ownerIdAfterInsert ->
                 mongoTemplate.findById<MongoPassOwner>(ownerIdAfterInsert!!)
                     .doOnNext { ownerById ->
-                        assertThat(ownerIdAfterInsert).usingRecursiveComparison().isEqualTo(ownerById)
+                        assertThat(ownerIdAfterInsert).isEqualTo(ownerById)
                     }
                     .subscribe()
             }
