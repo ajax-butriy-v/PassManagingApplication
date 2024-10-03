@@ -7,6 +7,7 @@ import com.example.passmanager.repositories.PassRepository
 import com.example.passmanager.service.PassOwnerService
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmpty
 
 @Service
 internal class PassOwnerServiceImpl(
@@ -19,7 +20,7 @@ internal class PassOwnerServiceImpl(
     }
 
     override fun getById(passOwnerId: String): Mono<MongoPassOwner> {
-        return findById(passOwnerId).switchIfEmpty(Mono.error(PassOwnerNotFoundException(passOwnerId)))
+        return findById(passOwnerId).switchIfEmpty { Mono.error(PassOwnerNotFoundException(passOwnerId)) }
     }
 
     override fun create(newMongoPassOwner: MongoPassOwner): Mono<MongoPassOwner> {

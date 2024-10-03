@@ -9,6 +9,9 @@ import com.example.passmanager.service.PassTypeService
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmpty
+import reactor.kotlin.core.util.function.component1
+import reactor.kotlin.core.util.function.component2
 import java.time.LocalDate
 
 @Service
@@ -22,13 +25,14 @@ internal class PassServiceImpl(
     }
 
     override fun getById(passId: String): Mono<MongoPass> {
-        return findById(passId).switchIfEmpty(Mono.error(PassNotFoundException(passId)))
+        return findById(passId).switchIfEmpty { Mono.error(PassNotFoundException(passId)) }
     }
 
     override fun create(newPass: MongoPass, ownerId: String, passTypeId: String): Mono<MongoPass> {
         return Mono.zip(passOwnerService.getById(ownerId), passTypeService.getById(passTypeId))
-            .map { tuple -> tuple.t1.id to tuple.t2.id }
-            .flatMap { passRepository.insert(newPass.copy(passOwnerId = it.first, passTypeId = it.second)) }
+            .flatMap { (passOwner, passType) ->
+                passRepository.insert(newPass.copy(passOwnerId = passOwner.id, passTypeId = passType.id))
+            }
     }
 
     override fun update(pass: MongoPass): Mono<MongoPass> {

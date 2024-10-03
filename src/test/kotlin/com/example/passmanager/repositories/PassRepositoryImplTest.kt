@@ -94,10 +94,14 @@ internal class PassRepositoryImplTest {
         val delete = passRepository.deleteById(insertedPassId.toString())
 
         // THEN
-        delete.then(mongoTemplate.exists<MongoPass>(query(where(Fields.UNDERSCORE_ID).isEqualTo(insertedPassId))))
-            .test()
-            .assertNext { exists -> assertFalse("pass must not exist in collection after deletion") { exists } }
-            .verifyComplete()
+        delete.test().verifyComplete()
+
+        assertFalse("pass must not exist in collection after deletion") {
+            val existsById = mongoTemplate.exists<MongoPass>(
+                query(where(Fields.UNDERSCORE_ID).isEqualTo(insertedPassId))
+            )
+            existsById.block() == true
+        }
     }
 
     @Test
@@ -112,13 +116,14 @@ internal class PassRepositoryImplTest {
         val deleteAll = passRepository.deleteAllByOwnerId(passOwnerId.toString())
 
         // THEN`
-        val existsByOwnerId = mongoTemplate.exists<MongoPass>(
-            query(where(MongoPass::passOwnerId.name).isEqualTo(passOwnerId.toString()))
-        )
-        deleteAll.then(existsByOwnerId)
-            .test()
-            .assertNext { exists -> assertFalse("all owner passes must not exist in db after deletion") { exists } }
-            .verifyComplete()
+        deleteAll.test().verifyComplete()
+
+        assertFalse("all owner passes must not exist in db after deletion") {
+            val existsByOwnerid = mongoTemplate.exists<MongoPass>(
+                query(where(MongoPass::passOwnerId.name).isEqualTo(passOwnerId.toString()))
+            )
+            existsByOwnerid.block() == true
+        }
     }
 
     @Test

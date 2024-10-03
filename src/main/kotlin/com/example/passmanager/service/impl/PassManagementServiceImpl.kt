@@ -6,6 +6,8 @@ import com.example.passmanager.service.PassOwnerService
 import com.example.passmanager.service.PassService
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.util.function.component1
+import reactor.kotlin.core.util.function.component2
 
 @Service
 internal class PassManagementServiceImpl(
@@ -19,7 +21,7 @@ internal class PassManagementServiceImpl(
 
     override fun transferPass(passId: String, targetPassOwnerId: String): Mono<Unit> {
         return Mono.zip(passService.getById(passId), passOwnerService.getById(targetPassOwnerId))
-            .flatMap { passService.update(it.t1.copy(passOwnerId = it.t2.id)) }
+            .flatMap { (pass, passOwner) -> passService.update(pass.copy(passOwnerId = passOwner.id)) }
             .thenReturn(Unit)
     }
 }
