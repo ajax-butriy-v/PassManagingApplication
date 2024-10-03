@@ -89,7 +89,9 @@ internal class PassTypeRepositoryImplTest {
         val delete = passTypeRepository.deleteById(insertedPassTypeId.toString())
 
         // THEN
-        delete.test().verifyComplete()
+        delete.test()
+            .expectNext(Unit)
+            .verifyComplete()
 
         assertFalse("pass type must not exist in collection after deletion") {
             val existsById = mongoTemplate.exists<MongoPassType>(

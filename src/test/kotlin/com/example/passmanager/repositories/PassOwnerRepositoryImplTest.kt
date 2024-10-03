@@ -84,7 +84,9 @@ internal class PassOwnerRepositoryImplTest {
         val delete = passOwnerRepository.deleteById(insertedPassOwnerId.toString())
 
         // THEN
-        delete.test().verifyComplete()
+        delete.test()
+            .expectNext(Unit)
+            .verifyComplete()
 
         assertFalse("Pass owner must not exist in collection after deletion") {
             val existsById = mongoTemplate.exists<MongoPassOwner>(
