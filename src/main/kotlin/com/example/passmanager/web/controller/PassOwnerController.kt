@@ -10,7 +10,6 @@ import com.example.passmanager.web.mapper.PassOwnerMapper.toDto
 import com.example.passmanager.web.mapper.PassOwnerMapper.toEntity
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
@@ -64,7 +63,8 @@ internal class PassOwnerController(
     }
 
     @DeleteMapping("/{id}")
-    fun deleteById(@PathVariable id: String): Mono<ResponseEntity<Unit>> {
-        return passOwnerService.deleteById(id).thenReturn(ResponseEntity.noContent().build())
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteById(@PathVariable id: String): Mono<Unit> {
+        return passOwnerService.deleteById(id)
     }
 }
