@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Mono
 
@@ -33,24 +34,26 @@ internal class PassController(
     }
 
     @PostMapping
-    fun create(@Valid @RequestBody passDto: PassDto): Mono<ResponseEntity<PassDto>> {
-        return passService.create(passDto.toEntity(), passDto.passOwnerId, passDto.passTypeId)
-            .map { it.toDto() }
-            .map { ResponseEntity.status(HttpStatus.CREATED).body(it) }
+    @ResponseStatus(HttpStatus.CREATED)
+    fun create(@Valid @RequestBody passDto: PassDto): Mono<PassDto> {
+        return passService.create(passDto.toEntity(), passDto.passOwnerId, passDto.passTypeId).map { it.toDto() }
     }
 
     @PostMapping("/{id}/cancel/{owner-id}")
-    fun cancelPass(@PathVariable id: String, @PathVariable("owner-id") ownerId: String): Mono<ResponseEntity<Unit>> {
-        return passManagementService.cancelPass(ownerId, id).thenReturn(ResponseEntity.ok().build())
+    @ResponseStatus(HttpStatus.OK)
+    fun cancelPass(@PathVariable id: String, @PathVariable("owner-id") ownerId: String): Mono<Unit> {
+        return passManagementService.cancelPass(ownerId, id)
     }
 
     @PostMapping("/{id}/transfer/{owner-id}")
-    fun transferPass(@PathVariable id: String, @PathVariable("owner-id") ownerId: String): Mono<ResponseEntity<Unit>> {
-        return passManagementService.transferPass(id, ownerId).thenReturn(ResponseEntity.ok().build())
+    @ResponseStatus(HttpStatus.OK)
+    fun transferPass(@PathVariable id: String, @PathVariable("owner-id") ownerId: String): Mono<Unit> {
+        return passManagementService.transferPass(id, ownerId)
     }
 
     @DeleteMapping("/{id}")
-    fun deleteById(@PathVariable id: String): Mono<ResponseEntity<Unit>> {
-        return passService.deleteById(id).thenReturn(ResponseEntity.noContent().build())
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteById(@PathVariable id: String): Mono<Unit> {
+        return passService.deleteById(id)
     }
 }

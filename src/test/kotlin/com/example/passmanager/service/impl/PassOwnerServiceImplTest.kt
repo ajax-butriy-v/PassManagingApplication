@@ -4,6 +4,7 @@ import com.example.passmanager.domain.MongoPassOwner
 import com.example.passmanager.exception.PassOwnerNotFoundException
 import com.example.passmanager.repositories.PassOwnerRepository
 import com.example.passmanager.repositories.PassRepository
+import com.example.passmanager.util.PassOwnerFixture
 import com.example.passmanager.util.PassOwnerFixture.passOwnerFromDb
 import com.example.passmanager.util.PassOwnerFixture.passOwnerIdFromDb
 import com.example.passmanager.util.PassOwnerFixture.passOwnerToCreate
@@ -50,17 +51,21 @@ internal class PassOwnerServiceImplTest {
     @Test
     fun `partial update with unique values should update object`() {
         // GIVEN
+        every { passOwnerRepository.findById(any()) } returns passOwnerFromDb.toMono()
         every { passOwnerRepository.save(any()) } returns passOwnerFromDb.copy(firstName = "Changed").toMono()
 
         // WHEN
-        val updated = passOwnerService.update(passOwnerFromDb.copy(firstName = "Changed"))
+        val updated = passOwnerService.update(passOwnerIdFromDb, PassOwnerFixture.passOwnerUpdateDto)
 
         // THEN
         updated.test()
             .assertNext { assertThat(it.firstName).isEqualTo("Changed") }
             .verifyComplete()
 
-        verify { passOwnerRepository.save(any()) }
+        verify {
+            passOwnerService.findById(any())
+            passOwnerRepository.save(any())
+        }
     }
 
     @Test

@@ -3,9 +3,9 @@ package com.example.passmanager.web.controller
 import com.example.passmanager.service.PassOwnerService
 import com.example.passmanager.service.PassOwnerStatisticsService
 import com.example.passmanager.web.dto.PassOwnerDto
+import com.example.passmanager.web.dto.PassOwnerUpdateDto
 import com.example.passmanager.web.dto.PriceDistribution
 import com.example.passmanager.web.dto.SpentAfterDateDto
-import com.example.passmanager.web.mapper.PassOwnerMapper.partialUpdate
 import com.example.passmanager.web.mapper.PassOwnerMapper.toDto
 import com.example.passmanager.web.mapper.PassOwnerMapper.toEntity
 import jakarta.validation.Valid
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -32,37 +33,34 @@ internal class PassOwnerController(
 ) {
 
     @GetMapping("/{id}/distributions")
-    fun calculatePriceDistributions(@PathVariable id: String): ResponseEntity<Flux<PriceDistribution>> {
-        return ResponseEntity.ok(passOwnerStatisticsService.calculatePriceDistributions(id))
+    @ResponseStatus(HttpStatus.OK)
+    fun calculatePriceDistributions(@PathVariable id: String): Flux<PriceDistribution> {
+        return passOwnerStatisticsService.calculatePriceDistributions(id)
     }
 
     @GetMapping("/{id}/spent")
+    @ResponseStatus(HttpStatus.OK)
     fun calculateSpentAfterDate(
         @RequestParam afterDate: LocalDate,
         @PathVariable("id") ownerId: String,
-    ): Mono<ResponseEntity<SpentAfterDateDto>> {
+    ): Mono<SpentAfterDateDto> {
         return passOwnerStatisticsService.calculateSpentAfterDate(afterDate, ownerId)
             .map { spentAfterDate -> SpentAfterDateDto(ownerId, afterDate, spentAfterDate) }
-            .map { ResponseEntity.ok(it) }
     }
 
     @PostMapping
-    fun create(@Valid @RequestBody dto: PassOwnerDto): Mono<ResponseEntity<PassOwnerDto>> {
-        return passOwnerService.create(dto.toEntity())
-            .map { it.toDto() }
-            .map { ResponseEntity.status(HttpStatus.CREATED).body(it) }
+    @ResponseStatus(HttpStatus.CREATED)
+    fun create(@Valid @RequestBody dto: PassOwnerDto): Mono<PassOwnerDto> {
+        return passOwnerService.create(dto.toEntity()).map { it.toDto() }
     }
 
     @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     fun partialUpdate(
-        @Valid @RequestBody dto: PassOwnerDto,
+        @Valid @RequestBody updateDto: PassOwnerUpdateDto,
         @PathVariable("id") ownerId: String,
-    ): Mono<ResponseEntity<PassOwnerDto>> {
-        return passOwnerService.getById(ownerId)
-            .map { passOwner -> passOwner.partialUpdate(dto) }
-            .flatMap { partiallyUpdated -> passOwnerService.update(partiallyUpdated) }
-            .map { it.toDto() }
-            .map { ResponseEntity.ok(it) }
+    ): Mono<PassOwnerDto> {
+        return passOwnerService.update(ownerId, updateDto).map { it.toDto() }
     }
 
     @DeleteMapping("/{id}")

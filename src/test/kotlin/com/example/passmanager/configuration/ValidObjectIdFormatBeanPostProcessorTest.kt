@@ -80,8 +80,7 @@ internal class ValidObjectIdFormatBeanPostProcessorTest {
         val created = proxiedController.create(dtoWithValidIdFormats)
 
         // THEN
-        created.mapNotNull { it.body }
-            .test()
+        created.test()
             .expectNext(passFromDb.toDto())
             .verifyComplete()
     }

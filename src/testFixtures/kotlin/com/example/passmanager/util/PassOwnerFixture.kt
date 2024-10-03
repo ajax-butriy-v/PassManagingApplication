@@ -3,6 +3,7 @@ package com.example.passmanager.util
 
 import com.example.passmanager.domain.MongoPassOwner
 import com.example.passmanager.web.dto.PassOwnerDto
+import com.example.passmanager.web.dto.PassOwnerUpdateDto
 import io.github.serpro69.kfaker.Faker
 import org.bson.types.ObjectId
 
@@ -20,6 +21,13 @@ object PassOwnerFixture {
     val passOwnerIdFromDb = id.toString()
 
     val passOwnerDto = PassOwnerDto(
+        firstName = passOwnerFromDb.firstName,
+        lastName = passOwnerFromDb.lastName,
+        phoneNumber = passOwnerFromDb.phoneNumber,
+        email = passOwnerFromDb.email
+    )
+
+    val passOwnerUpdateDto = PassOwnerUpdateDto(
         firstName = passOwnerFromDb.firstName,
         lastName = passOwnerFromDb.lastName,
         phoneNumber = passOwnerFromDb.phoneNumber,

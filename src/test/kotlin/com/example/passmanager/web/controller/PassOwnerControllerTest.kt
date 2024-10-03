@@ -78,7 +78,7 @@ internal class PassOwnerControllerTest {
         // GIVEN
         val partiallyUpdated = passOwnerFromDb.copy(firstName = "updated")
         every { passOwnerService.getById(any()) } returns passOwnerFromDb.toMono()
-        every { passOwnerService.update(any()) } returns partiallyUpdated.toMono()
+        every { passOwnerService.update(any(), any()) } returns partiallyUpdated.toMono()
 
         // WHEN // THEN
         webTestClient.patch()
