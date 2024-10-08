@@ -10,9 +10,7 @@ import com.example.passmanager.web.dto.SpentAfterDateDto
 import com.example.passmanager.web.mapper.PassOwnerMapper.toDto
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
-import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.http.MediaType
@@ -24,7 +22,6 @@ import reactor.kotlin.core.publisher.toMono
 import java.math.BigDecimal
 import java.time.LocalDate
 
-@ExtendWith(MockKExtension::class)
 @WebFluxTest(PassOwnerController::class)
 @ActiveProfiles("test")
 internal class PassOwnerControllerTest {

@@ -2,6 +2,7 @@ package com.example.passmanager.util
 
 import com.example.passmanager.domain.MongoPass
 import com.example.passmanager.domain.MongoPassType
+import com.example.passmanager.util.PassOwnerFixture.passOwnerFromDb
 import com.example.passmanager.web.dto.PassDto
 import com.example.passmanager.web.mapper.PassMapper.toDto
 import org.bson.types.ObjectId
@@ -35,8 +36,8 @@ object PassFixture {
         MongoPass(
             id = null,
             purchasedFor = BigDecimal.TEN,
-            passOwnerId = null,
-            passTypeId = null,
+            passOwnerId = passOwnerFromDb.id,
+            passTypeId = it.id,
             purchasedAt = instant,
         )
     }

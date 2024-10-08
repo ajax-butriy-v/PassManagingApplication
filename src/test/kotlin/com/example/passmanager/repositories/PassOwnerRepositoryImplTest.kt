@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.aggregation.Fields
 import org.springframework.data.mongodb.core.exists
-import org.springframework.data.mongodb.core.findById
 import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query.query
 import org.springframework.data.mongodb.core.query.isEqualTo
@@ -42,19 +41,23 @@ internal class PassOwnerRepositoryImplTest {
 
     @Test
     fun `inserting pass owner in collection should return created pass owner`() {
-        // GIVEN // WHEN
-        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
+        // GIVEN
+        val ownerToCreate = getOwnerWithUniqueFields()
+        val insertedPassOwner = mongoTemplate.insert(ownerToCreate).block()
+
+        // WHEN
+        val passOwnerById = passOwnerRepository.findById(insertedPassOwner!!.id.toString())
 
         // THEN
-        insertedPassOwner
-            .test()
-            .assertNext { ownerIdAfterInsert ->
-                mongoTemplate.findById<MongoPassOwner>(ownerIdAfterInsert!!)
-                    .doOnNext { ownerById ->
-                        assertThat(ownerIdAfterInsert).isEqualTo(ownerById)
-                    }
-                    .subscribe()
-            }
+        assertThat(insertedPassOwner).isEqualTo(
+            ownerToCreate.copy(
+                id = insertedPassOwner.id,
+                version = insertedPassOwner.version
+            )
+        )
+
+        passOwnerById.test()
+            .assertNext { assertThat(it).isEqualTo(insertedPassOwner) }
             .verifyComplete()
     }
 

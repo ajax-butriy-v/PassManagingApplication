@@ -81,7 +81,7 @@ internal class ValidObjectIdFormatBeanPostProcessorTest {
 
         // THEN
         created.test()
-            .expectNext(passFromDb.toDto())
+            .assertNext { assertThat(it).isEqualTo(passFromDb.toDto()) }
             .verifyComplete()
     }
 

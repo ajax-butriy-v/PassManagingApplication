@@ -10,9 +10,7 @@ import com.example.passmanager.web.dto.PassDto
 import com.example.passmanager.web.mapper.PassMapper.toDto
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
-import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.http.MediaType
@@ -21,7 +19,6 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 import reactor.kotlin.core.publisher.toMono
 
-@ExtendWith(MockKExtension::class)
 @WebFluxTest(PassController::class)
 @ActiveProfiles("test")
 internal class PassControllerTest {

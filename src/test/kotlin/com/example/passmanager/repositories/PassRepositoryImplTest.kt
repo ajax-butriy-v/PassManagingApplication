@@ -3,7 +3,7 @@ package com.example.passmanager.repositories
 import com.example.passmanager.domain.MongoPass
 import com.example.passmanager.testcontainers.WithMongoTestContainer
 import com.example.passmanager.util.PassFixture.passToCreate
-import com.example.passmanager.util.PassFixture.passTypesToCreate
+import com.example.passmanager.util.PassFixture.passTypes
 import com.example.passmanager.util.PassFixture.passesToCreate
 import com.example.passmanager.util.PassOwnerFixture.getOwnerWithUniqueFields
 import org.assertj.core.api.Assertions.assertThat
@@ -54,16 +54,20 @@ internal class PassRepositoryImplTest {
 
     @Test
     fun `inserting pass in collection should return created pass`() {
-        // GIVEN // WHEN
-        val insertedPass = mongoTemplate.insert(passToCreate)
+        // GIVEN
+        val insertedPass = mongoTemplate.insert(passToCreate).block()
+
+        // WHEN
+        val passById = mongoTemplate.findById<MongoPass>(insertedPass!!.id.toString())
 
         // THEN
-        insertedPass
-            .test()
-            .assertNext { pass ->
-                mongoTemplate.findById<MongoPass>(pass!!)
-                    .doOnNext { passById -> assertThat(pass).isEqualTo(passById) }
-                    .subscribe()
+        assertThat(insertedPass).isEqualTo(passToCreate.copy(id = insertedPass.id, version = insertedPass.version))
+
+        passById.test()
+            .assertNext {
+                assertThat(it).usingRecursiveComparison()
+                    .ignoringFields(MongoPass::purchasedAt.name)
+                    .isEqualTo(insertedPass)
             }
             .verifyComplete()
     }
@@ -195,24 +199,12 @@ internal class PassRepositoryImplTest {
     @Test
     fun `getting passes price distributions should return correct distribution per type`() {
         // GIVEN
-        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
-        val insertedPassTypes = mongoTemplate.insertAll(passTypesToCreate)
-        insertedPassOwner.mapNotNull { it.id }
-            .flatMapMany { ownerId ->
-                insertedPassTypes.map {
-                    passToCreate.copy(
-                        passTypeId = it.id,
-                        passOwnerId = ownerId
-                    )
-                }
-            }
-            .collectList()
-            .map { mongoTemplate.insertAll(it) }
-            .subscribe()
+        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields()).block()
+        mongoTemplate.insertAll(passTypes).subscribe()
+        mongoTemplate.insertAll(passesToCreate.map { it.copy(passOwnerId = insertedPassOwner!!.id) }).subscribe()
 
         // WHEN
-        val priceDistributionFlux = insertedPassOwner.mapNotNull { it.id.toString() }
-            .flatMapMany { passRepository.getPassesPriceDistribution(it) }
+        val priceDistributionFlux = passRepository.getPassesPriceDistribution(insertedPassOwner!!.id.toString())
 
         // THEN
         priceDistributionFlux.collectList()
@@ -220,6 +212,7 @@ internal class PassRepositoryImplTest {
             .assertNext { priceDistributions ->
                 assertThat(priceDistributions).hasSize(3).allMatch { it.spentForPassType == BigDecimal.TEN }
             }
+            .verifyComplete()
     }
 
     @Test
