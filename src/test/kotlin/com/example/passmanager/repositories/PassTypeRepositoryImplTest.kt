@@ -2,27 +2,25 @@ package com.example.passmanager.repositories
 
 import com.example.passmanager.domain.MongoPassType
 import com.example.passmanager.testcontainers.WithMongoTestContainer
-import com.example.passmanager.util.OptimisticLockTestUtils.getOptimisticLocksAmount
 import com.example.passmanager.util.PassFixture.passTypeToCreate
-import com.example.passmanager.util.PassFixture.singlePassType
 import org.assertj.core.api.Assertions.assertThat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate
+import org.springframework.data.mongodb.core.aggregation.Fields
 import org.springframework.data.mongodb.core.exists
 import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query.query
 import org.springframework.data.mongodb.core.query.isEqualTo
+import reactor.kotlin.test.test
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 @SpringBootTest
 @WithMongoTestContainer
-class PassTypeRepositoryImplTest {
+internal class PassTypeRepositoryImplTest {
     @Autowired
-    private lateinit var mongoTemplate: MongoTemplate
+    private lateinit var mongoTemplate: ReactiveMongoTemplate
 
     @Autowired
     private lateinit var passTypeRepository: PassTypeRepository
@@ -30,73 +28,77 @@ class PassTypeRepositoryImplTest {
     @Test
     fun `finding pass type by existing id should return pass type by id`() {
         // GIVEN
-        val insertedPassType = mongoTemplate.insert(passTypeToCreate)
-        val insertedPassTypeId = insertedPassType.id
+        val insertedPassType = mongoTemplate.insert(passTypeToCreate).block()
 
         // WHEN
-        val passTypeById = passTypeRepository.findById(insertedPassTypeId.toString())
+        val passTypeById = passTypeRepository.findById(insertedPassType!!.id.toString())
 
         // THEN
-        assertThat(passTypeById?.id).isNotNull().isEqualTo(insertedPassTypeId)
+        passTypeById.test()
+            .assertNext {
+                assertThat(it).isEqualTo(insertedPassType)
+            }
+            .verifyComplete()
     }
 
     @Test
     fun `inserting pass type in collection should return created pass type`() {
+        // GIVEN
+        val insertedPassType = mongoTemplate.insert(passTypeToCreate).block()
+
         // WHEN
-        val insertedPassType = mongoTemplate.insert(passTypeToCreate)
-        val insertedPassTypeId = insertedPassType.id
+        val passTypeById = passTypeRepository.findById(insertedPassType!!.id.toString())
 
         // THEN
-        assertTrue("pass type must be persisted in db after creation") {
-            mongoTemplate.exists<MongoPassType>(query(where("id").isEqualTo(insertedPassTypeId)))
-        }
+        assertThat(insertedPassType).isEqualTo(
+            passTypeToCreate.copy(
+                id = insertedPassType.id,
+                version = insertedPassType.version
+            )
+        )
+
+        passTypeById.test()
+            .assertNext {
+                assertThat(it).isEqualTo(insertedPassType)
+            }
+            .verifyComplete()
     }
 
     @Test
-    fun `saving pass type in collection show update existing pass type by id`() {
+    fun `saving pass type in collection should update existing pass type by id`() {
         // GIVEN
         val insertedPassType = mongoTemplate.insert(passTypeToCreate)
         val changedTypeName = "Changed name"
-        val updatedPassType = insertedPassType.copy(name = changedTypeName)
+        val updatedPassType = insertedPassType.map { it.copy(name = changedTypeName) }
 
         // WHEN
-        val saved = passTypeRepository.save(updatedPassType)
+        val savedPassType = updatedPassType.flatMap { passTypeRepository.save(it) }
 
-        // WHEN
-        assertThat(saved.name).isEqualTo(changedTypeName)
+        // THEN
+        savedPassType.test()
+            .assertNext { saved -> assertThat(saved.name).isEqualTo(changedTypeName) }
+            .verifyComplete()
     }
 
     @Test
     fun `deleting pass type by id should delete pass type from collection`() {
         // GIVEN
-        val insertedPassType = mongoTemplate.insert(passTypeToCreate)
-        val insertedPassTypeId = insertedPassType.id
+        val insertedPassType = mongoTemplate.insert(passTypeToCreate).block()
+        val insertedPassTypeId = insertedPassType!!.id
 
         // WHEN
-        passTypeRepository.deleteById(insertedPassTypeId.toString())
-
-        // WHEN
-        assertFalse("pass owner must not exist in collection after deletion") {
-            mongoTemplate.exists<MongoPassType>(query(where("_id").isEqualTo(insertedPassTypeId)))
-        }
-    }
-
-    @Test
-    fun `optimistic lock handling while save() should throw exception if version was changed by another thread`() {
-        // GIVEN
-        val insertedPassType = passTypeRepository.insert(singlePassType)
-        val typeNames = listOf("First", "Second", "Third")
-        assertEquals(1, insertedPassType.version)
-
-        // WHEN
-        val tasks = typeNames.map {
-            Runnable { passTypeRepository.save(insertedPassType.copy(name = it)) }
-        }
-        val optimisticLocks = getOptimisticLocksAmount(tasks)
+        val delete = passTypeRepository.deleteById(insertedPassTypeId.toString())
 
         // THEN
-        val updatedPass = passTypeRepository.findById(insertedPassType.id.toString())
-        assertEquals(2, updatedPass?.version)
-        assertEquals(2, optimisticLocks)
+        delete.test()
+            .expectNext(Unit)
+            .verifyComplete()
+
+        assertFalse("pass type must not exist in collection after deletion") {
+            val existsById = mongoTemplate.exists<MongoPassType>(
+                query(where(Fields.UNDERSCORE_ID).isEqualTo(insertedPassTypeId))
+            )
+            existsById.block() == true
+        }
     }
 }

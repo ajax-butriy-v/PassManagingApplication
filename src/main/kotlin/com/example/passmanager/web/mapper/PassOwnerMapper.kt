@@ -2,6 +2,7 @@ package com.example.passmanager.web.mapper
 
 import com.example.passmanager.domain.MongoPassOwner
 import com.example.passmanager.web.dto.PassOwnerDto
+import com.example.passmanager.web.dto.PassOwnerUpdateDto
 
 internal object PassOwnerMapper {
     fun MongoPassOwner.toDto(): PassOwnerDto {
@@ -18,12 +19,12 @@ internal object PassOwnerMapper {
         )
     }
 
-    fun MongoPassOwner.partialUpdate(dto: PassOwnerDto): MongoPassOwner {
+    fun MongoPassOwner.partialUpdate(passOwnerUpdateDto: PassOwnerUpdateDto): MongoPassOwner {
         return copy(
-            firstName = dto.firstName ?: firstName,
-            lastName = dto.lastName ?: lastName,
-            email = dto.email ?: email,
-            phoneNumber = dto.phoneNumber ?: phoneNumber
+            firstName = passOwnerUpdateDto.firstName ?: firstName,
+            lastName = passOwnerUpdateDto.lastName ?: lastName,
+            email = passOwnerUpdateDto.email ?: email,
+            phoneNumber = passOwnerUpdateDto.phoneNumber ?: phoneNumber
         )
     }
 }

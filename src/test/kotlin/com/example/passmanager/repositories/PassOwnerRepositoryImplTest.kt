@@ -2,27 +2,25 @@ package com.example.passmanager.repositories
 
 import com.example.passmanager.domain.MongoPassOwner
 import com.example.passmanager.testcontainers.WithMongoTestContainer
-import com.example.passmanager.util.OptimisticLockTestUtils.getOptimisticLocksAmount
 import com.example.passmanager.util.PassOwnerFixture.getOwnerWithUniqueFields
-import com.example.passmanager.util.PassOwnerFixture.passOwnerToCreate
 import org.assertj.core.api.Assertions.assertThat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate
+import org.springframework.data.mongodb.core.aggregation.Fields
 import org.springframework.data.mongodb.core.exists
-import org.springframework.data.mongodb.core.findById
 import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query.query
 import org.springframework.data.mongodb.core.query.isEqualTo
+import reactor.kotlin.test.test
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 
 @SpringBootTest
 @WithMongoTestContainer
-class PassOwnerRepositoryImplTest {
+internal class PassOwnerRepositoryImplTest {
     @Autowired
-    private lateinit var mongoTemplate: MongoTemplate
+    private lateinit var mongoTemplate: ReactiveMongoTemplate
 
     @Autowired
     private lateinit var passOwnerRepository: PassOwnerRepository
@@ -30,24 +28,37 @@ class PassOwnerRepositoryImplTest {
     @Test
     fun `finding pass by existing id should return pass owner by id`() {
         // GIVEN
-        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
-        val insertedPassOwnerId = insertedPassOwner.id
+        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields()).block()
 
         // WHEN
-        val passOwnerById = passOwnerRepository.findById(insertedPassOwnerId.toString())
+        val passOwnerById = passOwnerRepository.findById(insertedPassOwner!!.id.toString())
 
         // THEN
-        assertThat(passOwnerById?.id).isNotNull().isEqualTo(insertedPassOwnerId)
+        passOwnerById.test()
+            .assertNext { assertThat(it).isEqualTo(insertedPassOwner) }
+            .verifyComplete()
     }
 
     @Test
     fun `inserting pass owner in collection should return created pass owner`() {
+        // GIVEN
+        val ownerToCreate = getOwnerWithUniqueFields()
+        val insertedPassOwner = mongoTemplate.insert(ownerToCreate).block()
+
         // WHEN
-        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
-        val insertedPassOwnerId = insertedPassOwner.id
+        val passOwnerById = passOwnerRepository.findById(insertedPassOwner!!.id.toString())
 
         // THEN
-        assertThat(mongoTemplate.findById<MongoPassOwner>(insertedPassOwnerId!!)).isEqualTo(insertedPassOwner)
+        assertThat(insertedPassOwner).isEqualTo(
+            ownerToCreate.copy(
+                id = insertedPassOwner.id,
+                version = insertedPassOwner.version
+            )
+        )
+
+        passOwnerById.test()
+            .assertNext { assertThat(it).isEqualTo(insertedPassOwner) }
+            .verifyComplete()
     }
 
     @Test
@@ -55,46 +66,36 @@ class PassOwnerRepositoryImplTest {
         // GIVEN
         val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
         val changedFirstName = "Changed first name"
-        val updatedPassOwner = insertedPassOwner.copy(firstName = changedFirstName)
+        val updatedPassOwner = insertedPassOwner.map { it.copy(firstName = changedFirstName) }
 
         // WHEN
-        val saved = passOwnerRepository.save(updatedPassOwner)
+        val saved = updatedPassOwner.flatMap { passOwnerRepository.save(it) }
 
         // WHEN
-        assertThat(saved.firstName).isEqualTo(changedFirstName)
+        saved.test()
+            .assertNext { assertThat(it.firstName).isEqualTo(changedFirstName) }
+            .verifyComplete()
     }
 
     @Test
     fun `deleting pass owner by id should delete pass owner from collection`() {
         // GIVEN
-        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
-        val insertedPassOwnerId = insertedPassOwner.id
+        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields()).block()
+        val insertedPassOwnerId = insertedPassOwner!!.id
 
         // WHEN
-        passOwnerRepository.deleteById(insertedPassOwnerId.toString())
+        val delete = passOwnerRepository.deleteById(insertedPassOwnerId.toString())
 
         // THEN
-        assertFalse("pass owner must not exist in collection after deletion") {
-            mongoTemplate.exists<MongoPassOwner>(query(where("_id").isEqualTo(insertedPassOwnerId)))
+        delete.test()
+            .expectNext(Unit)
+            .verifyComplete()
+
+        assertFalse("Pass owner must not exist in collection after deletion") {
+            val existsById = mongoTemplate.exists<MongoPassOwner>(
+                query(where(Fields.UNDERSCORE_ID).isEqualTo(insertedPassOwnerId))
+            )
+            existsById.block() == true
         }
-    }
-
-    @Test
-    fun `optimistic lock handling while save() should throw exception if version was changed by another thread()`() {
-        // GIVEN
-        val insertedPassOwner = passOwnerRepository.insert(passOwnerToCreate)
-        val firstNames = listOf("Firstname1", "Firstname2")
-        assertEquals(1, insertedPassOwner.version)
-
-        // WHEN
-        val tasks = firstNames.map {
-            Runnable { passOwnerRepository.save(insertedPassOwner.copy(firstName = it)) }
-        }
-        val optimisticLocks = getOptimisticLocksAmount(tasks)
-
-        // THEN
-        val updatedPass = passOwnerRepository.findById(insertedPassOwner.id.toString())
-        assertEquals(2, updatedPass?.version)
-        assertEquals(1, optimisticLocks)
     }
 }

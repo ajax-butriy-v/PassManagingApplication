@@ -2,6 +2,7 @@ package com.example.passmanager.util
 
 import com.example.passmanager.domain.MongoPass
 import com.example.passmanager.domain.MongoPassType
+import com.example.passmanager.util.PassOwnerFixture.passOwnerFromDb
 import com.example.passmanager.web.dto.PassDto
 import com.example.passmanager.web.mapper.PassMapper.toDto
 import org.bson.types.ObjectId
@@ -13,10 +14,10 @@ import java.time.temporal.ChronoUnit
 
 
 object PassFixture {
-    private val clock = Clock.fixed(Instant.now(), ZoneId.of("UTC"))
-    private val instant = clock.instant()
+    private val clock = Clock.fixed(Instant.now(), ZoneId.systemDefault())
+    private val instant = Instant.now(clock).truncatedTo(ChronoUnit.MILLIS)
 
-    val passTypesToCreate = listOf("First type", "Second type", "Third type")
+    private val passTypesToCreate = listOf("First type", "Second type", "Third type")
         .map {
             MongoPassType(
                 id = null,
@@ -35,8 +36,8 @@ object PassFixture {
         MongoPass(
             id = null,
             purchasedFor = BigDecimal.TEN,
-            passOwnerId = null,
-            passTypeId = null,
+            passOwnerId = passOwnerFromDb.id,
+            passTypeId = it.id,
             purchasedAt = instant,
         )
     }

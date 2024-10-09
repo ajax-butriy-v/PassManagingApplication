@@ -30,6 +30,9 @@ dependencies {
     implementation(libs.jackson.module.kotlin)
     implementation(libs.spring.boot.starter.data.mongodb)
     implementation(libs.spring.boot.starter.validation)
+    implementation(libs.spring.boot.starter.webflux)
+    implementation(libs.spring.boot.starter.data.mongodb.reactive)
+    implementation(libs.reactor.kotlin.extensions)
     implementation(libs.faker)
     implementation(libs.mongock.springboot.v3)
     implementation(libs.mongock.mongodb.springdata.v4.driver)
@@ -41,6 +44,7 @@ dependencies {
     testImplementation(libs.kotlin.test.junit5)
     testImplementation(libs.spring.boot.testcontainers)
     testImplementation(libs.testcontainers.mongodb)
+    testImplementation(libs.reactor.test)
     testFixturesImplementation(libs.faker)
     testRuntimeOnly(libs.junit.platform.launcher)
     detektPlugins(libs.detekt.formatting)
@@ -78,6 +82,10 @@ configure<DeltaCoverageConfiguration> {
         html = true
         markdown = true
     }
+
+    excludeClasses.value(
+        listOf("**/com/example/passmanager/migration/**/*.*")
+    )
 }
 
 tasks.named("check") {

@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
+import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping("/passes")
@@ -24,32 +26,34 @@ internal class PassController(
 ) {
 
     @GetMapping("/{id}")
-    fun findById(@PathVariable id: String): ResponseEntity<PassDto> {
-        val passById = passService.findById(id)
-        return passById?.run { ResponseEntity.ok(toDto()) } ?: ResponseEntity.notFound().build()
+    fun findById(@PathVariable id: String): Mono<ResponseEntity<PassDto>> {
+        return passService.findById(id)
+            .map { it.toDto() }
+            .map { ResponseEntity.ok(it) }
+            .defaultIfEmpty(ResponseEntity.notFound().build())
     }
 
     @PostMapping
-    fun create(@Valid @RequestBody passDto: PassDto): ResponseEntity<PassDto> {
-        val created = passService.create(passDto.toEntity(), passDto.passOwnerId, passDto.passTypeId)
-        return ResponseEntity.status(HttpStatus.CREATED).body(created.toDto())
+    @ResponseStatus(HttpStatus.CREATED)
+    fun create(@Valid @RequestBody passDto: PassDto): Mono<PassDto> {
+        return passService.create(passDto.toEntity(), passDto.passOwnerId, passDto.passTypeId).map { it.toDto() }
     }
 
     @PostMapping("/{id}/cancel/{owner-id}")
-    fun cancelPass(@PathVariable id: String, @PathVariable("owner-id") ownerId: String): ResponseEntity<Unit> {
-        passManagementService.cancelPass(ownerId, id)
-        return ResponseEntity.ok().build()
+    @ResponseStatus(HttpStatus.OK)
+    fun cancelPass(@PathVariable id: String, @PathVariable("owner-id") ownerId: String): Mono<Unit> {
+        return passManagementService.cancelPass(ownerId, id)
     }
 
     @PostMapping("/{id}/transfer/{owner-id}")
-    fun transferPass(@PathVariable id: String, @PathVariable("owner-id") ownerId: String): ResponseEntity<Unit> {
-        passManagementService.transferPass(id, ownerId)
-        return ResponseEntity.ok().build()
+    @ResponseStatus(HttpStatus.OK)
+    fun transferPass(@PathVariable id: String, @PathVariable("owner-id") ownerId: String): Mono<Unit> {
+        return passManagementService.transferPass(id, ownerId)
     }
 
     @DeleteMapping("/{id}")
-    fun deleteById(@PathVariable id: String): ResponseEntity<Unit> {
-        passService.deleteById(id)
-        return ResponseEntity.noContent().build()
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteById(@PathVariable id: String): Mono<Unit> {
+        return passService.deleteById(id)
     }
 }

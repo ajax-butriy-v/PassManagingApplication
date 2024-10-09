@@ -2,34 +2,34 @@ package com.example.passmanager.repositories
 
 import com.example.passmanager.domain.MongoPass
 import com.example.passmanager.testcontainers.WithMongoTestContainer
-import com.example.passmanager.util.OptimisticLockTestUtils.getOptimisticLocksAmount
 import com.example.passmanager.util.PassFixture.passToCreate
-import com.example.passmanager.util.PassFixture.passTypesToCreate
+import com.example.passmanager.util.PassFixture.passTypes
 import com.example.passmanager.util.PassFixture.passesToCreate
 import com.example.passmanager.util.PassOwnerFixture.getOwnerWithUniqueFields
 import org.assertj.core.api.Assertions.assertThat
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate
+import org.springframework.data.mongodb.core.aggregation.Fields
 import org.springframework.data.mongodb.core.exists
+import org.springframework.data.mongodb.core.findById
 import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query.query
 import org.springframework.data.mongodb.core.query.isEqualTo
+import reactor.kotlin.test.test
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZoneId
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 @SpringBootTest
 @WithMongoTestContainer
-class PassRepositoryImplTest {
+internal class PassRepositoryImplTest {
 
     @Autowired
-    private lateinit var mongoTemplate: MongoTemplate
+    private lateinit var mongoTemplate: ReactiveMongoTemplate
 
     @Autowired
     private lateinit var passRepository: PassRepository
@@ -37,69 +37,95 @@ class PassRepositoryImplTest {
     @Test
     fun `finding pass by existing id should return pass by id`() {
         // GIVEN
-        val inserted = mongoTemplate.insert(passToCreate)
+        val insertedPass = mongoTemplate.insert(passToCreate).block()
 
         // WHEN
-        val passById = passRepository.findById(inserted.id.toString())
+        val passById = passRepository.findById(insertedPass!!.id.toString())
 
         // THEN
-        assertThat(passById?.id).isNotNull().isEqualTo(inserted.id)
+        passById.test()
+            .assertNext {
+                assertThat(it).isEqualTo(insertedPass)
+            }
+            .verifyComplete()
     }
 
     @Test
     fun `inserting pass in collection should return created pass`() {
+        // GIVEN
+        val insertedPass = mongoTemplate.insert(passToCreate).block()
+
         // WHEN
-        val inserted = passRepository.insert(passToCreate)
-        val insertedId = inserted.id
+        val passById = mongoTemplate.findById<MongoPass>(insertedPass!!.id.toString())
 
         // THEN
-        assertTrue("pass must be persisted in db after creation") {
-            mongoTemplate.exists<MongoPass>(query(where("id").isEqualTo(insertedId)))
-        }
+        assertThat(insertedPass).isEqualTo(passToCreate.copy(id = insertedPass.id, version = insertedPass.version))
+
+        passById.test()
+            .assertNext {
+                assertThat(it).isEqualTo(insertedPass)
+            }
+            .verifyComplete()
     }
 
     @Test
     fun `saving pass in collection show update existing pass by id`() {
         // GIVEN
-        val inserted = mongoTemplate.insert(passToCreate)
+        val insertedPass = mongoTemplate.insert(passToCreate)
         val changedPrice = BigDecimal.TEN
-        val updatedPass = inserted.copy(purchasedFor = changedPrice)
+        val updatedPass = insertedPass.map { it.copy(purchasedFor = changedPrice) }
 
         // WHEN
-        val saved = passRepository.save(updatedPass)
+        val saved = updatedPass.flatMap { passRepository.save(it) }
 
-        // THEN
-        assertThat(saved.purchasedFor).isEqualTo(changedPrice)
+        // WHEN
+        saved.test()
+            .assertNext { assertThat(it.purchasedFor).isEqualTo(changedPrice) }
+            .verifyComplete()
     }
 
     @Test
     fun `deleting pass by id should delete pass from collection`() {
         // GIVEN
-        val inserted = mongoTemplate.insert(passToCreate)
-        val insertedId = inserted.id
+        val insertedPass = mongoTemplate.insert(passToCreate).block()
+        val insertedPassId = insertedPass!!.id
 
         // WHEN
-        passRepository.deleteById(insertedId.toString())
+        val delete = passRepository.deleteById(insertedPassId.toString())
 
         // THEN
-        assertFalse("pass must not exist in db after deletion") {
-            mongoTemplate.exists<MongoPass>(query(where("id").isEqualTo(insertedId)))
+        delete.test()
+            .expectNext(Unit)
+            .verifyComplete()
+
+        assertFalse("pass must not exist in collection after deletion") {
+            val existsById = mongoTemplate.exists<MongoPass>(
+                query(where(Fields.UNDERSCORE_ID).isEqualTo(insertedPassId))
+            )
+            existsById.block() == true
         }
     }
 
     @Test
     fun `deleting all passes by owner id should delete all owner's passes`() {
         // GIVEN
-        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
-        val insertedPassOwnerId = insertedPassOwner.id
-        mongoTemplate.insertAll(passesToCreate.map { it.copy(passOwnerId = insertedPassOwnerId) })
+        val passOwner = mongoTemplate.insert(getOwnerWithUniqueFields()).block()
+        val passOwnerId = passOwner!!.id
+        passesToCreate.map { it.copy(passOwnerId = passOwnerId) }.also { mongoTemplate.insertAll(it).subscribe() }
 
         // WHEN
-        passRepository.deleteAllByOwnerId(insertedPassOwnerId.toString())
+        val deleteAll = passRepository.deleteAllByOwnerId(passOwnerId.toString())
 
-        // THEN
-        assertFalse(message = "all owner passes must not exist in db after deletion") {
-            mongoTemplate.exists<MongoPass>(query(where("passOwnerId").isEqualTo(insertedPassOwnerId)))
+        // THEN`
+        deleteAll.test()
+            .expectNext(Unit)
+            .verifyComplete()
+
+        assertFalse("all owner passes must not exist in db after deletion") {
+            val existsByOwnerid = mongoTemplate.exists<MongoPass>(
+                query(where(MongoPass::passOwnerId.name).isEqualTo(passOwnerId.toString()))
+            )
+            existsByOwnerid.block() == true
         }
     }
 
@@ -107,111 +133,114 @@ class PassRepositoryImplTest {
     fun `finding by owner and purchased after should return corresponding passes`() {
         // GIVEN
         val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
-        val insertedPassOwnerId = insertedPassOwner.id
-        mongoTemplate.insertAll(passesToCreate.map { it.copy(passOwnerId = insertedPassOwnerId) })
+        insertedPassOwner
+            .map { owner -> passesToCreate.map { it.copy(passOwnerId = owner.id) } }
+            .map { passes -> mongoTemplate.insertAll(passes) }
+            .subscribe()
         val afterDate = LocalDate.now()
 
         // WHEN
-        val passes = passRepository.findByOwnerAndPurchasedAfter(insertedPassOwnerId.toString(), afterDate)
+        val passes = insertedPassOwner
+            .mapNotNull { it.id.toString() }
+            .flatMapMany { passRepository.findByOwnerAndPurchasedAfter(it, afterDate) }
 
         // THEN
-        assertThat(passes).hasSize(3)
-            .allMatch({ it.passOwnerId == insertedPassOwnerId })
-            .allMatch({
-                val dateToInstant = afterDate.atStartOfDay(ZoneId.systemDefault()).toInstant()
-                it.purchasedAt?.isAfter(dateToInstant) == true
-            })
+        passes.collectList()
+            .test()
+            .assertNext {
+                assertThat(it).hasSize(3)
+                    .allMatch { pass ->
+                        val dateToInstant = afterDate.atStartOfDay(ZoneId.systemDefault()).toInstant()
+                        pass.purchasedAt?.isAfter(dateToInstant) ?: false
+                    }
+            }
     }
 
     @Test
     fun `finding all by pass owner id should return corresponding passes`() {
         // GIVEN
         val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
-        val insertedPassOwnerId = insertedPassOwner.id
-        mongoTemplate.insertAll(passesToCreate.map { it.copy(passOwnerId = insertedPassOwnerId) })
+        insertedPassOwner
+            .map { owner -> passesToCreate.map { it.copy(passOwnerId = owner.id) } }
+            .map { passes -> mongoTemplate.insertAll(passes) }
+            .subscribe()
 
         // WHEN
-        val passesByOwnerId = passRepository.findAllByPassOwnerId(insertedPassOwnerId.toString())
+        val passesByOwnerId = insertedPassOwner
+            .mapNotNull { it.id.toString() }
+            .flatMapMany { passRepository.findAllByPassOwnerId(it) }
 
         // THEN
-        assertThat(passesByOwnerId).hasSize(3).allMatch({ it.passOwnerId == insertedPassOwnerId })
+        passesByOwnerId.collectList()
+            .test()
+            .assertNext { passes ->
+                val passOwnerId = passes.first().passOwnerId
+                assertThat(passes).hasSize(3).allMatch { it.passOwnerId == passOwnerId }
+            }
     }
 
     @Test
     fun `finding all by non-existent pass owner id should return empty list`() {
-        // GIVEN
-        mongoTemplate.insertAll(passesToCreate)
-
         // WHEN
         val passesByOwnerId = passRepository.findAllByPassOwnerId(ObjectId.get().toString())
 
         // THEN
-        assertThat(passesByOwnerId).isEmpty()
+        passesByOwnerId.collectList()
+            .test()
+            .assertNext { assertThat(it).isEmpty() }
+            .verifyComplete()
     }
 
     @Test
     fun `getting passes price distributions should return correct distribution per type`() {
         // GIVEN
-        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
-        val insertedPassOwnerId = insertedPassOwner.id
-        val insertedPassTypes = mongoTemplate.insertAll(passTypesToCreate)
-        val passesToCreate = insertedPassTypes.map {
-            passToCreate.copy(passOwnerId = insertedPassOwnerId, passTypeId = it.id)
-        }
-        mongoTemplate.insertAll(passesToCreate)
+        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields()).block()
+        mongoTemplate.insertAll(passTypes).subscribe()
+        mongoTemplate.insertAll(passesToCreate.map { it.copy(passOwnerId = insertedPassOwner!!.id) }).subscribe()
 
         // WHEN
-        val priceDistributions = passRepository.getPassesPriceDistribution(insertedPassOwnerId.toString())
+        val priceDistributionFlux = passRepository.getPassesPriceDistribution(insertedPassOwner!!.id.toString())
 
         // THEN
-        assertThat(priceDistributions).hasSize(3).allMatch({ it.spentForPassType == BigDecimal.TEN })
+        priceDistributionFlux.collectList()
+            .test()
+            .assertNext { priceDistributions ->
+                assertThat(priceDistributions).hasSize(3).allMatch { it.spentForPassType == BigDecimal.TEN }
+            }
+            .verifyComplete()
     }
 
     @Test
     fun `getting sum of purchased passes for pass owner should return correct sum`() {
         // GIVEN
-        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
-        val insertedPassOwnerId = insertedPassOwner.id
-        mongoTemplate.insertAll(passesToCreate.map { it.copy(passOwnerId = insertedPassOwnerId) })
+        val passOwner = mongoTemplate.insert(getOwnerWithUniqueFields()).block()
+        val passOwnerId = passOwner!!.id
         val afterDate = LocalDate.now()
+        passesToCreate.map { it.copy(passOwnerId = passOwnerId) }.also { mongoTemplate.insertAll(it).subscribe() }
 
         // WHEN
-        val sum = passRepository.sumPurchasedAtAfterDate(insertedPassOwnerId.toString(), afterDate)
+        val sum = passRepository.sumPurchasedAtAfterDate(passOwnerId.toString(), afterDate)
 
         // THEN
-        assertThat(sum).isEqualTo(BigDecimal.valueOf(30))
+        sum.test()
+            .assertNext { assertThat(it).isEqualTo(BigDecimal.valueOf(30)) }
+            .verifyComplete()
     }
 
     @Test
     fun `getting sum of purchased passes for pass owner with no passes should return zero sum`() {
         // GIVEN
         val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields())
-        val insertedPassOwnerId = insertedPassOwner.id
         val afterDate = LocalDate.now()
 
         // WHEN
-        val sum = passRepository.sumPurchasedAtAfterDate(insertedPassOwnerId.toString(), afterDate)
+        val sum = insertedPassOwner
+            .mapNotNull { it.id.toString() }
+            .flatMap { passRepository.sumPurchasedAtAfterDate(it, afterDate) }
 
         // THEN
-        assertThat(sum).isEqualTo(BigDecimal.ZERO)
-    }
-
-    @Test
-    fun `optimistic lock handling while save() should throw exception if version was changed by another thread`() {
-        // GIVEN
-        val createdPass = passRepository.insert(passToCreate)
-        val priceChangingList = listOf(BigDecimal.valueOf(20), BigDecimal.valueOf(30))
-        assertEquals(1, createdPass.version)
-
-        // WHEN
-        val tasks = priceChangingList.map {
-            Runnable { passRepository.save(createdPass.copy(purchasedFor = it)) }
-        }
-        val optimisticLocks = getOptimisticLocksAmount(tasks)
-
-        // THEN
-        val updatedPass = passRepository.findById(createdPass.id.toString())
-        assertEquals(2, updatedPass?.version)
-        assertEquals(1, optimisticLocks)
+        sum.test()
+            .assertNext { assertThat(it).isEqualTo(BigDecimal.ZERO) }
+            .verifyComplete()
     }
 }

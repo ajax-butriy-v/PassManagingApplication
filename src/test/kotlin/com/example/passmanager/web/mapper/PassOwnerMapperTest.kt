@@ -2,7 +2,8 @@ package com.example.passmanager.web.mapper
 
 import com.example.passmanager.util.PassOwnerFixture.passOwnerDto
 import com.example.passmanager.util.PassOwnerFixture.passOwnerFromDb
-import com.example.passmanager.web.dto.PassOwnerDto
+import com.example.passmanager.util.PassOwnerFixture.passOwnerUpdateDto
+import com.example.passmanager.web.dto.PassOwnerUpdateDto
 import com.example.passmanager.web.mapper.PassOwnerMapper.partialUpdate
 import com.example.passmanager.web.mapper.PassOwnerMapper.toDto
 import com.example.passmanager.web.mapper.PassOwnerMapper.toEntity
@@ -34,10 +35,10 @@ internal class PassOwnerMapperTest {
     @Test
     fun `testing partial update updates only non-null fields`() {
         // GIVEN
-        val partiallyUpdatedDto = passOwnerDto.copy(firstName = "Updated")
+        val partiallyUpdated = passOwnerUpdateDto.copy(firstName = "Updated")
 
         // WHEN
-        val actual = passOwnerFromDb.partialUpdate(partiallyUpdatedDto)
+        val actual = passOwnerFromDb.partialUpdate(partiallyUpdated)
         assertThat(actual.firstName).isEqualTo("Updated")
         assertThat(actual).isNotEqualTo(passOwnerFromDb)
     }
@@ -45,7 +46,7 @@ internal class PassOwnerMapperTest {
     @Test
     fun `test partialUpdate when all fields are null does not update any field`() {
         // GIVEN
-        val allFieldsNullableDto = PassOwnerDto(
+        val allFieldsNullableDto = PassOwnerUpdateDto(
             firstName = null,
             lastName = null,
             phoneNumber = null,

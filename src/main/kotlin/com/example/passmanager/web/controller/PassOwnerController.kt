@@ -3,14 +3,13 @@ package com.example.passmanager.web.controller
 import com.example.passmanager.service.PassOwnerService
 import com.example.passmanager.service.PassOwnerStatisticsService
 import com.example.passmanager.web.dto.PassOwnerDto
+import com.example.passmanager.web.dto.PassOwnerUpdateDto
 import com.example.passmanager.web.dto.PriceDistribution
 import com.example.passmanager.web.dto.SpentAfterDateDto
-import com.example.passmanager.web.mapper.PassOwnerMapper.partialUpdate
 import com.example.passmanager.web.mapper.PassOwnerMapper.toDto
 import com.example.passmanager.web.mapper.PassOwnerMapper.toEntity
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
@@ -19,7 +18,10 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.time.LocalDate
 
 @RestController
@@ -30,41 +32,39 @@ internal class PassOwnerController(
 ) {
 
     @GetMapping("/{id}/distributions")
-    fun calculatePriceDistributions(@PathVariable id: String): ResponseEntity<List<PriceDistribution>> {
-        val priceDistributions = passOwnerStatisticsService.calculatePriceDistributions(id)
-        return ResponseEntity.ok(priceDistributions)
+    @ResponseStatus(HttpStatus.OK)
+    fun calculatePriceDistributions(@PathVariable id: String): Flux<PriceDistribution> {
+        return passOwnerStatisticsService.calculatePriceDistributions(id)
     }
 
     @GetMapping("/{id}/spent")
+    @ResponseStatus(HttpStatus.OK)
     fun calculateSpentAfterDate(
         @RequestParam afterDate: LocalDate,
         @PathVariable("id") ownerId: String,
-    ): ResponseEntity<SpentAfterDateDto> {
-        val totalSpent = passOwnerStatisticsService.calculateSpentAfterDate(afterDate, ownerId)
-        return ResponseEntity.ok(SpentAfterDateDto(ownerId, afterDate, totalSpent))
+    ): Mono<SpentAfterDateDto> {
+        return passOwnerStatisticsService.calculateSpentAfterDate(afterDate, ownerId)
+            .map { spentAfterDate -> SpentAfterDateDto(ownerId, afterDate, spentAfterDate) }
     }
 
     @PostMapping
-    fun create(@Valid @RequestBody dto: PassOwnerDto): ResponseEntity<PassOwnerDto> {
-        val created = passOwnerService.create(dto.toEntity())
-        return ResponseEntity.status(HttpStatus.CREATED).body(created.toDto())
+    @ResponseStatus(HttpStatus.CREATED)
+    fun create(@Valid @RequestBody dto: PassOwnerDto): Mono<PassOwnerDto> {
+        return passOwnerService.create(dto.toEntity()).map { it.toDto() }
     }
 
     @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     fun partialUpdate(
-        @Valid @RequestBody dto: PassOwnerDto,
+        @Valid @RequestBody updateDto: PassOwnerUpdateDto,
         @PathVariable("id") ownerId: String,
-    ): ResponseEntity<PassOwnerDto> {
-        return passOwnerService.findById(ownerId)?.let { passOwnerInDb ->
-            val partiallyUpdated = passOwnerInDb.partialUpdate(dto)
-            val updated = passOwnerService.update(partiallyUpdated)
-            return ResponseEntity.ok(updated.toDto())
-        } ?: ResponseEntity.notFound().build()
+    ): Mono<PassOwnerDto> {
+        return passOwnerService.update(ownerId, updateDto).map { it.toDto() }
     }
 
     @DeleteMapping("/{id}")
-    fun deleteById(@PathVariable id: String): ResponseEntity<Unit> {
-        passOwnerService.deleteById(id)
-        return ResponseEntity.noContent().build()
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteById(@PathVariable id: String): Mono<Unit> {
+        return passOwnerService.deleteById(id)
     }
 }
