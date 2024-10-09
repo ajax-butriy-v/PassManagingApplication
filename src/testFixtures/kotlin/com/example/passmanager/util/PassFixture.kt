@@ -14,10 +14,10 @@ import java.time.temporal.ChronoUnit
 
 
 object PassFixture {
-    private val clock = Clock.fixed(Instant.now(), ZoneId.of("UTC"))
-    private val instant = clock.instant()
+    private val clock = Clock.fixed(Instant.now(), ZoneId.systemDefault())
+    private val instant = Instant.now(clock).truncatedTo(ChronoUnit.MILLIS)
 
-    val passTypesToCreate = listOf("First type", "Second type", "Third type")
+    private val passTypesToCreate = listOf("First type", "Second type", "Third type")
         .map {
             MongoPassType(
                 id = null,

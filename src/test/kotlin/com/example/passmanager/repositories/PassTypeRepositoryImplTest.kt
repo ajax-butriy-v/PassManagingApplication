@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.aggregation.Fields
 import org.springframework.data.mongodb.core.exists
-import org.springframework.data.mongodb.core.findById
 import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query.query
 import org.springframework.data.mongodb.core.query.isEqualTo
@@ -37,28 +36,30 @@ internal class PassTypeRepositoryImplTest {
         // THEN
         passTypeById.test()
             .assertNext {
-                assertThat(it)
-                    .usingRecursiveComparison()
-                    .ignoringFields(MongoPassType::activeFrom.name, MongoPassType::activeTo.name)
-                    .isEqualTo(insertedPassType)
+                assertThat(it).isEqualTo(insertedPassType)
             }
             .verifyComplete()
     }
 
     @Test
     fun `inserting pass type in collection should return created pass type`() {
-        // GIVEN // WHEN
-        val insertedPassType = mongoTemplate.insert(passTypeToCreate)
+        // GIVEN
+        val insertedPassType = mongoTemplate.insert(passTypeToCreate).block()
+
+        // WHEN
+        val passTypeById = passTypeRepository.findById(insertedPassType!!.id.toString())
 
         // THEN
-        insertedPassType
-            .test()
-            .assertNext { passType ->
-                mongoTemplate.findById<MongoPassType>(passType!!)
-                    .doOnNext { passTypeById ->
-                        assertThat(passType).isEqualTo(passTypeById)
-                    }
-                    .subscribe()
+        assertThat(insertedPassType).isEqualTo(
+            passTypeToCreate.copy(
+                id = insertedPassType.id,
+                version = insertedPassType.version
+            )
+        )
+
+        passTypeById.test()
+            .assertNext {
+                assertThat(it).isEqualTo(insertedPassType)
             }
             .verifyComplete()
     }

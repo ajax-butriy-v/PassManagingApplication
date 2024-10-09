@@ -45,9 +45,7 @@ internal class PassRepositoryImplTest {
         // THEN
         passById.test()
             .assertNext {
-                assertThat(it).usingRecursiveComparison()
-                    .ignoringFields(MongoPass::purchasedAt.name)
-                    .isEqualTo(insertedPass)
+                assertThat(it).isEqualTo(insertedPass)
             }
             .verifyComplete()
     }
@@ -65,9 +63,7 @@ internal class PassRepositoryImplTest {
 
         passById.test()
             .assertNext {
-                assertThat(it).usingRecursiveComparison()
-                    .ignoringFields(MongoPass::purchasedAt.name)
-                    .isEqualTo(insertedPass)
+                assertThat(it).isEqualTo(insertedPass)
             }
             .verifyComplete()
     }
@@ -115,8 +111,7 @@ internal class PassRepositoryImplTest {
         // GIVEN
         val passOwner = mongoTemplate.insert(getOwnerWithUniqueFields()).block()
         val passOwnerId = passOwner!!.id
-        passesToCreate.map { it.copy(passOwnerId = passOwnerId) }
-            .also { mongoTemplate.insertAll(it).subscribe() }
+        passesToCreate.map { it.copy(passOwnerId = passOwnerId) }.also { mongoTemplate.insertAll(it).subscribe() }
 
         // WHEN
         val deleteAll = passRepository.deleteAllByOwnerId(passOwnerId.toString())
