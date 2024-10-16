@@ -16,8 +16,8 @@ object TransferPassMapper {
         return TransferPassResponse.newBuilder().apply {
             failureBuilder.setMessage(throwable.message.orEmpty())
             when (throwable) {
-                is PassNotFoundException -> failureBuilder.setPassNotFoundById(Error.newBuilder())
-                is PassOwnerNotFoundException -> failureBuilder.setPassOwnerNotFoundById(Error.newBuilder())
+                is PassNotFoundException -> failureBuilder.setPassNotFoundById(Error.getDefaultInstance())
+                is PassOwnerNotFoundException -> failureBuilder.setPassOwnerNotFoundById(Error.getDefaultInstance())
             }
         }.build()
     }

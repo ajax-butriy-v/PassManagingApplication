@@ -30,8 +30,8 @@ object CreatePassMapper {
         return CreatePassResponse.newBuilder().apply {
             failureBuilder.setMessage(throwable.message.orEmpty())
             when (throwable) {
-                is PassTypeNotFoundException -> failureBuilder.setPassTypeNotFoundId(Error.newBuilder())
-                is PassOwnerNotFoundException -> failureBuilder.setOwnerNotFoundById(Error.newBuilder())
+                is PassTypeNotFoundException -> failureBuilder.setPassTypeNotFoundId(Error.getDefaultInstance())
+                is PassOwnerNotFoundException -> failureBuilder.setOwnerNotFoundById(Error.getDefaultInstance())
             }
         }.build()
     }
