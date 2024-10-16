@@ -69,7 +69,7 @@ internal class ResponseEntityControllerAdviceTest {
 
     @Test
     fun `non-existing pass by id value should result in handled not found custom exception`() {
-        val nonExistingPassId = ObjectId()
+        val nonExistingPassId = ObjectId.get()
 
         // GIVEN
         every {
@@ -78,7 +78,7 @@ internal class ResponseEntityControllerAdviceTest {
                 any()
             )
         } throws com.example.passmanagersvc.exception.PassNotFoundException(
-            PASS_NOT_FOUND_MESSAGE + nonExistingPassId
+            PASS_NOT_FOUND_MESSAGE(nonExistingPassId)
         )
 
         // WHEN
@@ -87,16 +87,16 @@ internal class ResponseEntityControllerAdviceTest {
 
         // THEN
         resultActions.andExpect(status().isNotFound)
-            .andExpect(jsonPath("$.message", `is`(PASS_NOT_FOUND_MESSAGE.format(nonExistingPassId))))
+            .andExpect(jsonPath("$.message", `is`(PASS_NOT_FOUND_MESSAGE(nonExistingPassId))))
     }
 
     @Test
     fun `non-existing pass owner by id value should result in handled not found custom exception`() {
-        val nonExistingOwnerId = passDto.passOwnerId
+        val nonExistingOwnerId = ObjectId.get()
 
         // GIVEN
         every { passOwnerController.calculateSpentAfterDate(any(), any()) } throws PassOwnerNotFoundException(
-            PASS_OWNER_NOT_FOUND_MESSAGE + nonExistingOwnerId
+            PASS_OWNER_NOT_FOUND_MESSAGE(nonExistingOwnerId)
         )
 
         // WHEN
@@ -107,16 +107,16 @@ internal class ResponseEntityControllerAdviceTest {
 
         // THEN
         resultActions.andExpect(status().isNotFound)
-            .andExpect(jsonPath("$.message", `is`(PASS_OWNER_NOT_FOUND_MESSAGE.format(nonExistingOwnerId))))
+            .andExpect(jsonPath("$.message", `is`(PASS_OWNER_NOT_FOUND_MESSAGE(nonExistingOwnerId))))
     }
 
     @Test
     fun `non-existing pass type by id value should result in handled not found custom exception`() {
-        val nonExistingPassTypeId = ObjectId()
+        val nonExistingPassTypeId = ObjectId.get()
 
         // GIVEN
         every { passController.create(any()) } throws PassTypeNotFoundException(
-            PASS_TYPE_NOT_FOUND_MESSAGE + nonExistingPassTypeId
+            PASS_TYPE_NOT_FOUND_MESSAGE(nonExistingPassTypeId)
         )
 
         // WHEN
@@ -129,7 +129,7 @@ internal class ResponseEntityControllerAdviceTest {
 
         // THEN
         resultActions.andExpect(status().isNotFound)
-            .andExpect(jsonPath("$.message", `is`(PASS_TYPE_NOT_FOUND_MESSAGE.format(nonExistingPassTypeId))))
+            .andExpect(jsonPath("$.message", `is`(PASS_TYPE_NOT_FOUND_MESSAGE(nonExistingPassTypeId))))
     }
 
     @Test
@@ -147,8 +147,8 @@ internal class ResponseEntityControllerAdviceTest {
     companion object {
         private const val PASSES_URL = "passes"
         private const val OWNERS_URL = "owners"
-        private const val PASS_NOT_FOUND_MESSAGE = "Could not find pass by id %s"
-        private const val PASS_OWNER_NOT_FOUND_MESSAGE = "Could not find pass owner by id %s"
-        private const val PASS_TYPE_NOT_FOUND_MESSAGE = "Could not find pass type by id %s"
+        private val PASS_NOT_FOUND_MESSAGE: (ObjectId) -> String = { id -> "Could not find pass by id $id" }
+        private val PASS_OWNER_NOT_FOUND_MESSAGE: (ObjectId) -> String = { id -> "Could not find pass owner by id $id" }
+        private val PASS_TYPE_NOT_FOUND_MESSAGE: (ObjectId) -> String = { id -> "Could not find pass type by id $id" }
     }
 }
