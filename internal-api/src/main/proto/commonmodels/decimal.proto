@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+option java_package = "com.example.passmanagersvc.commonmodels";
+
+message BDecimal {
+  uint32 scale = 1;
+  uint32 precision = 2;
+  bytes value = 3;
+}

@@ -1,0 +1,7 @@
+nats:
+  uri: ${NATS_CONNECTION_URI}
+server:
+  servlet:
+    context-path: /api/v1
+mongock:
+  enabled: false

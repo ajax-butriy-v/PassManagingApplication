@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: PassManagingApplication
+nats:
+  uri: nats://localhost:4222
+mongock:
+  enabled: false

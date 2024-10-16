@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+import "commonmodels/decimal.proto";
+
+option java_package = "com.example.passmanagersvc.commonmodels";
+option java_multiple_files = true;
+
+message Pass {
+  BDecimal purchased_for = 1;
+  string pass_owner_id = 2;
+  string pass_type_id = 3;
+}

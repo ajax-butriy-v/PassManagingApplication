@@ -1,5 +1,0 @@
-spring:
-  application:
-    name: PassManagingApplication
-mongock:
-  enabled: false
