@@ -19,6 +19,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Start containers
+        run: docker compose -f "docker-compose-actions.yml" up -d --build
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
