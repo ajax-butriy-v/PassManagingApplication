@@ -15,6 +15,3 @@ data class PassDto(
     @field:NotNull(message = "Specify pass type id")
     val passTypeId: String,
 )
-// module: pass-manager-svc
-// com.example.passmanagersvc
-// com.example.gateway

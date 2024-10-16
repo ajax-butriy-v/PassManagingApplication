@@ -15,4 +15,3 @@ allprojects {
 tasks.named("check") {
     dependsOn("deltaCoverage", "detektMain", "detektTest")
 }
-

@@ -57,4 +57,3 @@ services:
       - "8222:8222"
 volumes:
   db_data:
-

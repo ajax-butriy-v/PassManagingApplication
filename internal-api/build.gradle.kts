@@ -11,4 +11,3 @@ protobuf {
         artifact = libs.protoc.get().toString()
     }
 }
-
