@@ -3,6 +3,7 @@ package com.example.gateway.configuration
 import com.example.gateway.exception.InvalidObjectIdFormatException
 import com.example.gateway.proto.PassDtoFixture.passDto
 import com.example.gateway.proto.PassDtoFixture.passDtoWithInvalidIdFormats
+import com.example.gateway.web.dto.PassDto
 import com.example.gateway.web.mapper.proto.pass.CreatePassResponseMapper.toCreatePassRequest
 import com.example.gateway.web.rest.PassController
 import com.example.internal.NatsSubject.Pass.CREATE
@@ -65,13 +66,8 @@ internal class ValidObjectIdFormatBeanPostProcessorTest {
     fun `controller method with dto, which has invalid field values, should throw custom runtime exception`() {
         // GIVEN
         val proxiedController = getProxiedController()
-        every {
-            natsClient.request(
-                CREATE,
-                passDtoWithInvalidIdFormats.toCreatePassRequest(),
-                CreatePassResponse.parser()
-            )
-        } returns failureCreatePassResponseWithPassOwnerNotFound(passDtoWithInvalidIdFormats.passOwnerId).toMono()
+        val failureResponse = failureCreatePassResponseWithPassOwnerNotFound(passDtoWithInvalidIdFormats.passOwnerId)
+        every { doCreateRequest(passDtoWithInvalidIdFormats) } returns failureResponse.toMono()
 
         // WHEN
         val created = Mono.defer { proxiedController.create(passDtoWithInvalidIdFormats) }
@@ -89,13 +85,7 @@ internal class ValidObjectIdFormatBeanPostProcessorTest {
             passTypeId = ObjectId(passDto.passTypeId)
         )
 
-        every {
-            natsClient.request(
-                CREATE,
-                passDto.toCreatePassRequest(),
-                CreatePassResponse.parser()
-            )
-        } returns successfulCreatePassResponse(passToReturn).toMono()
+        every { doCreateRequest(passDto) } returns successfulCreatePassResponse(passToReturn).toMono()
 
         // WHEN
         val created = proxiedController.create(passDto)
@@ -108,6 +98,14 @@ internal class ValidObjectIdFormatBeanPostProcessorTest {
 
     private fun getProxiedController(): PassController {
         return beanPostProcessor.postProcessAfterInitialization(passController, BEAN_NAME) as PassController
+    }
+
+    private fun doCreateRequest(passDto: PassDto): Mono<CreatePassResponse> {
+        return natsClient.request(
+            CREATE,
+            passDto.toCreatePassRequest(),
+            CreatePassResponse.parser()
+        )
     }
 
     companion object {

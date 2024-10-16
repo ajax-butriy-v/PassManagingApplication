@@ -87,7 +87,7 @@ internal class ResponseEntityControllerAdviceTest {
 
         // THEN
         resultActions.andExpect(status().isNotFound)
-            .andExpect(jsonPath("$.message", `is`(PASS_NOT_FOUND_MESSAGE + nonExistingPassId)))
+            .andExpect(jsonPath("$.message", `is`(PASS_NOT_FOUND_MESSAGE.format(nonExistingPassId))))
     }
 
     @Test
@@ -107,7 +107,7 @@ internal class ResponseEntityControllerAdviceTest {
 
         // THEN
         resultActions.andExpect(status().isNotFound)
-            .andExpect(jsonPath("$.message", `is`(PASS_OWNER_NOT_FOUND_MESSAGE + nonExistingOwnerId)))
+            .andExpect(jsonPath("$.message", `is`(PASS_OWNER_NOT_FOUND_MESSAGE.format(nonExistingOwnerId))))
     }
 
     @Test
@@ -129,7 +129,7 @@ internal class ResponseEntityControllerAdviceTest {
 
         // THEN
         resultActions.andExpect(status().isNotFound)
-            .andExpect(jsonPath("$.message", `is`(PASS_TYPE_NOT_FOUND_MESSAGE + nonExistingPassTypeId)))
+            .andExpect(jsonPath("$.message", `is`(PASS_TYPE_NOT_FOUND_MESSAGE.format(nonExistingPassTypeId))))
     }
 
     @Test
@@ -147,8 +147,8 @@ internal class ResponseEntityControllerAdviceTest {
     companion object {
         private const val PASSES_URL = "passes"
         private const val OWNERS_URL = "owners"
-        private const val PASS_NOT_FOUND_MESSAGE = "Could not find pass by id"
-        private const val PASS_OWNER_NOT_FOUND_MESSAGE = "Could not find pass owner by id"
-        private const val PASS_TYPE_NOT_FOUND_MESSAGE = "Could not find pass type by id"
+        private const val PASS_NOT_FOUND_MESSAGE = "Could not find pass by id %s"
+        private const val PASS_OWNER_NOT_FOUND_MESSAGE = "Could not find pass owner by id %s"
+        private const val PASS_TYPE_NOT_FOUND_MESSAGE = "Could not find pass type by id %s"
     }
 }
