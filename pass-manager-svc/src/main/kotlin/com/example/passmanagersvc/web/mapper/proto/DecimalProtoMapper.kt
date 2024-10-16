@@ -1,6 +1,6 @@
 package com.example.passmanagersvc.web.mapper.proto
 
-import com.example.passmanagersvc.commonmodels.Decimal.BDecimal
+import com.example.internal.commonmodels.BDecimal
 import com.google.protobuf.ByteString
 import java.math.BigDecimal
 import java.math.BigInteger

@@ -2,8 +2,8 @@ package com.example.passmanagersvc.web.controller.nats.pass
 
 import com.example.internal.NatsSubject.Pass.CREATE
 import com.example.internal.NatsSubject.Pass.PASS_QUEUE_GROUP
-import com.example.passmanagersvc.input.reqreply.CreatePassRequest
-import com.example.passmanagersvc.input.reqreply.CreatePassResponse
+import com.example.internal.input.reqreply.CreatePassRequest
+import com.example.internal.input.reqreply.CreatePassResponse
 import com.example.passmanagersvc.service.PassService
 import com.example.passmanagersvc.web.controller.nats.NatsController
 import com.example.passmanagersvc.web.mapper.proto.pass.CreatePassMapper.failureCreatedPassResponse

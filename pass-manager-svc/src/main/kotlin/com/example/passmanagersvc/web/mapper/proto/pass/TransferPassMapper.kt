@@ -1,9 +1,9 @@
 package com.example.passmanagersvc.web.mapper.proto.pass
 
-import com.example.passmanagersvc.commonmodels.Error
+import com.example.internal.commonmodels.Error
+import com.example.internal.input.reqreply.TransferPassResponse
 import com.example.passmanagersvc.exception.PassNotFoundException
 import com.example.passmanagersvc.exception.PassOwnerNotFoundException
-import com.example.passmanagersvc.input.reqreply.TransferPassResponse
 
 object TransferPassMapper {
     fun successTransferPassResponse(): TransferPassResponse {

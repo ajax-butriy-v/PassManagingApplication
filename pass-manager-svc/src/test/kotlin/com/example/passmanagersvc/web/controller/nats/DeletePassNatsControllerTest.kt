@@ -1,7 +1,7 @@
 package com.example.passmanagersvc.web.controller.nats
 
 import com.example.internal.NatsSubject.Pass.DELETE_BY_ID
-import com.example.passmanagersvc.input.reqreply.DeletePassByIdResponse
+import com.example.internal.input.reqreply.DeletePassByIdResponse
 import com.example.passmanagersvc.repositories.PassRepository
 import com.example.passmanagersvc.util.PassFixture.passToCreate
 import com.example.passmanagersvc.util.PassProtoFixture.deletePassByIdRequest

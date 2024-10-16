@@ -12,8 +12,6 @@ import java.time.temporal.ChronoUnit
 object PassDtoFixture {
     private val clock = Clock.fixed(Instant.now(), ZoneId.systemDefault())
     private val instant = Instant.now(clock).truncatedTo(ChronoUnit.MILLIS)
-    val passOwnerId = ObjectId.get()
-    val passTypeId = ObjectId.get().toString()
 
     val passDtoWithInvalidIdFormats = PassDto(
         passOwnerId = "not valid",

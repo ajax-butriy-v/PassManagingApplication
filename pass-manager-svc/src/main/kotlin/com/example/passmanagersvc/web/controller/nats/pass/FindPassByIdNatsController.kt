@@ -2,9 +2,9 @@ package com.example.passmanagersvc.web.controller.nats.pass
 
 import com.example.internal.NatsSubject.Pass.FIND_BY_ID
 import com.example.internal.NatsSubject.Pass.PASS_QUEUE_GROUP
+import com.example.internal.input.reqreply.FindPassByIdRequest
+import com.example.internal.input.reqreply.FindPassByIdResponse
 import com.example.passmanagersvc.exception.PassNotFoundException
-import com.example.passmanagersvc.input.reqreply.FindPassByIdRequest
-import com.example.passmanagersvc.input.reqreply.FindPassByIdResponse
 import com.example.passmanagersvc.service.PassService
 import com.example.passmanagersvc.web.controller.nats.NatsController
 import com.example.passmanagersvc.web.mapper.proto.pass.FindPassByIdMapper.failureFindByIdPassResponse

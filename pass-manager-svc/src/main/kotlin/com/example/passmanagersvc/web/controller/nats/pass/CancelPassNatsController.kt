@@ -2,8 +2,8 @@ package com.example.passmanagersvc.web.controller.nats.pass
 
 import com.example.internal.NatsSubject.Pass.CANCEL
 import com.example.internal.NatsSubject.Pass.PASS_QUEUE_GROUP
-import com.example.passmanagersvc.input.reqreply.CancelPassRequest
-import com.example.passmanagersvc.input.reqreply.CancelPassResponse
+import com.example.internal.input.reqreply.CancelPassRequest
+import com.example.internal.input.reqreply.CancelPassResponse
 import com.example.passmanagersvc.service.PassManagementService
 import com.example.passmanagersvc.web.controller.nats.NatsController
 import com.example.passmanagersvc.web.mapper.proto.pass.CancelPassMapper.failureCancelPassResponse

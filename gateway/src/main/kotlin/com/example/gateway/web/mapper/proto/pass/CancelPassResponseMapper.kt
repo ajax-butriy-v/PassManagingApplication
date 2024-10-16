@@ -1,7 +1,7 @@
 package com.example.gateway.web.mapper.proto.pass
 
+import com.example.internal.input.reqreply.CancelPassResponse
 import com.example.passmanagersvc.exception.PassOwnerNotFoundException
-import com.example.passmanagersvc.input.reqreply.CancelPassResponse
 
 object CancelPassResponseMapper {
     fun CancelPassResponse.toUnitResponse() {

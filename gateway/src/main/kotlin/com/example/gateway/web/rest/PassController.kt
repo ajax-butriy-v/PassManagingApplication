@@ -13,15 +13,15 @@ import com.example.internal.NatsSubject.Pass.CREATE
 import com.example.internal.NatsSubject.Pass.DELETE_BY_ID
 import com.example.internal.NatsSubject.Pass.FIND_BY_ID
 import com.example.internal.NatsSubject.Pass.TRANSFER
-import com.example.passmanagersvc.input.reqreply.CancelPassRequest
-import com.example.passmanagersvc.input.reqreply.CancelPassResponse
-import com.example.passmanagersvc.input.reqreply.CreatePassResponse
-import com.example.passmanagersvc.input.reqreply.DeletePassByIdRequest
-import com.example.passmanagersvc.input.reqreply.DeletePassByIdResponse
-import com.example.passmanagersvc.input.reqreply.FindPassByIdRequest
-import com.example.passmanagersvc.input.reqreply.FindPassByIdResponse
-import com.example.passmanagersvc.input.reqreply.TransferPassRequest
-import com.example.passmanagersvc.input.reqreply.TransferPassResponse
+import com.example.internal.input.reqreply.CancelPassRequest
+import com.example.internal.input.reqreply.CancelPassResponse
+import com.example.internal.input.reqreply.CreatePassResponse
+import com.example.internal.input.reqreply.DeletePassByIdRequest
+import com.example.internal.input.reqreply.DeletePassByIdResponse
+import com.example.internal.input.reqreply.FindPassByIdRequest
+import com.example.internal.input.reqreply.FindPassByIdResponse
+import com.example.internal.input.reqreply.TransferPassRequest
+import com.example.internal.input.reqreply.TransferPassResponse
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -44,7 +44,7 @@ internal class PassController(private val natsClient: NatsClient) {
         val payload = FindPassByIdRequest.newBuilder()
             .setId(id)
             .build()
-        return payload.let { natsClient.request(FIND_BY_ID, it, FindPassByIdResponse.parser()) }.map { it.toDto() }
+        return natsClient.request(FIND_BY_ID, payload, FindPassByIdResponse.parser()).map { it.toDto() }
     }
 
     @PostMapping
@@ -61,7 +61,7 @@ internal class PassController(private val natsClient: NatsClient) {
             .setId(id)
             .setOwnerId(ownerId)
             .build()
-        return payload.let { natsClient.request(CANCEL, it, CancelPassResponse.parser()) }.map { it.toUnitResponse() }
+        return natsClient.request(CANCEL, payload, CancelPassResponse.parser()).map { it.toUnitResponse() }
     }
 
     @PostMapping("/{id}/transfer/{owner-id}")
@@ -71,8 +71,7 @@ internal class PassController(private val natsClient: NatsClient) {
             .setId(id)
             .setOwnerId(ownerId)
             .build()
-        return payload.let { natsClient.request(TRANSFER, it, TransferPassResponse.parser()) }
-            .map { it.toTransferResponse() }
+        return natsClient.request(TRANSFER, payload, TransferPassResponse.parser()).map { it.toTransferResponse() }
     }
 
     @DeleteMapping("/{id}")
@@ -81,7 +80,6 @@ internal class PassController(private val natsClient: NatsClient) {
         val payload = DeletePassByIdRequest.newBuilder()
             .setId(id)
             .build()
-        return payload.let { natsClient.request(DELETE_BY_ID, it, DeletePassByIdResponse.parser()) }
-            .map { it.toDeleteResponse() }
+        return natsClient.request(DELETE_BY_ID, payload, DeletePassByIdResponse.parser()).map { it.toDeleteResponse() }
     }
 }

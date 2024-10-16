@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-import "commonmodels/pass.proto";
-import "commonmodels/error.proto";
+import "com/example/internal/commonmodels/pass.proto";
+import "com/example/internal/commonmodels/error.proto";
 
-option java_package = "com.example.passmanagersvc.input.reqreply";
+option java_package = "com.example.internal.input.reqreply";
 option java_multiple_files = true;
 
 message FindPassByIdRequest {

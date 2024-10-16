@@ -1,7 +1,7 @@
 package com.example.passmanagersvc.web.controller.nats
 
 import com.example.internal.NatsSubject.Pass.CREATE
-import com.example.passmanagersvc.input.reqreply.CreatePassResponse
+import com.example.internal.input.reqreply.CreatePassResponse
 import com.example.passmanagersvc.repositories.PassOwnerRepository
 import com.example.passmanagersvc.repositories.PassTypeRepository
 import com.example.passmanagersvc.util.PassFixture.passToCreate
@@ -37,9 +37,9 @@ class CreatePassNatsControllerTest {
         // GIVEN
         val passOwner = passOwnerRepository.insert(getOwnerWithUniqueFields()).block()
         val passType = passTypeRepository.insert(passTypeToCreate).block()
-        val pass = passToCreate.copy(passTypeId = passType?.id, passOwnerId = passOwner?.id)
+        val pass = passToCreate.copy(passTypeId = passType!!.id, passOwnerId = passOwner!!.id)
 
-        val createRequest = createPassRequest(passOwner?.id.toString(), passType?.id.toString())
+        val createRequest = createPassRequest(passOwner.id.toString(), passType.id.toString())
 
         // WHEN
         val createdPassMessage = connection.requestWithTimeout(

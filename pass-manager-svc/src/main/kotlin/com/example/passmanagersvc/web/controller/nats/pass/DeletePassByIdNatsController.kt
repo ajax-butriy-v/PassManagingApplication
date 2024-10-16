@@ -2,8 +2,8 @@ package com.example.passmanagersvc.web.controller.nats.pass
 
 import com.example.internal.NatsSubject.Pass.DELETE_BY_ID
 import com.example.internal.NatsSubject.Pass.PASS_QUEUE_GROUP
-import com.example.passmanagersvc.input.reqreply.DeletePassByIdRequest
-import com.example.passmanagersvc.input.reqreply.DeletePassByIdResponse
+import com.example.internal.input.reqreply.DeletePassByIdRequest
+import com.example.internal.input.reqreply.DeletePassByIdResponse
 import com.example.passmanagersvc.service.PassService
 import com.example.passmanagersvc.web.controller.nats.NatsController
 import com.example.passmanagersvc.web.mapper.proto.pass.DeletePassByIdMapper

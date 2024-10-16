@@ -1,7 +1,7 @@
 package com.example.passmanagersvc.web.controller.nats
 
 import com.example.internal.NatsSubject.Pass.TRANSFER
-import com.example.passmanagersvc.input.reqreply.TransferPassResponse
+import com.example.internal.input.reqreply.TransferPassResponse
 import com.example.passmanagersvc.repositories.PassOwnerRepository
 import com.example.passmanagersvc.repositories.PassRepository
 import com.example.passmanagersvc.util.PassFixture.passToCreate

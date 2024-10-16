@@ -1,7 +1,7 @@
 package com.example.passmanagersvc.web.controller.nats
 
 import com.example.internal.NatsSubject.Pass.FIND_BY_ID
-import com.example.passmanagersvc.input.reqreply.FindPassByIdResponse
+import com.example.internal.input.reqreply.FindPassByIdResponse
 import com.example.passmanagersvc.repositories.PassRepository
 import com.example.passmanagersvc.util.PassFixture
 import com.example.passmanagersvc.util.PassProtoFixture.failureFindPassByIdResponseWithPassNotFound

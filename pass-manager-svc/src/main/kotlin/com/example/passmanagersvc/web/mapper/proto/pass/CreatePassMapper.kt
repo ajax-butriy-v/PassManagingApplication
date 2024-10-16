@@ -1,12 +1,12 @@
 package com.example.passmanagersvc.web.mapper.proto.pass
 
-import com.example.passmanagersvc.commonmodels.Error
-import com.example.passmanagersvc.commonmodels.Pass
+import com.example.internal.commonmodels.Error
+import com.example.internal.commonmodels.Pass
+import com.example.internal.input.reqreply.CreatePassRequest
+import com.example.internal.input.reqreply.CreatePassResponse
 import com.example.passmanagersvc.domain.MongoPass
 import com.example.passmanagersvc.exception.PassOwnerNotFoundException
 import com.example.passmanagersvc.exception.PassTypeNotFoundException
-import com.example.passmanagersvc.input.reqreply.CreatePassRequest
-import com.example.passmanagersvc.input.reqreply.CreatePassResponse
 import com.example.passmanagersvc.web.mapper.proto.DecimalProtoMapper.toBigDecimal
 import org.bson.types.ObjectId
 

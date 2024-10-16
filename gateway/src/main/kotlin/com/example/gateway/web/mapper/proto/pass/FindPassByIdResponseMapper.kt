@@ -1,10 +1,11 @@
 package com.example.gateway.web.mapper.proto.pass
 
 import com.example.gateway.web.dto.PassDto
+import com.example.internal.commonmodels.Pass
+import com.example.internal.input.reqreply.FindPassByIdResponse
+import com.example.internal.input.reqreply.FindPassByIdResponse.Failure.ErrorCase.ERROR_NOT_SET
+import com.example.internal.input.reqreply.FindPassByIdResponse.Failure.ErrorCase.NOT_FOUND_BY_ID
 import com.example.passmanagersvc.exception.PassNotFoundException
-import com.example.passmanagersvc.input.reqreply.FindPassByIdResponse
-import com.example.passmanagersvc.input.reqreply.FindPassByIdResponse.Failure.ErrorCase.ERROR_NOT_SET
-import com.example.passmanagersvc.input.reqreply.FindPassByIdResponse.Failure.ErrorCase.NOT_FOUND_BY_ID
 import com.example.passmanagersvc.web.mapper.proto.DecimalProtoMapper.toBigDecimal
 
 object FindPassByIdResponseMapper {
@@ -19,13 +20,15 @@ object FindPassByIdResponseMapper {
                 ERROR_NOT_SET -> error(message)
             }
         } else {
-            return success.pass.run {
-                PassDto(
-                    purchasedFor = purchasedFor.toBigDecimal(),
-                    passOwnerId = passOwnerId,
-                    passTypeId = passTypeId
-                )
-            }
+            return success.pass.fromProtoToDto()
         }
+    }
+
+    internal fun Pass.fromProtoToDto(): PassDto {
+        return PassDto(
+            purchasedFor = purchasedFor.toBigDecimal(),
+            passOwnerId = passOwnerId,
+            passTypeId = passTypeId
+        )
     }
 }

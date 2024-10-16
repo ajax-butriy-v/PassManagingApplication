@@ -1,6 +1,6 @@
 package com.example.passmanagersvc.web.mapper.proto.pass
 
-import com.example.passmanagersvc.input.reqreply.DeletePassByIdResponse
+import com.example.internal.input.reqreply.DeletePassByIdResponse
 
 object DeletePassByIdMapper {
     fun successDeletePassByIdResponse(): DeletePassByIdResponse {

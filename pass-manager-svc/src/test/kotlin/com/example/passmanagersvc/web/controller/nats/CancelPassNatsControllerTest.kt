@@ -1,7 +1,7 @@
 package com.example.passmanagersvc.web.controller.nats
 
 import com.example.internal.NatsSubject.Pass.CANCEL
-import com.example.passmanagersvc.input.reqreply.CancelPassResponse
+import com.example.internal.input.reqreply.CancelPassResponse
 import com.example.passmanagersvc.repositories.PassOwnerRepository
 import com.example.passmanagersvc.repositories.PassRepository
 import com.example.passmanagersvc.util.PassFixture.passToCreate

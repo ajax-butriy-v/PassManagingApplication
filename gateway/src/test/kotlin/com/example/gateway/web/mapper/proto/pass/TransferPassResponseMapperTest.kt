@@ -1,9 +1,9 @@
 package com.example.gateway.web.mapper.proto.pass
 
 import com.example.gateway.web.mapper.proto.pass.TransferPassResponseMapper.toTransferResponse
+import com.example.internal.input.reqreply.TransferPassResponse
 import com.example.passmanagersvc.exception.PassNotFoundException
 import com.example.passmanagersvc.exception.PassOwnerNotFoundException
-import com.example.passmanagersvc.input.reqreply.TransferPassResponse
 import com.example.passmanagersvc.util.PassProtoFixture.failureTransferPassResponseWithPassNotFound
 import com.example.passmanagersvc.util.PassProtoFixture.failureTransferPassResponseWithPassOwnerNotFound
 import com.example.passmanagersvc.util.PassProtoFixture.successfulTransferPassResponse

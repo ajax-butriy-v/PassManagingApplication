@@ -3,5 +3,3 @@ nats:
 server:
   servlet:
     context-path: /api/v1
-mongock:
-  enabled: false

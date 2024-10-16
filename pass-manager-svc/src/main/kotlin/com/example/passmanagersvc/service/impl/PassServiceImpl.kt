@@ -42,7 +42,6 @@ internal class PassServiceImpl(
     }
 
     override fun deleteById(passId: String): Mono<Unit> {
-        println("called")
         return passRepository.deleteById(passId)
     }
 

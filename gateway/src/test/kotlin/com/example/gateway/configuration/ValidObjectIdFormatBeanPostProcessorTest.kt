@@ -6,7 +6,7 @@ import com.example.gateway.proto.PassDtoFixture.passDtoWithInvalidIdFormats
 import com.example.gateway.web.mapper.proto.pass.CreatePassResponseMapper.toCreatePassRequest
 import com.example.gateway.web.rest.PassController
 import com.example.internal.NatsSubject.Pass.CREATE
-import com.example.passmanagersvc.input.reqreply.CreatePassResponse
+import com.example.internal.input.reqreply.CreatePassResponse
 import com.example.passmanagersvc.util.PassFixture.passFromDb
 import com.example.passmanagersvc.util.PassProtoFixture.failureCreatePassResponseWithPassOwnerNotFound
 import com.example.passmanagersvc.util.PassProtoFixture.successfulCreatePassResponse
@@ -51,7 +51,10 @@ internal class ValidObjectIdFormatBeanPostProcessorTest {
     @Test
     fun `processing bean, which not match BPP logic, must return bean`() {
         // WHEN
-        val beanNotToBeProxied = beanPostProcessor.postProcessAfterInitialization(natsClient, "passService")
+        val beanNotToBeProxied = beanPostProcessor.postProcessAfterInitialization(
+            natsClient,
+            natsClient::class.java.simpleName
+        )
 
         // THEN
         assertThat(beanNotToBeProxied).isEqualTo(natsClient)

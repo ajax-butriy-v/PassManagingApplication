@@ -2,9 +2,9 @@ package com.example.gateway.web.mapper.proto.pass
 
 import com.example.gateway.proto.PassDtoFixture
 import com.example.gateway.web.mapper.proto.pass.CreatePassResponseMapper.toDto
+import com.example.internal.input.reqreply.CreatePassResponse
 import com.example.passmanagersvc.exception.PassOwnerNotFoundException
 import com.example.passmanagersvc.exception.PassTypeNotFoundException
-import com.example.passmanagersvc.input.reqreply.CreatePassResponse
 import com.example.passmanagersvc.util.PassProtoFixture.failureCreatePassResponseWithPassOwnerNotFound
 import com.example.passmanagersvc.util.PassProtoFixture.failureCreatePassResponseWithPassTypeNotFound
 import com.example.passmanagersvc.util.PassProtoFixture.successfulCreatePassResponse
@@ -12,7 +12,6 @@ import com.example.passmanagersvc.web.mapper.proto.pass.CreatePassMapper.failure
 import org.assertj.core.api.Assertions.assertThat
 import org.bson.types.ObjectId
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 
 class CreatePassResponseMapperTest {
@@ -22,7 +21,6 @@ class CreatePassResponseMapperTest {
         val response = successfulCreatePassResponse(PassDtoFixture.passFromDto)
 
         // WHEN // THEN
-        assertDoesNotThrow { response.toDto() }
         assertThat(response.toDto()).isEqualTo(PassDtoFixture.passDto)
     }
 
