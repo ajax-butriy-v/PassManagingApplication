@@ -1,21 +1,20 @@
 package com.example.gateway.configuration
 
 import com.example.gateway.exception.InvalidObjectIdFormatException
-import com.example.gateway.proto.PassDtoFixture.passDto
-import com.example.gateway.proto.PassDtoFixture.passDtoWithInvalidIdFormats
+import com.example.gateway.util.PassDtoFixture.passDto
+import com.example.gateway.util.PassDtoFixture.passDtoWithInvalidIdFormats
+import com.example.gateway.util.PassProtoFixture.failureCreatePassResponseWithPassOwnerNotFound
+import com.example.gateway.util.PassProtoFixture.protoPass
+import com.example.gateway.util.PassProtoFixture.successfulCreatePassResponse
 import com.example.gateway.web.dto.PassDto
 import com.example.gateway.web.mapper.proto.pass.CreatePassResponseMapper.toCreatePassRequest
 import com.example.gateway.web.rest.PassController
 import com.example.internal.NatsSubject.Pass.CREATE
 import com.example.internal.input.reqreply.CreatePassResponse
-import com.example.passmanagersvc.util.PassFixture.passFromDb
-import com.example.passmanagersvc.util.PassProtoFixture.failureCreatePassResponseWithPassOwnerNotFound
-import com.example.passmanagersvc.util.PassProtoFixture.successfulCreatePassResponse
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
-import org.bson.types.ObjectId
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.aop.support.AopUtils
 import reactor.core.publisher.Mono
@@ -80,12 +79,8 @@ internal class ValidObjectIdFormatBeanPostProcessorTest {
     fun `controller method with dto, which has valid field values, should pass`() {
         // GIVEN
         val proxiedController = getProxiedController()
-        val passToReturn = passFromDb.copy(
-            passOwnerId = ObjectId(passDto.passOwnerId),
-            passTypeId = ObjectId(passDto.passTypeId)
-        )
 
-        every { doCreateRequest(passDto) } returns successfulCreatePassResponse(passToReturn).toMono()
+        every { doCreateRequest(passDto) } returns successfulCreatePassResponse(protoPass).toMono()
 
         // WHEN
         val created = proxiedController.create(passDto)

@@ -1,7 +1,7 @@
 package com.example.passmanagersvc.repositories
 
 import com.example.passmanagersvc.domain.MongoPass
-import com.example.passmanagersvc.testcontainers.WithMongoTestContainer
+import com.example.passmanagersvc.util.IntegrationTest
 import com.example.passmanagersvc.util.PassFixture.passToCreate
 import com.example.passmanagersvc.util.PassFixture.passTypes
 import com.example.passmanagersvc.util.PassFixture.passesToCreate
@@ -9,9 +9,6 @@ import com.example.passmanagersvc.util.PassOwnerFixture.getOwnerWithUniqueFields
 import org.assertj.core.api.Assertions.assertThat
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.FilterType
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.aggregation.Fields
 import org.springframework.data.mongodb.core.exists
@@ -19,7 +16,6 @@ import org.springframework.data.mongodb.core.findById
 import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query.query
 import org.springframework.data.mongodb.core.query.isEqualTo
-import org.springframework.stereotype.Repository
 import reactor.kotlin.test.test
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -27,9 +23,7 @@ import java.time.ZoneId
 import kotlin.test.Test
 import kotlin.test.assertFalse
 
-@DataMongoTest(includeFilters = [ComponentScan.Filter(type = FilterType.ANNOTATION, classes = [Repository::class])])
-@WithMongoTestContainer
-internal class PassRepositoryImplTest {
+internal class PassRepositoryImplTest : IntegrationTest() {
 
     @Autowired
     private lateinit var mongoTemplate: ReactiveMongoTemplate

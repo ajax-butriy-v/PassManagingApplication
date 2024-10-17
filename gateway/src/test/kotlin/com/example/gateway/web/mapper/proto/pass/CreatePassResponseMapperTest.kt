@@ -1,14 +1,15 @@
 package com.example.gateway.web.mapper.proto.pass
 
-import com.example.gateway.proto.PassDtoFixture
+import com.example.core.exception.PassOwnerNotFoundException
+import com.example.core.exception.PassTypeNotFoundException
+import com.example.gateway.util.PassDtoFixture
+import com.example.gateway.util.PassProtoFixture.failureCreatePassResponse
+import com.example.gateway.util.PassProtoFixture.failureCreatePassResponseWithPassOwnerNotFound
+import com.example.gateway.util.PassProtoFixture.failureCreatePassResponseWithPassTypeNotFound
+import com.example.gateway.util.PassProtoFixture.protoPass
+import com.example.gateway.util.PassProtoFixture.successfulCreatePassResponse
 import com.example.gateway.web.mapper.proto.pass.CreatePassResponseMapper.toDto
 import com.example.internal.input.reqreply.CreatePassResponse
-import com.example.passmanagersvc.exception.PassOwnerNotFoundException
-import com.example.passmanagersvc.exception.PassTypeNotFoundException
-import com.example.passmanagersvc.util.PassProtoFixture.failureCreatePassResponseWithPassOwnerNotFound
-import com.example.passmanagersvc.util.PassProtoFixture.failureCreatePassResponseWithPassTypeNotFound
-import com.example.passmanagersvc.util.PassProtoFixture.successfulCreatePassResponse
-import com.example.passmanagersvc.web.mapper.proto.pass.CreatePassMapper.failureCreatedPassResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.bson.types.ObjectId
 import org.junit.jupiter.api.Test
@@ -18,7 +19,7 @@ class CreatePassResponseMapperTest {
     @Test
     fun `in case of successful completion should not throw exceptions`() {
         // GIVEN
-        val response = successfulCreatePassResponse(PassDtoFixture.passFromDto)
+        val response = successfulCreatePassResponse(protoPass)
 
         // WHEN // THEN
         assertThat(response.toDto()).isEqualTo(PassDtoFixture.passDto)
@@ -28,7 +29,7 @@ class CreatePassResponseMapperTest {
     fun `in case of getting internal exception should throw illegal state exception`() {
         // GIVEN
         val internalException = IllegalStateException()
-        val response = failureCreatedPassResponse(internalException)
+        val response = failureCreatePassResponse(internalException)
 
         // WHEN // THEN
         assertThrows<IllegalStateException> { response.toDto() }

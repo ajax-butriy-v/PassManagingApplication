@@ -1,13 +1,13 @@
 package com.example.gateway.web.mapper.proto.pass
 
+import com.example.core.exception.PassNotFoundException
+import com.example.core.exception.PassOwnerNotFoundException
+import com.example.gateway.util.PassProtoFixture.failureTransferPassResponse
+import com.example.gateway.util.PassProtoFixture.failureTransferPassResponseWithPassNotFound
+import com.example.gateway.util.PassProtoFixture.failureTransferPassResponseWithPassOwnerNotFound
+import com.example.gateway.util.PassProtoFixture.successfulTransferPassResponse
 import com.example.gateway.web.mapper.proto.pass.TransferPassResponseMapper.toTransferResponse
 import com.example.internal.input.reqreply.TransferPassResponse
-import com.example.passmanagersvc.exception.PassNotFoundException
-import com.example.passmanagersvc.exception.PassOwnerNotFoundException
-import com.example.passmanagersvc.util.PassProtoFixture.failureTransferPassResponseWithPassNotFound
-import com.example.passmanagersvc.util.PassProtoFixture.failureTransferPassResponseWithPassOwnerNotFound
-import com.example.passmanagersvc.util.PassProtoFixture.successfulTransferPassResponse
-import com.example.passmanagersvc.web.mapper.proto.pass.TransferPassMapper.failureTransferPassResponse
 import org.bson.types.ObjectId
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow

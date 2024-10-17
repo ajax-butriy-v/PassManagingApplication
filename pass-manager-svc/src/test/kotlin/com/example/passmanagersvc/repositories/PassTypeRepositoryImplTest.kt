@@ -1,27 +1,21 @@
 package com.example.passmanagersvc.repositories
 
 import com.example.passmanagersvc.domain.MongoPassType
-import com.example.passmanagersvc.testcontainers.WithMongoTestContainer
+import com.example.passmanagersvc.util.IntegrationTest
 import com.example.passmanagersvc.util.PassFixture.passTypeToCreate
 import org.assertj.core.api.Assertions.assertThat
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.FilterType
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.aggregation.Fields
 import org.springframework.data.mongodb.core.exists
 import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query.query
 import org.springframework.data.mongodb.core.query.isEqualTo
-import org.springframework.stereotype.Repository
 import reactor.kotlin.test.test
 import kotlin.test.Test
 import kotlin.test.assertFalse
 
-@DataMongoTest(includeFilters = [ComponentScan.Filter(type = FilterType.ANNOTATION, classes = [Repository::class])])
-@WithMongoTestContainer
-internal class PassTypeRepositoryImplTest {
+internal class PassTypeRepositoryImplTest : IntegrationTest() {
     @Autowired
     private lateinit var mongoTemplate: ReactiveMongoTemplate
 

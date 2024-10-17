@@ -12,9 +12,8 @@ dependencies {
     implementation(libs.mongock.springboot.v3)
     implementation(libs.mongock.mongodb.springdata.v4.driver)
     implementation(libs.nats)
+    implementation(project(":core"))
     implementation(project(":internal-api"))
-    testImplementation(libs.spring.boot.testcontainers)
-    testImplementation(libs.testcontainers.mongodb)
     testImplementation(libs.nats.embedded)
     testFixturesImplementation(libs.faker)
 }

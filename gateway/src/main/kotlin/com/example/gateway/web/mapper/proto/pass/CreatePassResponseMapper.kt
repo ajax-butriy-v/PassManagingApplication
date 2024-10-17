@@ -1,14 +1,14 @@
 package com.example.gateway.web.mapper.proto.pass
 
+import com.example.core.exception.PassOwnerNotFoundException
+import com.example.core.exception.PassTypeNotFoundException
+import com.example.core.web.mapper.proto.DecimalProtoMapper.toBDecimal
 import com.example.gateway.web.dto.PassDto
 import com.example.gateway.web.mapper.proto.pass.FindPassByIdResponseMapper.fromProtoToDto
 import com.example.internal.input.reqreply.CreatePassRequest
 import com.example.internal.input.reqreply.CreatePassResponse
 import com.example.internal.input.reqreply.CreatePassResponse.Failure.ErrorCase.OWNER_NOT_FOUND_BY_ID
 import com.example.internal.input.reqreply.CreatePassResponse.Failure.ErrorCase.PASS_TYPE_NOT_FOUND_ID
-import com.example.passmanagersvc.exception.PassOwnerNotFoundException
-import com.example.passmanagersvc.exception.PassTypeNotFoundException
-import com.example.passmanagersvc.web.mapper.proto.DecimalProtoMapper.toBDecimal
 
 object CreatePassResponseMapper {
     fun CreatePassResponse.toDto(): PassDto {

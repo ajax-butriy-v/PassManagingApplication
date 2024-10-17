@@ -1,8 +1,18 @@
 package com.example.gateway.web.rest
 
 import com.example.gateway.configuration.NatsClient
-import com.example.gateway.proto.PassDtoFixture.passDto
-import com.example.gateway.proto.PassDtoFixture.passFromDto
+import com.example.gateway.util.PassDtoFixture.passDto
+import com.example.gateway.util.PassDtoFixture.passId
+import com.example.gateway.util.PassProtoFixture
+import com.example.gateway.util.PassProtoFixture.cancelPassRequest
+import com.example.gateway.util.PassProtoFixture.deletePassByIdRequest
+import com.example.gateway.util.PassProtoFixture.protoPass
+import com.example.gateway.util.PassProtoFixture.succesfulCancelPassResponse
+import com.example.gateway.util.PassProtoFixture.succesfulDeletePassByIdResponse
+import com.example.gateway.util.PassProtoFixture.successfulCreatePassResponse
+import com.example.gateway.util.PassProtoFixture.successfulFindPassByIdResponse
+import com.example.gateway.util.PassProtoFixture.successfulTransferPassResponse
+import com.example.gateway.util.PassProtoFixture.transferPassRequest
 import com.example.gateway.web.dto.PassDto
 import com.example.gateway.web.mapper.proto.pass.CreatePassResponseMapper.toCreatePassRequest
 import com.example.internal.NatsSubject.Pass.CANCEL
@@ -15,14 +25,6 @@ import com.example.internal.input.reqreply.CreatePassResponse
 import com.example.internal.input.reqreply.DeletePassByIdResponse
 import com.example.internal.input.reqreply.FindPassByIdResponse
 import com.example.internal.input.reqreply.TransferPassResponse
-import com.example.passmanagersvc.util.PassProtoFixture
-import com.example.passmanagersvc.util.PassProtoFixture.cancelPassRequest
-import com.example.passmanagersvc.util.PassProtoFixture.deletePassByIdRequest
-import com.example.passmanagersvc.util.PassProtoFixture.succesfulCancelPassResponse
-import com.example.passmanagersvc.util.PassProtoFixture.succesfulDeletePassByIdResponse
-import com.example.passmanagersvc.util.PassProtoFixture.successfulCreatePassResponse
-import com.example.passmanagersvc.util.PassProtoFixture.successfulTransferPassResponse
-import com.example.passmanagersvc.util.PassProtoFixture.transferPassRequest
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import org.junit.jupiter.api.Test
@@ -45,12 +47,11 @@ internal class PassControllerTest {
     @Test
     fun `find by id should return pass by id`() {
         // GIVEN
-        val passId = passFromDto.id
         every {
             natsClient.request(
                 FIND_BY_ID, PassProtoFixture.findPassByIdRequest(passId), FindPassByIdResponse.parser()
             )
-        } returns PassProtoFixture.successfulFindPassByIdResponse(passFromDto).toMono()
+        } returns successfulFindPassByIdResponse(protoPass).toMono()
 
         // WHEN // THEN
         webTestClient.get().uri("$URL/$passId").exchange().expectStatus().isOk.expectHeader()
@@ -64,7 +65,7 @@ internal class PassControllerTest {
             natsClient.request(
                 CREATE, passDto.toCreatePassRequest(), CreatePassResponse.parser()
             )
-        } returns successfulCreatePassResponse(passFromDto).toMono()
+        } returns successfulCreatePassResponse(protoPass).toMono()
 
         // WHEN // THEN
         webTestClient.post().uri(URL).contentType(MediaType.APPLICATION_JSON).bodyValue(passDto).exchange()
@@ -74,14 +75,15 @@ internal class PassControllerTest {
     @Test
     fun `canceling a pass should cancel a pass`() {
         // GIVEN
+
         every {
             natsClient.request(
-                CANCEL, cancelPassRequest(passFromDto.id, passFromDto.passOwnerId), CancelPassResponse.parser()
+                CANCEL, cancelPassRequest(passId, protoPass.passOwnerId), CancelPassResponse.parser()
             )
         } returns succesfulCancelPassResponse.toMono()
 
         // WHEN // THEN
-        webTestClient.post().uri("$URL/${passFromDto.id}/cancel/${passFromDto.passOwnerId}").exchange()
+        webTestClient.post().uri("$URL/$passId/cancel/${protoPass.passOwnerId}").exchange()
             .expectStatus().isOk
     }
 
@@ -90,12 +92,12 @@ internal class PassControllerTest {
         // GIVEN
         every {
             natsClient.request(
-                TRANSFER, transferPassRequest(passFromDto.id, passFromDto.passOwnerId), TransferPassResponse.parser()
+                TRANSFER, transferPassRequest(passId, protoPass.passOwnerId), TransferPassResponse.parser()
             )
         } returns successfulTransferPassResponse.toMono()
 
         // WHEN // THEN
-        webTestClient.post().uri("$URL/${passFromDto.id}/transfer/${passFromDto.passOwnerId}").exchange()
+        webTestClient.post().uri("$URL/$passId/transfer/${protoPass.passOwnerId}").exchange()
             .expectStatus().isOk
     }
 
@@ -104,12 +106,12 @@ internal class PassControllerTest {
         // GIVEN
         every {
             natsClient.request(
-                DELETE_BY_ID, deletePassByIdRequest(passFromDto.id), DeletePassByIdResponse.parser()
+                DELETE_BY_ID, deletePassByIdRequest(passId), DeletePassByIdResponse.parser()
             )
         } returns succesfulDeletePassByIdResponse.toMono()
 
         // WHEN // THEN
-        webTestClient.delete().uri("$URL/${passFromDto.id}").exchange().expectStatus().isNoContent
+        webTestClient.delete().uri("$URL/$passId").exchange().expectStatus().isNoContent
     }
 
     private companion object {

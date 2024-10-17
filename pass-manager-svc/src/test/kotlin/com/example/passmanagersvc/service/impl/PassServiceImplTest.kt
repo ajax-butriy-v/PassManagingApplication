@@ -1,6 +1,6 @@
 package com.example.passmanagersvc.service.impl
 
-import com.example.passmanagersvc.exception.PassNotFoundException
+import com.example.core.exception.PassNotFoundException
 import com.example.passmanagersvc.repositories.PassRepository
 import com.example.passmanagersvc.service.PassOwnerService
 import com.example.passmanagersvc.service.PassTypeService

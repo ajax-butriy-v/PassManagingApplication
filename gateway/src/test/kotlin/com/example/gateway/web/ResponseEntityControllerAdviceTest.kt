@@ -1,14 +1,15 @@
 package com.example.gateway.web
 
+import com.example.core.exception.PassNotFoundException
+import com.example.core.exception.PassOwnerNotFoundException
+import com.example.core.exception.PassTypeNotFoundException
 import com.example.gateway.exception.InvalidObjectIdFormatException
-import com.example.gateway.proto.PassDtoFixture.passDto
-import com.example.gateway.proto.PassDtoFixture.passDtoWithInvalidIdFormats
+import com.example.gateway.util.PassDtoFixture.passDto
+import com.example.gateway.util.PassDtoFixture.passDtoWithInvalidIdFormats
+import com.example.gateway.util.PassDtoFixture.passId
 import com.example.gateway.web.ResponseEntityControllerAdvice.handleBadRequest
 import com.example.gateway.web.ResponseEntityControllerAdvice.handleNotFound
 import com.example.gateway.web.rest.PassController
-import com.example.passmanagersvc.exception.PassOwnerNotFoundException
-import com.example.passmanagersvc.exception.PassTypeNotFoundException
-import com.example.passmanagersvc.web.controller.rest.PassOwnerController
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -20,7 +21,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -37,14 +37,11 @@ internal class ResponseEntityControllerAdviceTest {
     @MockK
     private lateinit var passController: PassController
 
-    @MockK
-    private lateinit var passOwnerController: PassOwnerController
-
     private val objectMapper = ObjectMapper()
 
     @BeforeTest
     fun setupControllerAdvice() {
-        this.mockMvc = MockMvcBuilders.standaloneSetup(passController, passOwnerController)
+        this.mockMvc = MockMvcBuilders.standaloneSetup(passController)
             .setControllerAdvice(ResponseEntityControllerAdvice)
             .build()
     }
@@ -77,7 +74,7 @@ internal class ResponseEntityControllerAdviceTest {
                 any(),
                 any()
             )
-        } throws com.example.passmanagersvc.exception.PassNotFoundException(
+        } throws PassNotFoundException(
             PASS_NOT_FOUND_MESSAGE(nonExistingPassId)
         )
 
@@ -95,13 +92,13 @@ internal class ResponseEntityControllerAdviceTest {
         val nonExistingOwnerId = ObjectId.get()
 
         // GIVEN
-        every { passOwnerController.calculateSpentAfterDate(any(), any()) } throws PassOwnerNotFoundException(
+        every { passController.cancelPass(any(), any()) } throws PassOwnerNotFoundException(
             PASS_OWNER_NOT_FOUND_MESSAGE(nonExistingOwnerId)
         )
 
         // WHEN
         val resultActions = mockMvc.perform(
-            get("/{url}/{id}/spent", OWNERS_URL, nonExistingOwnerId)
+            post("/{url}/{id}/cancel/{owner-id}", PASSES_URL, passId, nonExistingOwnerId)
                 .param("afterDate", LocalDate.now().toString())
         )
 
@@ -146,7 +143,6 @@ internal class ResponseEntityControllerAdviceTest {
 
     companion object {
         private const val PASSES_URL = "passes"
-        private const val OWNERS_URL = "owners"
         private val PASS_NOT_FOUND_MESSAGE: (ObjectId) -> String = { id -> "Could not find pass by id $id" }
         private val PASS_OWNER_NOT_FOUND_MESSAGE: (ObjectId) -> String = { id -> "Could not find pass owner by id $id" }
         private val PASS_TYPE_NOT_FOUND_MESSAGE: (ObjectId) -> String = { id -> "Could not find pass type by id $id" }

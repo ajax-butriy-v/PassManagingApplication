@@ -1,9 +1,9 @@
 package com.example.gateway.web.mapper.proto.pass
 
+import com.example.gateway.util.PassProtoFixture.failureDeletePassByIdResponse
+import com.example.gateway.util.PassProtoFixture.succesfulDeletePassByIdResponse
 import com.example.gateway.web.mapper.proto.pass.DeletePassByIdResponseMapper.toDeleteResponse
 import com.example.internal.input.reqreply.DeletePassByIdResponse
-import com.example.passmanagersvc.util.PassProtoFixture.succesfulDeletePassByIdResponse
-import com.example.passmanagersvc.web.mapper.proto.pass.DeletePassByIdMapper.failureDeletePassByIdResponse
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows

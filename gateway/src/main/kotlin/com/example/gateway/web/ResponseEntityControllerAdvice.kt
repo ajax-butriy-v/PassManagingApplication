@@ -1,9 +1,9 @@
 package com.example.gateway.web
 
+import com.example.core.exception.PassNotFoundException
+import com.example.core.exception.PassOwnerNotFoundException
+import com.example.core.exception.PassTypeNotFoundException
 import com.example.gateway.exception.InvalidObjectIdFormatException
-import com.example.passmanagersvc.exception.PassNotFoundException
-import com.example.passmanagersvc.exception.PassOwnerNotFoundException
-import com.example.passmanagersvc.exception.PassTypeNotFoundException
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler

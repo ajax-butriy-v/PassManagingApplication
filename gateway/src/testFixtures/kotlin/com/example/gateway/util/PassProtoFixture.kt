@@ -1,0 +1,120 @@
+package com.example.gateway.util
+
+import com.example.gateway.util.PassDtoFixture.passDto
+import com.example.gateway.web.mapper.proto.pass.FindPassByIdResponseMapper.toProto
+import com.example.internal.commonmodels.Error
+import com.example.internal.commonmodels.Pass
+import com.example.internal.input.reqreply.CancelPassRequest
+import com.example.internal.input.reqreply.CancelPassResponse
+import com.example.internal.input.reqreply.CreatePassResponse
+import com.example.internal.input.reqreply.DeletePassByIdRequest
+import com.example.internal.input.reqreply.DeletePassByIdResponse
+import com.example.internal.input.reqreply.FindPassByIdRequest
+import com.example.internal.input.reqreply.FindPassByIdResponse
+import com.example.internal.input.reqreply.TransferPassRequest
+import com.example.internal.input.reqreply.TransferPassResponse
+import org.bson.types.ObjectId
+
+object PassProtoFixture {
+    private const val PASS_OWNER_NOT_FOUND = "Could not find pass owner by id "
+    private const val PASS_NOT_FOUND = "Could not find pass by id "
+    private const val PASS_TYPE_NOT_FOUND = "Could not find pass type by id "
+
+    val protoPass = passDto.toProto()
+    fun cancelPassRequest(passId: String, passOwnerId: String): CancelPassRequest {
+        return CancelPassRequest.newBuilder()
+            .setId(passId)
+            .setOwnerId(passOwnerId)
+            .build()
+    }
+
+    val succesfulCancelPassResponse = CancelPassResponse.newBuilder().apply {
+        successBuilder
+    }.build()
+
+
+    fun successfulCreatePassResponse(pass: Pass): CreatePassResponse {
+        return CreatePassResponse.newBuilder().apply {
+            successBuilder.setPass(pass)
+        }.build()
+    }
+
+    fun failureCreatePassResponseWithPassOwnerNotFound(ownerId: String): CreatePassResponse {
+        return CreatePassResponse.newBuilder().apply {
+            failureBuilder.setOwnerNotFoundById(Error.getDefaultInstance())
+            failureBuilder.setMessage(PASS_OWNER_NOT_FOUND + ownerId)
+        }.build()
+    }
+
+    fun failureCreatePassResponseWithPassTypeNotFound(passTypeId: ObjectId): CreatePassResponse {
+        return CreatePassResponse.newBuilder().apply {
+            failureBuilder.setPassTypeNotFoundId(Error.getDefaultInstance())
+            failureBuilder.setMessage(PASS_TYPE_NOT_FOUND + passTypeId)
+        }.build()
+    }
+
+    fun failureCreatePassResponse(throwable: Throwable): CreatePassResponse {
+        return CreatePassResponse.newBuilder().apply {
+            failureBuilder.setMessage(throwable.message.orEmpty())
+        }.build()
+    }
+
+    fun deletePassByIdRequest(passId: String): DeletePassByIdRequest {
+        return DeletePassByIdRequest.newBuilder()
+            .setId(passId)
+            .build()
+    }
+
+    val succesfulDeletePassByIdResponse = DeletePassByIdResponse.newBuilder().apply {
+        successBuilder
+    }.build()
+
+    fun failureDeletePassByIdResponse(throwable: Throwable): DeletePassByIdResponse {
+        return DeletePassByIdResponse.newBuilder().apply {
+            failureBuilder.setMessage(throwable.message.orEmpty())
+        }.build()
+    }
+
+    fun findPassByIdRequest(passId: String): FindPassByIdRequest {
+        return FindPassByIdRequest.newBuilder()
+            .setId(passId)
+            .build()
+    }
+
+    fun successfulFindPassByIdResponse(pass: Pass): FindPassByIdResponse {
+        return FindPassByIdResponse.newBuilder().apply {
+            successBuilder.setPass(pass)
+        }.build()
+    }
+
+    fun transferPassRequest(passId: String, passOwnerId: String): TransferPassRequest {
+        return TransferPassRequest.newBuilder()
+            .setId(passId)
+            .setOwnerId(passOwnerId)
+            .build()
+    }
+
+    val successfulTransferPassResponse = TransferPassResponse.newBuilder().apply {
+        successBuilder
+    }.build()
+
+    fun failureTransferPassResponseWithPassOwnerNotFound(ownerId: ObjectId): TransferPassResponse {
+        return TransferPassResponse.newBuilder().apply {
+            failureBuilder.setPassOwnerNotFoundById(Error.getDefaultInstance())
+            failureBuilder.setMessage(PASS_OWNER_NOT_FOUND + ownerId)
+        }.build()
+    }
+
+    fun failureTransferPassResponseWithPassNotFound(passId: ObjectId): TransferPassResponse {
+        return TransferPassResponse.newBuilder().apply {
+            failureBuilder.setPassNotFoundById(Error.getDefaultInstance())
+            failureBuilder.setMessage(PASS_NOT_FOUND + passId)
+        }.build()
+    }
+
+    fun failureTransferPassResponse(throwable: Throwable): TransferPassResponse {
+        return TransferPassResponse.newBuilder().apply {
+            failureBuilder.setMessage(throwable.message.orEmpty())
+        }.build()
+    }
+}

@@ -1,7 +1,7 @@
 package com.example.passmanagersvc.service.impl
 
+import com.example.core.exception.PassOwnerNotFoundException
 import com.example.passmanagersvc.domain.MongoPassOwner
-import com.example.passmanagersvc.exception.PassOwnerNotFoundException
 import com.example.passmanagersvc.repositories.PassOwnerRepository
 import com.example.passmanagersvc.repositories.PassRepository
 import com.example.passmanagersvc.service.PassOwnerService

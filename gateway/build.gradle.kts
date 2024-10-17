@@ -10,6 +10,5 @@ dependencies {
     implementation(libs.spring.boot.starter.data.mongodb.reactive)
     implementation(libs.nats)
     implementation(project(":internal-api"))
-    implementation(project(":pass-manager-svc"))
-    testImplementation(testFixtures(project(":pass-manager-svc")))
+    implementation(project(":core"))
 }

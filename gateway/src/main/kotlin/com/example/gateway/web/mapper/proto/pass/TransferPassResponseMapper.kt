@@ -1,8 +1,8 @@
 package com.example.gateway.web.mapper.proto.pass
 
+import com.example.core.exception.PassNotFoundException
+import com.example.core.exception.PassOwnerNotFoundException
 import com.example.internal.input.reqreply.TransferPassResponse
-import com.example.passmanagersvc.exception.PassNotFoundException
-import com.example.passmanagersvc.exception.PassOwnerNotFoundException
 
 object TransferPassResponseMapper {
     fun TransferPassResponse.toTransferResponse() {

@@ -1,7 +1,7 @@
 package com.example.passmanagersvc.service.impl
 
+import com.example.core.exception.PassTypeNotFoundException
 import com.example.passmanagersvc.domain.MongoPassType
-import com.example.passmanagersvc.exception.PassTypeNotFoundException
 import com.example.passmanagersvc.repositories.PassTypeRepository
 import com.example.passmanagersvc.service.PassTypeService
 import org.springframework.stereotype.Service
