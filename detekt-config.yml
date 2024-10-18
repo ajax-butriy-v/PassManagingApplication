@@ -1,3 +1,5 @@
 style:
   VarCouldBeVal:
     excludes: "**/test/**"
+  ThrowsCount:
+    max: 3

@@ -49,6 +49,11 @@ services:
       ME_CONFIG_MONGODB_AUTH_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       ME_CONFIG_MONGODB_AUTH_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
       ME_CONFIG_MONGODB_URL: ${ME_CONFIG_MONGODB_URL}
+  nats:
+    container_name: nats-server
+    image: nats
+    ports:
+      - "4222:4222"
+      - "8222:8222"
 volumes:
   db_data:
-

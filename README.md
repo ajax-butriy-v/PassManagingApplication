@@ -19,4 +19,4 @@ obviously, using **Docker Compose** for database service.
 
 Entity relationship UML diagram for the first stage:
 
-<img src="src/main/resources/static/database.png" alt="er"/>
+<img src="domainservice/src/main/resources/static/database.png" alt="er"/>

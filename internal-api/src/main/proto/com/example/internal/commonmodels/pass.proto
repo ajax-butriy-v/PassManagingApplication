@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package com.example.internal.commonmodels;
+
+import "com/example/internal/commonmodels/decimal.proto";
+
+option java_multiple_files = true;
+
+message Pass {
+  BDecimal purchased_for = 1;
+  string pass_owner_id = 2;
+  string pass_type_id = 3;
+}
