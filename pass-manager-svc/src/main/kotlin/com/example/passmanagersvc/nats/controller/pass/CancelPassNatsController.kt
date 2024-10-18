@@ -1,7 +1,6 @@
 package com.example.passmanagersvc.nats.controller.pass
 
 import com.example.internal.NatsSubject.Pass.CANCEL
-import com.example.internal.NatsSubject.Pass.PASS_QUEUE_GROUP
 import com.example.internal.input.reqreply.CancelPassRequest
 import com.example.internal.input.reqreply.CancelPassResponse
 import com.example.passmanagersvc.nats.controller.NatsController
@@ -31,5 +30,9 @@ class CancelPassNatsController(
                 failureCancelPassResponse(it).toMono()
             }
             .log()
+    }
+
+    companion object {
+        const val PASS_QUEUE_GROUP = "passQueueGroup"
     }
 }

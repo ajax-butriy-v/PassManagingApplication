@@ -1,15 +1,14 @@
 package com.example.gateway.web.mapper.proto.pass
 
+import com.example.core.exception.InternalRuntimeException
 import com.example.internal.input.reqreply.DeletePassByIdResponse
 
 object DeletePassByIdResponseMapper {
     fun DeletePassByIdResponse.toDeleteResponse() {
-        require(this != DeletePassByIdResponse.getDefaultInstance()) {
-            "Response must not be default instance."
-        }
-
-        if (hasFailure()) {
-            error(failure.message.orEmpty())
+        when (responseCase!!) {
+            DeletePassByIdResponse.ResponseCase.SUCCESS -> Unit
+            DeletePassByIdResponse.ResponseCase.FAILURE -> throw InternalRuntimeException(failure.message.orEmpty())
+            DeletePassByIdResponse.ResponseCase.RESPONSE_NOT_SET -> throw InternalRuntimeException()
         }
     }
 }

@@ -5,7 +5,6 @@ object NatsSubject {
 
     object Pass {
         private const val PASS_PREFIX = "$REQUEST_PREFIX.pass"
-        const val PASS_QUEUE_GROUP = "passQueueGroup"
 
         const val FIND_BY_ID = "$PASS_PREFIX.find_by_id"
         const val CREATE = "$PASS_PREFIX.create"

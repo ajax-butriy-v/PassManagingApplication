@@ -1,7 +1,6 @@
 package com.example.passmanagersvc.nats.controller.pass
 
 import com.example.internal.NatsSubject.Pass.CREATE
-import com.example.internal.NatsSubject.Pass.PASS_QUEUE_GROUP
 import com.example.internal.input.reqreply.CreatePassRequest
 import com.example.internal.input.reqreply.CreatePassResponse
 import com.example.passmanagersvc.nats.controller.NatsController
@@ -33,5 +32,9 @@ class CreatePassNatsController(
             .onErrorResume { throwable ->
                 failureCreatedPassResponse(throwable).toMono()
             }
+    }
+
+    companion object {
+        const val PASS_QUEUE_GROUP = "passQueueGroup"
     }
 }

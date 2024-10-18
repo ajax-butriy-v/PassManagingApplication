@@ -21,10 +21,10 @@ object PassProtoFixture {
     private const val PASS_TYPE_NOT_FOUND = "Could not find pass type by id "
 
     fun cancelPassRequest(passId: String, passOwnerId: String): CancelPassRequest {
-        return CancelPassRequest.newBuilder()
-            .setId(passId)
-            .setOwnerId(passOwnerId)
-            .build()
+        return CancelPassRequest.newBuilder().apply {
+            id = passId
+            ownerId = passOwnerId
+        }.build()
     }
 
     val succesfulCancelPassResponse = CancelPassResponse.newBuilder().apply {
@@ -48,22 +48,22 @@ object PassProtoFixture {
 
     fun failureCreatePassResponseWithPassOwnerNotFound(ownerId: String): CreatePassResponse {
         return CreatePassResponse.newBuilder().apply {
-            failureBuilder.setOwnerNotFoundById(Error.getDefaultInstance())
-            failureBuilder.setMessage(PASS_OWNER_NOT_FOUND + ownerId)
+            failureBuilder.ownerNotFoundById = Error.getDefaultInstance()
+            failureBuilder.message = PASS_OWNER_NOT_FOUND + ownerId
         }.build()
     }
 
     fun failureCreatePassResponseWithPassTypeNotFound(passTypeId: ObjectId): CreatePassResponse {
         return CreatePassResponse.newBuilder().apply {
-            failureBuilder.setPassTypeNotFoundId(Error.getDefaultInstance())
-            failureBuilder.setMessage(PASS_TYPE_NOT_FOUND + passTypeId)
+            failureBuilder.passTypeNotFoundId = Error.getDefaultInstance()
+            failureBuilder.message = PASS_TYPE_NOT_FOUND + passTypeId
         }.build()
     }
 
     fun deletePassByIdRequest(passId: String): DeletePassByIdRequest {
-        return DeletePassByIdRequest.newBuilder()
-            .setId(passId)
-            .build()
+        return DeletePassByIdRequest.newBuilder().apply {
+            id = passId
+        }.build()
     }
 
     val succesfulDeletePassByIdResponse = DeletePassByIdResponse.newBuilder().apply {
@@ -72,23 +72,23 @@ object PassProtoFixture {
 
 
     fun findPassByIdRequest(passId: String): FindPassByIdRequest {
-        return FindPassByIdRequest.newBuilder()
-            .setId(passId)
-            .build()
+        return FindPassByIdRequest.newBuilder().apply {
+            id = passId
+        }.build()
     }
 
     fun failureFindPassByIdResponseWithPassNotFound(passId: String): FindPassByIdResponse {
         return FindPassByIdResponse.newBuilder().apply {
-            failureBuilder.setNotFoundById(Error.getDefaultInstance())
-            failureBuilder.setMessage(PASS_NOT_FOUND + passId)
+            failureBuilder.notFoundById = Error.getDefaultInstance()
+            failureBuilder.message = PASS_NOT_FOUND + passId
         }.build()
     }
 
     fun transferPassRequest(passId: String, passOwnerId: String): TransferPassRequest {
-        return TransferPassRequest.newBuilder()
-            .setId(passId)
-            .setOwnerId(passOwnerId)
-            .build()
+        return TransferPassRequest.newBuilder().apply {
+            id = passId
+            ownerId = passOwnerId
+        }.build()
     }
 
     val successfulTransferPassResponse = TransferPassResponse.newBuilder().apply {
@@ -97,15 +97,15 @@ object PassProtoFixture {
 
     fun failureTransferPassResponseWithPassOwnerNotFound(ownerId: String): TransferPassResponse {
         return TransferPassResponse.newBuilder().apply {
-            failureBuilder.setPassOwnerNotFoundById(Error.getDefaultInstance())
-            failureBuilder.setMessage(PASS_OWNER_NOT_FOUND + ownerId)
+            failureBuilder.passOwnerNotFoundById = Error.getDefaultInstance()
+            failureBuilder.message = PASS_OWNER_NOT_FOUND + ownerId
         }.build()
     }
 
     fun failureTransferPassResponseWithPassNotFound(passId: String): TransferPassResponse {
         return TransferPassResponse.newBuilder().apply {
-            failureBuilder.setPassNotFoundById(Error.getDefaultInstance())
-            failureBuilder.setMessage(PASS_NOT_FOUND + passId)
+            failureBuilder.passNotFoundById = Error.getDefaultInstance()
+            failureBuilder.message = PASS_NOT_FOUND + passId
         }.build()
     }
 }

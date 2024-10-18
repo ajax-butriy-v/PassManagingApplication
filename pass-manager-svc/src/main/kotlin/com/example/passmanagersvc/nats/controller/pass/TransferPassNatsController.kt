@@ -1,6 +1,5 @@
 package com.example.passmanagersvc.nats.controller.pass
 
-import com.example.internal.NatsSubject.Pass.PASS_QUEUE_GROUP
 import com.example.internal.NatsSubject.Pass.TRANSFER
 import com.example.internal.input.reqreply.TransferPassRequest
 import com.example.internal.input.reqreply.TransferPassResponse
@@ -30,5 +29,9 @@ class TransferPassNatsController(
             .onErrorResume { throwable ->
                 failureTransferPassResponse(throwable).toMono()
             }
+    }
+
+    companion object {
+        const val PASS_QUEUE_GROUP = "passQueueGroup"
     }
 }

@@ -1,5 +1,6 @@
 package com.example.gateway.web.mapper.proto.pass
 
+import com.example.core.exception.InternalRuntimeException
 import com.example.core.exception.PassNotFoundException
 import com.example.core.web.mapper.proto.DecimalProtoMapper.toBDecimal
 import com.example.core.web.mapper.proto.DecimalProtoMapper.toBigDecimal
@@ -11,17 +12,10 @@ import com.example.internal.input.reqreply.FindPassByIdResponse.Failure.ErrorCas
 
 object FindPassByIdResponseMapper {
     fun FindPassByIdResponse.toDto(): PassDto {
-        require(this != FindPassByIdResponse.getDefaultInstance()) {
-            "Response must not be default instance."
-        }
-        if (hasFailure()) {
-            val message = failure.message.orEmpty()
-            when (failure.errorCase!!) {
-                NOT_FOUND_BY_ID -> throw PassNotFoundException(message)
-                ERROR_NOT_SET -> error(message)
-            }
-        } else {
-            return success.pass.fromProtoToDto()
+        when (responseCase!!) {
+            FindPassByIdResponse.ResponseCase.SUCCESS -> return success.pass.fromProtoToDto()
+            FindPassByIdResponse.ResponseCase.FAILURE -> failureCase()
+            FindPassByIdResponse.ResponseCase.RESPONSE_NOT_SET -> throw InternalRuntimeException()
         }
     }
 
@@ -39,5 +33,13 @@ object FindPassByIdResponseMapper {
             .setPassTypeId(passTypeId)
             .setPurchasedFor(purchasedFor.toBDecimal())
             .build()
+    }
+
+    private fun FindPassByIdResponse.failureCase(): Nothing {
+        val message = failure.message.orEmpty()
+        when (failure.errorCase!!) {
+            NOT_FOUND_BY_ID -> throw PassNotFoundException(message)
+            ERROR_NOT_SET -> throw InternalRuntimeException(message)
+        }
     }
 }

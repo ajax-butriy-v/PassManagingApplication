@@ -1,5 +1,6 @@
 package com.example.gateway.web.mapper.proto.pass
 
+import com.example.core.exception.InternalRuntimeException
 import com.example.core.exception.PassNotFoundException
 import com.example.gateway.util.PassDtoFixture
 import com.example.gateway.util.PassProtoFixture.failureFindPassByIdResponseWithPassNotFound
@@ -23,7 +24,7 @@ class FindPassByIdMapperTest {
     }
 
     @Test
-    fun `in case of getting internal exception should throw illegal state exception`() {
+    fun `in case of getting internal exception should throw internal exception`() {
         // GIVEN
         val internalException = IllegalStateException()
         val response = FindPassByIdResponse.newBuilder().apply {
@@ -31,7 +32,8 @@ class FindPassByIdMapperTest {
         }.build()
 
         // WHEN // THEN
-        assertThrows<IllegalStateException> { response.toDto() }
+        val exception = assertThrows<InternalRuntimeException> { response.toDto() }
+        assertThat(exception.message).isEmpty()
     }
 
     @Test
@@ -45,11 +47,11 @@ class FindPassByIdMapperTest {
     }
 
     @Test
-    fun `in case of getting default instance should throw illegal argument exception`() {
+    fun `in case of getting default instance should throw  nternal exception`() {
         // GIVEN
         val defaultInstanceResponse = FindPassByIdResponse.getDefaultInstance()
 
         // WHEN // THEN
-        assertThrows<IllegalArgumentException> { defaultInstanceResponse.toDto() }
+        assertThrows<InternalRuntimeException> { defaultInstanceResponse.toDto() }
     }
 }

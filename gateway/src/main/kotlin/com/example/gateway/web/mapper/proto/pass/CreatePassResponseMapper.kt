@@ -1,5 +1,6 @@
 package com.example.gateway.web.mapper.proto.pass
 
+import com.example.core.exception.InternalRuntimeException
 import com.example.core.exception.PassOwnerNotFoundException
 import com.example.core.exception.PassTypeNotFoundException
 import com.example.core.web.mapper.proto.DecimalProtoMapper.toBDecimal
@@ -12,19 +13,10 @@ import com.example.internal.input.reqreply.CreatePassResponse.Failure.ErrorCase.
 
 object CreatePassResponseMapper {
     fun CreatePassResponse.toDto(): PassDto {
-        require(this != CreatePassResponse.getDefaultInstance()) {
-            "Response must not be default instance."
-        }
-
-        if (hasFailure()) {
-            val message = failure.message.orEmpty()
-            when (this.failure.errorCase!!) {
-                PASS_TYPE_NOT_FOUND_ID -> throw PassTypeNotFoundException(message)
-                OWNER_NOT_FOUND_BY_ID -> throw PassOwnerNotFoundException(message)
-                CreatePassResponse.Failure.ErrorCase.ERROR_NOT_SET -> error(message)
-            }
-        } else {
-            return success.pass.fromProtoToDto()
+        when (responseCase!!) {
+            CreatePassResponse.ResponseCase.SUCCESS -> return success.pass.fromProtoToDto()
+            CreatePassResponse.ResponseCase.FAILURE -> failureCase()
+            CreatePassResponse.ResponseCase.RESPONSE_NOT_SET -> throw InternalRuntimeException()
         }
     }
 
@@ -34,5 +26,14 @@ object CreatePassResponseMapper {
             .setPassOwnerId(passOwnerId)
             .setPurchasedFor(purchasedFor.toBDecimal())
             .build()
+    }
+
+    private fun CreatePassResponse.failureCase(): Nothing {
+        val message = failure.message.orEmpty()
+        when (this.failure.errorCase!!) {
+            PASS_TYPE_NOT_FOUND_ID -> throw PassTypeNotFoundException(message)
+            OWNER_NOT_FOUND_BY_ID -> throw PassOwnerNotFoundException(message)
+            CreatePassResponse.Failure.ErrorCase.ERROR_NOT_SET -> throw InternalRuntimeException(message)
+        }
     }
 }

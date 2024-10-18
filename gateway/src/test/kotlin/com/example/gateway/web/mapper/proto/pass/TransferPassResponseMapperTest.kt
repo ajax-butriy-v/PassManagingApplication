@@ -1,13 +1,15 @@
 package com.example.gateway.web.mapper.proto.pass
 
+import com.example.core.exception.InternalRuntimeException
 import com.example.core.exception.PassNotFoundException
 import com.example.core.exception.PassOwnerNotFoundException
 import com.example.gateway.util.PassProtoFixture.failureTransferPassResponse
 import com.example.gateway.util.PassProtoFixture.failureTransferPassResponseWithPassNotFound
 import com.example.gateway.util.PassProtoFixture.failureTransferPassResponseWithPassOwnerNotFound
 import com.example.gateway.util.PassProtoFixture.successfulTransferPassResponse
-import com.example.gateway.web.mapper.proto.pass.TransferPassResponseMapper.toTransferResponse
+import com.example.gateway.web.mapper.proto.pass.TransferPassResponseMapper.toUnitResponse
 import com.example.internal.input.reqreply.TransferPassResponse
+import org.assertj.core.api.Assertions.assertThat
 import org.bson.types.ObjectId
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -20,17 +22,18 @@ class TransferPassResponseMapperTest {
         val response = successfulTransferPassResponse
 
         // WHEN // THEN
-        assertDoesNotThrow { response.toTransferResponse() }
+        assertDoesNotThrow { response.toUnitResponse() }
     }
 
     @Test
-    fun `in case of getting internal exception should throw illegal state exception`() {
+    fun `in case of getting internal exception should throw internal exception`() {
         // GIVEN
         val internalException = IllegalStateException()
         val response = failureTransferPassResponse(internalException)
 
         // WHEN // THEN
-        assertThrows<IllegalStateException> { response.toTransferResponse() }
+        val exception = assertThrows<InternalRuntimeException> { response.toUnitResponse() }
+        assertThat(exception.message).isEmpty()
     }
 
     @Test
@@ -40,7 +43,7 @@ class TransferPassResponseMapperTest {
         val response = failureTransferPassResponseWithPassNotFound(passId)
 
         // WHEN // THEN
-        assertThrows<PassNotFoundException> { response.toTransferResponse() }
+        assertThrows<PassNotFoundException> { response.toUnitResponse() }
     }
 
     @Test
@@ -50,15 +53,15 @@ class TransferPassResponseMapperTest {
         val response = failureTransferPassResponseWithPassOwnerNotFound(passId)
 
         // WHEN // THEN
-        assertThrows<PassOwnerNotFoundException> { response.toTransferResponse() }
+        assertThrows<PassOwnerNotFoundException> { response.toUnitResponse() }
     }
 
     @Test
-    fun `in case of getting default instance should throw illegal argument exception`() {
+    fun `in case of getting default instance should throw  internal exception`() {
         // GIVEN
         val defaultInstanceResponse = TransferPassResponse.getDefaultInstance()
 
         // WHEN // THEN
-        assertThrows<IllegalArgumentException> { defaultInstanceResponse.toTransferResponse() }
+        assertThrows<InternalRuntimeException> { defaultInstanceResponse.toUnitResponse() }
     }
 }

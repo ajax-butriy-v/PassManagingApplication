@@ -1,9 +1,11 @@
 package com.example.gateway.web.mapper.proto.pass
 
+import com.example.core.exception.InternalRuntimeException
 import com.example.gateway.util.PassProtoFixture.failureDeletePassByIdResponse
 import com.example.gateway.util.PassProtoFixture.succesfulDeletePassByIdResponse
 import com.example.gateway.web.mapper.proto.pass.DeletePassByIdResponseMapper.toDeleteResponse
 import com.example.internal.input.reqreply.DeletePassByIdResponse
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
@@ -20,21 +22,22 @@ class DeletePassByIdResponseMapperTest {
     }
 
     @Test
-    fun `in case of getting internal exception should throw illegal state exception`() {
+    fun `in case of getting internal exception should throw  internal exception`() {
         // GIVEN
         val internalException = IllegalArgumentException()
         val response = failureDeletePassByIdResponse(internalException)
 
         // WHEN // THEN
-        assertThrows<IllegalStateException> { response.toDeleteResponse() }
+        val exception = assertThrows<InternalRuntimeException> { response.toDeleteResponse() }
+        assertThat(exception.message).isEmpty()
     }
 
     @Test
-    fun `in case of getting default instance should throw illegal argument exception`() {
+    fun `in case of getting default instance should throw internal exception`() {
         // GIVEN
         val defaultInstanceResponse = DeletePassByIdResponse.getDefaultInstance()
 
         // WHEN // THEN
-        assertThrows<IllegalArgumentException> { defaultInstanceResponse.toDeleteResponse() }
+        assertThrows<InternalRuntimeException> { defaultInstanceResponse.toDeleteResponse() }
     }
 }

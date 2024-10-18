@@ -2,7 +2,6 @@ package com.example.passmanagersvc.nats.controller.pass
 
 import com.example.core.exception.PassNotFoundException
 import com.example.internal.NatsSubject.Pass.FIND_BY_ID
-import com.example.internal.NatsSubject.Pass.PASS_QUEUE_GROUP
 import com.example.internal.input.reqreply.FindPassByIdRequest
 import com.example.internal.input.reqreply.FindPassByIdResponse
 import com.example.passmanagersvc.nats.controller.NatsController
@@ -33,5 +32,9 @@ class FindPassByIdNatsController(
             .map { passFromDb -> passFromDb.toProto() }
             .map { proto -> proto.toSuccessFindPassByIdResponse() }
             .onErrorResume(PassNotFoundException::class) { failureFindByIdPassResponse(it).toMono() }
+    }
+
+    companion object {
+        const val PASS_QUEUE_GROUP = "passQueueGroup"
     }
 }

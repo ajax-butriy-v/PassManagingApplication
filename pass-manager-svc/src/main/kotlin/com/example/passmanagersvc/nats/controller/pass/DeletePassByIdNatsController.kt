@@ -1,7 +1,6 @@
 package com.example.passmanagersvc.nats.controller.pass
 
 import com.example.internal.NatsSubject.Pass.DELETE_BY_ID
-import com.example.internal.NatsSubject.Pass.PASS_QUEUE_GROUP
 import com.example.internal.input.reqreply.DeletePassByIdRequest
 import com.example.internal.input.reqreply.DeletePassByIdResponse
 import com.example.passmanagersvc.nats.controller.NatsController
@@ -27,5 +26,9 @@ class DeletePassByIdNatsController(
         return passService.deleteById(request.id)
             .thenReturn(DeletePassByIdMapper.successDeletePassByIdResponse())
             .onErrorResume { thr -> DeletePassByIdMapper.failureDeletePassByIdResponse(thr).toMono() }
+    }
+
+    companion object {
+        const val PASS_QUEUE_GROUP = "passQueueGroup"
     }
 }

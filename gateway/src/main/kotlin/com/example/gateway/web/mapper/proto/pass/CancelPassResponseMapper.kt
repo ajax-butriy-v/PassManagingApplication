@@ -1,23 +1,26 @@
 package com.example.gateway.web.mapper.proto.pass
 
+import com.example.core.exception.InternalRuntimeException
 import com.example.core.exception.PassOwnerNotFoundException
 import com.example.internal.input.reqreply.CancelPassResponse
 
 object CancelPassResponseMapper {
     fun CancelPassResponse.toUnitResponse() {
-        require(this != CancelPassResponse.getDefaultInstance()) {
-            "Response must not be default instance."
+        when (responseCase!!) {
+            CancelPassResponse.ResponseCase.SUCCESS -> Unit
+            CancelPassResponse.ResponseCase.FAILURE -> failureCase()
+            CancelPassResponse.ResponseCase.RESPONSE_NOT_SET -> throw InternalRuntimeException()
         }
+    }
 
-        if (hasFailure()) {
-            val message = failure.message.orEmpty()
-            when (failure.errorCase!!) {
-                CancelPassResponse.Failure.ErrorCase.PASS_OWNER_NOT_FOUND_BY_ID -> throw PassOwnerNotFoundException(
-                    message
-                )
+    private fun CancelPassResponse.failureCase() {
+        val message = failure.message.orEmpty()
+        when (failure.errorCase!!) {
+            CancelPassResponse.Failure.ErrorCase.PASS_OWNER_NOT_FOUND_BY_ID -> throw PassOwnerNotFoundException(
+                message
+            )
 
-                CancelPassResponse.Failure.ErrorCase.ERROR_NOT_SET -> error(message)
-            }
+            CancelPassResponse.Failure.ErrorCase.ERROR_NOT_SET -> throw InternalRuntimeException(message)
         }
     }
 }

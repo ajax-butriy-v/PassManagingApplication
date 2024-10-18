@@ -1,5 +1,6 @@
 package com.example.gateway.web.mapper.proto.pass
 
+import com.example.core.exception.InternalRuntimeException
 import com.example.core.exception.PassOwnerNotFoundException
 import com.example.core.exception.PassTypeNotFoundException
 import com.example.gateway.util.PassDtoFixture
@@ -26,13 +27,14 @@ class CreatePassResponseMapperTest {
     }
 
     @Test
-    fun `in case of getting internal exception should throw illegal state exception`() {
+    fun `in case of getting internal exception should throw internal exception`() {
         // GIVEN
         val internalException = IllegalStateException()
         val response = failureCreatePassResponse(internalException)
 
         // WHEN // THEN
-        assertThrows<IllegalStateException> { response.toDto() }
+        val exception = assertThrows<InternalRuntimeException> { response.toDto() }
+        assertThat(exception.message).isEmpty()
     }
 
     @Test
@@ -61,6 +63,6 @@ class CreatePassResponseMapperTest {
         val defaultInstanceResponse = CreatePassResponse.getDefaultInstance()
 
         // WHEN // THEN
-        assertThrows<IllegalArgumentException> { defaultInstanceResponse.toDto() }
+        assertThrows<InternalRuntimeException> { defaultInstanceResponse.toDto() }
     }
 }

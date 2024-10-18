@@ -7,7 +7,7 @@ import com.example.gateway.web.mapper.proto.pass.CreatePassResponseMapper.toCrea
 import com.example.gateway.web.mapper.proto.pass.CreatePassResponseMapper.toDto
 import com.example.gateway.web.mapper.proto.pass.DeletePassByIdResponseMapper.toDeleteResponse
 import com.example.gateway.web.mapper.proto.pass.FindPassByIdResponseMapper.toDto
-import com.example.gateway.web.mapper.proto.pass.TransferPassResponseMapper.toTransferResponse
+import com.example.gateway.web.mapper.proto.pass.TransferPassResponseMapper.toUnitResponse
 import com.example.internal.NatsSubject.Pass.CANCEL
 import com.example.internal.NatsSubject.Pass.CREATE
 import com.example.internal.NatsSubject.Pass.DELETE_BY_ID
@@ -71,7 +71,7 @@ internal class PassController(private val natsClient: NatsClient) {
             .setId(id)
             .setOwnerId(ownerId)
             .build()
-        return natsClient.request(TRANSFER, payload, TransferPassResponse.parser()).map { it.toTransferResponse() }
+        return natsClient.request(TRANSFER, payload, TransferPassResponse.parser()).map { it.toUnitResponse() }
     }
 
     @DeleteMapping("/{id}")
