@@ -8,6 +8,8 @@ import com.example.passmanagersvc.service.PassService
 import com.example.passmanagersvc.web.mapper.proto.pass.DeletePassByIdMapper
 import com.google.protobuf.Parser
 import io.nats.client.Connection
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
@@ -25,10 +27,14 @@ class DeletePassByIdNatsController(
     override fun handle(request: DeletePassByIdRequest): Mono<DeletePassByIdResponse> {
         return passService.deleteById(request.id)
             .thenReturn(DeletePassByIdMapper.successDeletePassByIdResponse())
-            .onErrorResume { thr -> DeletePassByIdMapper.failureDeletePassByIdResponse(thr).toMono() }
+            .onErrorResume {
+                logger.error("Error occurred while executing", it)
+                DeletePassByIdMapper.failureDeletePassByIdResponse(it).toMono()
+            }
     }
 
     companion object {
         const val PASS_QUEUE_GROUP = "passQueueGroup"
+        private val logger: Logger = LoggerFactory.getLogger(this::class.java)
     }
 }

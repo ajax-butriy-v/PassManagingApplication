@@ -9,6 +9,8 @@ import com.example.passmanagersvc.web.mapper.proto.pass.TransferPassMapper.failu
 import com.example.passmanagersvc.web.mapper.proto.pass.TransferPassMapper.successTransferPassResponse
 import com.google.protobuf.Parser
 import io.nats.client.Connection
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
@@ -26,12 +28,14 @@ class TransferPassNatsController(
     override fun handle(request: TransferPassRequest): Mono<TransferPassResponse> {
         return passManagementService.transferPass(request.id, request.ownerId)
             .thenReturn(successTransferPassResponse())
-            .onErrorResume { throwable ->
-                failureTransferPassResponse(throwable).toMono()
+            .onErrorResume {
+                logger.error("Error occurred while executing", it)
+                failureTransferPassResponse(it).toMono()
             }
     }
 
     companion object {
         const val PASS_QUEUE_GROUP = "passQueueGroup"
+        private val logger: Logger = LoggerFactory.getLogger(this::class.java)
     }
 }

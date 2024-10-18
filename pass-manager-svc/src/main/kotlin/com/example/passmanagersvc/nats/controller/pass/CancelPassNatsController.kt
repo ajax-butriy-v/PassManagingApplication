@@ -9,6 +9,8 @@ import com.example.passmanagersvc.web.mapper.proto.pass.CancelPassMapper.failure
 import com.example.passmanagersvc.web.mapper.proto.pass.CancelPassMapper.successCancelPassResponse
 import com.google.protobuf.Parser
 import io.nats.client.Connection
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
@@ -27,12 +29,13 @@ class CancelPassNatsController(
         return passManagementService.cancelPass(request.ownerId, request.id)
             .thenReturn(successCancelPassResponse())
             .onErrorResume {
+                logger.error("Error occurred while executing", it)
                 failureCancelPassResponse(it).toMono()
             }
-            .log()
     }
 
     companion object {
         const val PASS_QUEUE_GROUP = "passQueueGroup"
+        private val logger: Logger = LoggerFactory.getLogger(this::class.java)
     }
 }

@@ -1,6 +1,5 @@
 package com.example.passmanagersvc.nats.controller.pass
 
-import com.example.core.exception.PassNotFoundException
 import com.example.internal.NatsSubject.Pass.FIND_BY_ID
 import com.example.internal.input.reqreply.FindPassByIdRequest
 import com.example.internal.input.reqreply.FindPassByIdResponse
@@ -11,9 +10,10 @@ import com.example.passmanagersvc.web.mapper.proto.pass.FindPassByIdMapper.toPro
 import com.example.passmanagersvc.web.mapper.proto.pass.FindPassByIdMapper.toSuccessFindPassByIdResponse
 import com.google.protobuf.Parser
 import io.nats.client.Connection
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
-import reactor.kotlin.core.publisher.onErrorResume
 import reactor.kotlin.core.publisher.toMono
 
 @Component
@@ -31,10 +31,14 @@ class FindPassByIdNatsController(
         return passService.getById(request.id)
             .map { passFromDb -> passFromDb.toProto() }
             .map { proto -> proto.toSuccessFindPassByIdResponse() }
-            .onErrorResume(PassNotFoundException::class) { failureFindByIdPassResponse(it).toMono() }
+            .onErrorResume {
+                logger.error("Error occurred while executing", it)
+                failureFindByIdPassResponse(it).toMono()
+            }
     }
 
     companion object {
         const val PASS_QUEUE_GROUP = "passQueueGroup"
+        private val logger: Logger = LoggerFactory.getLogger(this::class.java)
     }
 }
