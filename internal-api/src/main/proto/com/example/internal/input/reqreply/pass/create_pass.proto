@@ -1,14 +1,15 @@
 syntax = "proto3";
 
+package com.example.internal.input.reqreply;
+
 import "com/example/internal/commonmodels/pass.proto";
 import "com/example/internal/commonmodels/decimal.proto";
 import "com/example/internal/commonmodels/error.proto";
 
-option java_package = "com.example.internal.input.reqreply";
 option java_multiple_files = true;
 
 message CreatePassRequest {
-  BDecimal purchasedFor = 1;
+  com.example.internal.commonmodels.BDecimal purchasedFor = 1;
   string pass_owner_id = 2;
   string pass_type_id = 3;
 }
@@ -20,15 +21,15 @@ message CreatePassResponse {
   }
 
   message Success {
-    Pass pass = 1;
+    com.example.internal.commonmodels.Pass pass = 1;
   }
 
   message Failure {
     string message = 100;
 
     oneof error {
-      Error owner_not_found_by_id = 2;
-      Error pass_type_not_found_id = 3;
+      com.example.internal.commonmodels.Error owner_not_found_by_id = 2;
+      com.example.internal.commonmodels.Error pass_type_not_found_id = 3;
     }
   }
 }

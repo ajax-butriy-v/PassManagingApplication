@@ -1,5 +1,6 @@
 package com.example.passmanagersvc.util
 
+import com.example.core.web.mapper.proto.DecimalProtoMapper.toBDecimal
 import com.example.internal.commonmodels.Error
 import com.example.internal.input.reqreply.CancelPassRequest
 import com.example.internal.input.reqreply.CancelPassResponse
