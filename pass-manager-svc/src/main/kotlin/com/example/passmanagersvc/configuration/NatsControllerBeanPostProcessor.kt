@@ -27,7 +27,7 @@ class NatsControllerBeanPostProcessor(private val dispatcher: Dispatcher) : Bean
             Mono.fromCallable { controller.parser }
                 .map { parser -> parser.parseFrom(it.data) }
                 .flatMap { parsedData -> controller.handle(parsedData) }
-                .transform { mono -> onParseError(mono, controller.responseClassType) }
+                .transform { mono -> onParseError(mono, controller.responseClass) }
                 .subscribe { response ->
                     controller.connection.publish(it.replyTo, response.toByteArray())
                 }
@@ -35,14 +35,19 @@ class NatsControllerBeanPostProcessor(private val dispatcher: Dispatcher) : Bean
         return dispatcher.subscribe(controller.subject, controller.queueGroup, messageHandler)
     }
 
-    private fun <R : GeneratedMessageV3> onParseError(result: Mono<R>, responseClass: Class<R>): Mono<R> {
+    private fun <R : GeneratedMessageV3> onParseError(result: Mono<R>, responseClass: R): Mono<R> {
         return result.onErrorResume { throwable ->
             val message = throwable.message.orEmpty()
-            val builder = responseClass.getMethod("newBuilder").invoke(null)
-            val failureBuilder = builder.javaClass.getMethod("getFailureBuilder").invoke(builder)
-            failureBuilder.javaClass.getMethod("setMessage", String::class.java).invoke(failureBuilder, message)
-            val fallbackResponse = builder.javaClass.getMethod("build").invoke(builder) as? R
-            fallbackResponse?.toMono() ?: Mono.error(throwable)
+            val responseBuilder = responseClass.toBuilder()
+
+            val failureDescriptor = responseClass.descriptorForType.findFieldByName("failure")
+            val messageDescriptor = failureDescriptor.messageType.findFieldByName("message")
+            val response = responseBuilder.run {
+                val failure = newBuilderForField(failureDescriptor).setField(messageDescriptor, message).build()
+                setField(failureDescriptor, failure)
+            }.build()
+
+            (response as? R)?.toMono() ?: Mono.error(throwable)
         }
     }
 }

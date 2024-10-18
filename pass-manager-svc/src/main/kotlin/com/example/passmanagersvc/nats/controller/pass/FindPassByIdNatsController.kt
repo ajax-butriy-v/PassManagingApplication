@@ -26,7 +26,7 @@ class FindPassByIdNatsController(
     override val subject: String = FIND_BY_ID
     override val queueGroup: String = PASS_QUEUE_GROUP
     override val parser: Parser<FindPassByIdRequest> = FindPassByIdRequest.parser()
-    override val responseClassType = FindPassByIdResponse::class.java
+    override val responseClass = FindPassByIdResponse.getDefaultInstance()
 
     override fun handle(request: FindPassByIdRequest): Mono<FindPassByIdResponse> {
         return passService.getById(request.id)

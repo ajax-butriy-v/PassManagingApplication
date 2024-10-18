@@ -22,7 +22,7 @@ class TransferPassNatsController(
     override val subject: String = TRANSFER
     override val queueGroup: String = PASS_QUEUE_GROUP
     override val parser: Parser<TransferPassRequest> = TransferPassRequest.parser()
-    override val responseClassType = TransferPassResponse::class.java
+    override val responseClass = TransferPassResponse.getDefaultInstance()
 
     override fun handle(request: TransferPassRequest): Mono<TransferPassResponse> {
         return passManagementService.transferPass(request.id, request.ownerId)

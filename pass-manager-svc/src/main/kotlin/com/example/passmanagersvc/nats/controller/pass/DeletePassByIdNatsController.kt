@@ -21,7 +21,7 @@ class DeletePassByIdNatsController(
     override val subject: String = DELETE_BY_ID
     override val queueGroup: String = PASS_QUEUE_GROUP
     override val parser: Parser<DeletePassByIdRequest> = DeletePassByIdRequest.parser()
-    override val responseClassType = DeletePassByIdResponse::class.java
+    override val responseClass = DeletePassByIdResponse.getDefaultInstance()
 
     override fun handle(request: DeletePassByIdRequest): Mono<DeletePassByIdResponse> {
         return passService.deleteById(request.id)

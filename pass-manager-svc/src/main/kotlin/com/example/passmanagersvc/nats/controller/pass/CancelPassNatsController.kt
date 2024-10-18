@@ -22,7 +22,7 @@ class CancelPassNatsController(
     override val subject: String = CANCEL
     override val queueGroup: String = PASS_QUEUE_GROUP
     override val parser: Parser<CancelPassRequest> = CancelPassRequest.parser()
-    override val responseClassType = CancelPassResponse::class.java
+    override val responseClass = CancelPassResponse.getDefaultInstance()
 
     override fun handle(request: CancelPassRequest): Mono<CancelPassResponse> {
         return passManagementService.cancelPass(request.ownerId, request.id)

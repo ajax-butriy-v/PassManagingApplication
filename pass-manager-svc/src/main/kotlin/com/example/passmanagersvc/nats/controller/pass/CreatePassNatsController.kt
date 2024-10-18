@@ -24,7 +24,7 @@ class CreatePassNatsController(
     override val subject: String = CREATE
     override val queueGroup: String = PASS_QUEUE_GROUP
     override val parser: Parser<CreatePassRequest> = CreatePassRequest.parser()
-    override val responseClassType = CreatePassResponse::class.java
+    override val responseClass = CreatePassResponse.getDefaultInstance()
 
     override fun handle(request: CreatePassRequest): Mono<CreatePassResponse> {
         return passService.create(request.toModel(), request.passOwnerId, request.passTypeId)

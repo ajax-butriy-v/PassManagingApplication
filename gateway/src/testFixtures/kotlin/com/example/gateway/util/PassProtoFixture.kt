@@ -87,6 +87,13 @@ object PassProtoFixture {
         }.build()
     }
 
+    fun failureFindPassByIdResponseWithPassNotFound(passId: String): FindPassByIdResponse {
+        return FindPassByIdResponse.newBuilder().apply {
+            failureBuilder.setNotFoundById(Error.getDefaultInstance())
+            failureBuilder.setMessage(PASS_NOT_FOUND + passId)
+        }.build()
+    }
+
     fun transferPassRequest(passId: String, passOwnerId: String): TransferPassRequest {
         return TransferPassRequest.newBuilder()
             .setId(passId)

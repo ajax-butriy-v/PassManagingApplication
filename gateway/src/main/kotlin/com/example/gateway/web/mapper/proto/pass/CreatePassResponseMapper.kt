@@ -12,6 +12,7 @@ import com.example.internal.input.reqreply.CreatePassResponse.Failure.ErrorCase.
 
 object CreatePassResponseMapper {
     fun CreatePassResponse.toDto(): PassDto {
+        // if (responseCase) TODO change to response case
         require(this != CreatePassResponse.getDefaultInstance()) {
             "Response must not be default instance."
         }
