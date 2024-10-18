@@ -23,7 +23,7 @@ message CancelPassResponse {
     string message = 100;
 
     oneof error {
-      com.example.internal.commonmodels.Error pass_owner_not_found_by_id = 1;
+      commonmodels.Error pass_owner_not_found_by_id = 1;
     }
   }
 }

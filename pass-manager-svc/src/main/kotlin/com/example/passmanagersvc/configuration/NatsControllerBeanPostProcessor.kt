@@ -27,27 +27,24 @@ class NatsControllerBeanPostProcessor(private val dispatcher: Dispatcher) : Bean
             Mono.fromCallable { controller.parser }
                 .map { parser -> parser.parseFrom(it.data) }
                 .flatMap { parsedData -> controller.handle(parsedData) }
-                .transform { mono -> onParseError(mono, controller.responseClass) }
+                .onErrorResume { throwable ->
+                    val message = throwable.message.orEmpty()
+                    val responseBuilder = controller.responseClass.toBuilder()
+
+                    val failureDescriptor = controller.responseClass.descriptorForType.findFieldByName("failure")
+                    val messageDescriptor = failureDescriptor.messageType.findFieldByName("message")
+                    val response = responseBuilder.run {
+                        val failure = newBuilderForField(failureDescriptor).setField(messageDescriptor, message).build()
+                        setField(failureDescriptor, failure)
+                    }.build()
+
+                    (response as? R)?.toMono() ?: Mono.error(throwable)
+                }
+                .cast(controller.responseClass::class.java)
                 .subscribe { response ->
                     controller.connection.publish(it.replyTo, response.toByteArray())
                 }
         }
         return dispatcher.subscribe(controller.subject, controller.queueGroup, messageHandler)
-    }
-
-    private fun <R : GeneratedMessageV3> onParseError(result: Mono<R>, responseClass: R): Mono<R> {
-        return result.onErrorResume { throwable ->
-            val message = throwable.message.orEmpty()
-            val responseBuilder = responseClass.toBuilder()
-
-            val failureDescriptor = responseClass.descriptorForType.findFieldByName("failure")
-            val messageDescriptor = failureDescriptor.messageType.findFieldByName("message")
-            val response = responseBuilder.run {
-                val failure = newBuilderForField(failureDescriptor).setField(messageDescriptor, message).build()
-                setField(failureDescriptor, failure)
-            }.build()
-
-            (response as? R)?.toMono() ?: Mono.error(throwable)
-        }
     }
 }

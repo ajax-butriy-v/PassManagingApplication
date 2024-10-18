@@ -18,14 +18,14 @@ message FindPassByIdResponse {
   }
 
   message Success {
-    com.example.internal.commonmodels.Pass pass = 1;
+    commonmodels.Pass pass = 1;
   }
 
   message Failure {
     string message = 100;
 
     oneof error {
-      com.example.internal.commonmodels.Error not_found_by_id = 1;
+      commonmodels.Error not_found_by_id = 1;
     }
   }
 }

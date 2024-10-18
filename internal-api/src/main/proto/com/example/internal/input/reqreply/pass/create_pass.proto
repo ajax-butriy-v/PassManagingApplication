@@ -9,7 +9,7 @@ import "com/example/internal/commonmodels/error.proto";
 option java_multiple_files = true;
 
 message CreatePassRequest {
-  com.example.internal.commonmodels.BDecimal purchasedFor = 1;
+  commonmodels.BDecimal purchasedFor = 1;
   string pass_owner_id = 2;
   string pass_type_id = 3;
 }
@@ -21,15 +21,15 @@ message CreatePassResponse {
   }
 
   message Success {
-    com.example.internal.commonmodels.Pass pass = 1;
+    commonmodels.Pass pass = 1;
   }
 
   message Failure {
     string message = 100;
 
     oneof error {
-      com.example.internal.commonmodels.Error owner_not_found_by_id = 2;
-      com.example.internal.commonmodels.Error pass_type_not_found_id = 3;
+      commonmodels.Error owner_not_found_by_id = 2;
+      commonmodels.Error pass_type_not_found_id = 3;
     }
   }
 }
