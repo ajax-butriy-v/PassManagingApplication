@@ -12,7 +12,6 @@ import com.example.internal.input.reqreply.FindPassByIdResponse
 import com.example.internal.input.reqreply.TransferPassRequest
 import com.example.internal.input.reqreply.TransferPassResponse
 import com.example.passmanagersvc.util.PassFixture.passToCreate
-import com.example.passmanagersvc.web.mapper.proto.DecimalProtoMapper.toBDecimal
 import org.bson.types.ObjectId
 
 object PassProtoFixture {

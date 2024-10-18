@@ -1,11 +1,11 @@
 package com.example.passmanagersvc.web.mapper.proto.pass
 
 import com.example.core.exception.PassNotFoundException
+import com.example.core.web.mapper.proto.DecimalProtoMapper.toBDecimal
 import com.example.internal.commonmodels.Error
 import com.example.internal.commonmodels.Pass
 import com.example.internal.input.reqreply.FindPassByIdResponse
 import com.example.passmanagersvc.domain.MongoPass
-import com.example.passmanagersvc.web.mapper.proto.DecimalProtoMapper.toBDecimal
 
 object FindPassByIdMapper {
     fun MongoPass.toProto(): Pass {
