@@ -3,7 +3,7 @@ spring:
     mongodb:
       uri: mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}:${MONGODB_PORT}/${MONGODB_DATABASE}?authSource=admin
 mongock:
-  migration-scan-package: com.example.passmanager.migration
+  migration-scan-package: com.example.passmanagersvc.migration
 nats:
   uri: ${NATS_CONNECTION_URI}
 server:
