@@ -3,6 +3,6 @@ spring:
     name: PassManagingApplication
   data:
     mongodb:
-      uri: mongodb://root:test@localhost:27018/test_db?authSource=admin
+      uri: mongodb://root:test@localhost:27017/test_db?authSource=admin
 nats:
-  uri: nats://localhost:4223
+  uri: nats://localhost:4222
