@@ -17,17 +17,12 @@ spec:
     spec:
       containers:
         - name: app
-          image: passmanagingapplication-app
+          image: pass-manager-svc
           imagePullPolicy: Never
           ports:
-            - containerPort: 8080
+            - containerPort: 8081
               protocol: TCP
           env:
-            - name: APPLICATION_NAME
-              valueFrom:
-                configMapKeyRef:
-                  key: application_name
-                  name: pass-manager-app-configmap
             - name: MONGODB_PORT
               valueFrom:
                 configMapKeyRef:
@@ -53,6 +48,11 @@ spec:
                 secretKeyRef:
                   key: mongo-root-password
                   name: mongodb-secret
+            - name: NATS_CONNECTION_URI
+              valueFrom:
+                configMapKeyRef:
+                  key: nats_uri
+                  name: pass-manager-app-configmap
 ---
 apiVersion: v1
 kind: Service
@@ -63,5 +63,5 @@ spec:
     app: app
   ports:
     - protocol: TCP
-      port: 8080
-      targetPort: 8080
+      port: 8081
+      targetPort: 8081

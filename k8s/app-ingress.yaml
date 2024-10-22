@@ -8,10 +8,10 @@ spec:
     - host: pass-manager.com
       http:
         paths:
-          - path: /
+          - path: /api/v1/owners
             pathType: Prefix
             backend:
               service:
                 name: app-service
                 port:
-                  number: 8080
+                  number: 8081
