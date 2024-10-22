@@ -1,22 +1,37 @@
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: app
+    image: pass-manager-svc
+    container_name: pass-manager-svc
     env_file:
       - .env
     environment:
-      APPLICATION_NAME: ${APPLICATION_NAME}
       MONGODB_PORT: ${MONGODB_PORT}
       MONGODB_HOST: ${MONGODB_HOST}
       MONGODB_DATABASE: ${MONGODB_DATABASE}
       MONGODB_USER: ${MONGO_INITDB_ROOT_USERNAME}
       MONGODB_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      NATS_CONNECTION_URI: ${NATS_CONNECTION_URI}
     ports:
-      - "8080:8080"
+      - "8081:8081"
     depends_on:
       - mongo
+    networks:
+      - backend
+    profiles: [ dev ]
+
+  gateway:
+    image: gateway
+    container_name: gateway
+    env_file:
+      - .env
+    environment:
+      NATS_CONNECTION_URI: ${NATS_CONNECTION_URI}
+    ports:
+      - "8080:8080"
+    networks:
+      - backend
+    profiles: [ dev ]
+
   mongo:
     image: mongo
     restart: always
@@ -30,30 +45,39 @@ services:
       - "27017:27017"
     volumes:
       - db_data:/data/db
+    networks:
+      - backend
     healthcheck:
       test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
       interval: 3s
       timeout: 3s
       retries: 3
-  mongo-express:
-    image: mongo-express
-    container_name: mongo-express
-    depends_on:
-      - mongo
-    restart: always
-    ports:
-      - "8081:8081"
-    env_file:
-      - .env
-    environment:
-      ME_CONFIG_MONGODB_AUTH_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      ME_CONFIG_MONGODB_AUTH_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-      ME_CONFIG_MONGODB_URL: ${ME_CONFIG_MONGODB_URL}
+    profiles: [ dev ]
+
   nats:
     container_name: nats-server
     image: nats
     ports:
       - "4222:4222"
       - "8222:8222"
+    networks:
+      - backend
+    profiles: [ dev, test ]
+
+  mongo-test:
+    image: mongo
+    restart: always
+    container_name: testable_mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: test
+    ports:
+      - "27017:27017"
+    profiles: [ test ]
+
 volumes:
   db_data:
+
+networks:
+  backend:
+    driver: bridge

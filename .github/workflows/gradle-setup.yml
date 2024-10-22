@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
 
       - name: Start containers
-        run: docker compose -f docker-compose-actions.yml up -d
+        run: docker compose --profile test up -d
 
       - name: Setup Java
         uses: actions/setup-java@v4

@@ -1,15 +1,20 @@
 eval $(minikube docker-env)
-docker build -t passmanagingapplication-app -f ~/IdeaProjects/PassManagingApplication/Dockerfile ~/IdeaProjects/PassManagingApplication
+
+docker build --target pass-manager-svc-builder -t pass-manager-svc -f ../Dockerfile ../
+docker build --target gateway-builder -t gateway -f ../Dockerfile ../
 
 minikube addons enable ingress
 
-
-kubectl apply -f mongo-secret.yaml
-kubectl apply -f app-configmap.yaml
-kubectl apply -f mongo.yaml
+kubectl apply -f mongo-secret.yaml \
+              -f app-configmap.yaml \
+              -f mongo.yaml \
+              -f mongo-volume.yaml \
+              -f mongo-pvc.yaml \
+              -f nats.yaml
 
 kubectl wait --for=condition=ready pod -l app=mongodb --timeout=300s
 
-kubectl apply -f mongo-express.yaml
-kubectl apply -f app.yaml
-kubectl apply -f app-ingress.yaml
+kubectl apply -f app.yaml \
+              -f app-ingress.yaml \
+              -f gateway.yaml \
+              -f gateway-ingress.yaml

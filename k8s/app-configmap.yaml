@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: pass-manager-app-configmap
 data:
-  application_name: "PassManagingApplication"
   mongo_port: "27017"
   mongo_host: "mongodb-service"
   mongo_database: "test_db"
+  nats_uri: "nats://nats-service:4222"
