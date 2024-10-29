@@ -2,6 +2,7 @@ package com.example.passmanagersvc.nats.controller
 
 import com.example.internal.NatsSubject.Pass.TRANSFER
 import com.example.internal.input.reqreply.TransferPassResponse
+import com.example.passmanagersvc.kafka.producer.TransferPassMessageProducer
 import com.example.passmanagersvc.repositories.PassOwnerRepository
 import com.example.passmanagersvc.repositories.PassRepository
 import com.example.passmanagersvc.util.IntegrationTest
@@ -11,13 +12,20 @@ import com.example.passmanagersvc.util.PassProtoFixture.failureTransferPassRespo
 import com.example.passmanagersvc.util.PassProtoFixture.failureTransferPassResponseWithPassOwnerNotFound
 import com.example.passmanagersvc.util.PassProtoFixture.successfulTransferPassResponse
 import com.example.passmanagersvc.util.PassProtoFixture.transferPassRequest
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.every
 import io.nats.client.Connection
 import org.assertj.core.api.Assertions.assertThat
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
+import reactor.kotlin.core.publisher.toMono
 import java.time.Duration
 import kotlin.test.Test
 
+@SpringBootTest
+@ActiveProfiles("test")
 internal class TransferPassNatsControllerTest : IntegrationTest() {
     @Autowired
     private lateinit var connection: Connection
@@ -28,6 +36,9 @@ internal class TransferPassNatsControllerTest : IntegrationTest() {
     @Autowired
     private lateinit var passOwnerRepository: PassOwnerRepository
 
+    @MockkBean
+    private lateinit var transferPassMessageProducer: TransferPassMessageProducer
+
     @Test
     fun `transferring pass should return successful proto response`() {
         // GIVEN
@@ -37,6 +48,8 @@ internal class TransferPassNatsControllerTest : IntegrationTest() {
         val pass = passRepository.insert(passToCreate).block()!!
         val exceptedResponse = successfulTransferPassResponse
         val transferPassRequest = transferPassRequest(pass.id.toString(), passOwner.id.toString())
+
+        every { transferPassMessageProducer.sendTransferPassMessage(any(), any(), any()) } returns Unit.toMono()
 
         // WHEN
         val transferMessage = connection.requestWithTimeout(

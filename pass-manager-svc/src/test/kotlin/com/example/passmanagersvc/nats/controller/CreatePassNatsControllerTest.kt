@@ -36,7 +36,7 @@ internal class CreatePassNatsControllerTest : IntegrationTest() {
         val passType = passTypeRepository.insert(passTypeToCreate).block()
         val pass = passToCreate.copy(passTypeId = passType!!.id, passOwnerId = passOwner!!.id)
         val expectedResponse = pass.toProto().toSuccessCreatePassResponse()
-        val createRequest = createPassRequest(passOwner.id.toString(), passType.id.toString())
+        val createRequest = createPassRequest(pass)
 
         // WHEN
         val createdPassMessage = connection.requestWithTimeout(
@@ -53,10 +53,11 @@ internal class CreatePassNatsControllerTest : IntegrationTest() {
     @Test
     fun `creating with non-existent pass type should return not found response`() {
         // GIVEN
-        val passOwner = passOwnerRepository.insert(getOwnerWithUniqueFields()).block()
+        val passOwner = passOwnerRepository.insert(getOwnerWithUniqueFields()).block()!!
         val invalidPassTypeId = ObjectId.get()
         val expectedResponse = PassProtoFixture.failureCreatePassResponseWithPassTypeNotFound(invalidPassTypeId)
-        val invalidCreateRequest = createPassRequest(passOwner?.id.toString(), invalidPassTypeId.toString())
+        val passToCreate = passToCreate.copy(passOwnerId = passOwner.id, passTypeId = invalidPassTypeId)
+        val invalidCreateRequest = createPassRequest(passToCreate)
 
         // WHEN
         val createdPassMessage = connection.requestWithTimeout(
@@ -73,10 +74,12 @@ internal class CreatePassNatsControllerTest : IntegrationTest() {
     @Test
     fun `creating with non-existent pass owner should return not found response`() {
         // GIVEN
-        val invalidPassOwnerId = ObjectId.get().toString()
-        val passType = passTypeRepository.insert(passTypeToCreate).block()
-        val invalidCreateRequest = createPassRequest(invalidPassOwnerId, passType?.id.toString())
-        val expectedResponse = PassProtoFixture.failureCreatePassResponseWithPassOwnerNotFound(invalidPassOwnerId)
+        val invalidPassOwnerId = ObjectId.get()
+        val passType = passTypeRepository.insert(passTypeToCreate).block()!!
+        val invalidCreateRequest =
+            createPassRequest(passToCreate.copy(passTypeId = passType.id, passOwnerId = invalidPassOwnerId))
+        val expectedResponse =
+            PassProtoFixture.failureCreatePassResponseWithPassOwnerNotFound(invalidPassOwnerId.toString())
 
         // WHEN
         val createdPassMessage = connection.requestWithTimeout(

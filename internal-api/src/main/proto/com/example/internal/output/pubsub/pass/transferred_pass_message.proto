@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package com.example.internal.input.reqreply;
+
+import "com/example/internal/commonmodels/pass.proto";
+
+
+option java_multiple_files = true;
+
+message TransferredPassMessage {
+  string previous_pass_owner_id = 1;
+  commonmodels.Pass pass = 2;
+  string pass_id = 3;
+}

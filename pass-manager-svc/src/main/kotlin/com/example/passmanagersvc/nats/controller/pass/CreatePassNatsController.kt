@@ -28,13 +28,15 @@ class CreatePassNatsController(
     override val responseClass = CreatePassResponse.getDefaultInstance()
 
     override fun handle(request: CreatePassRequest): Mono<CreatePassResponse> {
-        return passService.create(request.toModel(), request.passOwnerId, request.passTypeId)
-            .map { createdPass -> createdPass.toProto() }
-            .map { proto -> proto.toSuccessCreatePassResponse() }
-            .onErrorResume {
-                logger.error("Error occurred while executing", it)
-                failureCreatedPassResponse(it).toMono()
-            }
+        return request.passToCreate.let { protoPass ->
+            passService.create(protoPass.toModel(), protoPass.passOwnerId, protoPass.passTypeId)
+                .map { createdPass -> createdPass.toProto() }
+                .map { proto -> proto.toSuccessCreatePassResponse() }
+                .onErrorResume {
+                    logger.error("Error occurred while executing", it)
+                    failureCreatedPassResponse(it).toMono()
+                }
+        }
     }
 
     companion object {
