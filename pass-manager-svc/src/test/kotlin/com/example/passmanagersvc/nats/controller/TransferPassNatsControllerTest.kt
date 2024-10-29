@@ -44,7 +44,7 @@ internal class TransferPassNatsControllerTest : IntegrationTest() {
             getOwnerWithUniqueFields()
         ).block()!!
         val pass = passRepository.insert(passToCreate).block()!!
-        val exceptedResponse = successfulTransferPassResponse
+        val expectedResponse = successfulTransferPassResponse
         val transferPassRequest = transferPassRequest(pass.id.toString(), passOwner.id.toString())
 
         every { transferPassMessageProducer.sendTransferPassMessage(any(), any(), any()) } returns Unit.toMono()
@@ -58,7 +58,7 @@ internal class TransferPassNatsControllerTest : IntegrationTest() {
 
         // THEN
         val actualResponse = TransferPassResponse.parser().parseFrom(transferMessage.get().data)
-        assertThat(actualResponse).isEqualTo(exceptedResponse)
+        assertThat(actualResponse).isEqualTo(expectedResponse)
     }
 
     @Test
