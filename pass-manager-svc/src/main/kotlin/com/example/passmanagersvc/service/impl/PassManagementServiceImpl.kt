@@ -7,6 +7,7 @@ import com.example.passmanagersvc.service.PassOwnerService
 import com.example.passmanagersvc.service.PassService
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 import reactor.kotlin.core.util.function.component1
 import reactor.kotlin.core.util.function.component2
 
@@ -26,13 +27,14 @@ internal class PassManagementServiceImpl(
             .flatMap { (pass, passOwner) ->
                 passService.update(pass.copy(passOwnerId = passOwner.id)).map { it to passOwner.id }
             }
-            .flatMap { (updatedPass, previousPassOwnerId) ->
+            .publishOn(Schedulers.boundedElastic())
+            .doOnNext { (updatedPass, previousPassOwnerId) ->
                 val key = updatedPass.passTypeId.toString()
                 transferPassMessageProducer.sendTransferPassMessage(
                     updatedPass,
                     key,
                     previousPassOwnerId.toString()
-                )
+                ).subscribe()
             }
             .thenReturn(Unit)
     }
