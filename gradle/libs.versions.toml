@@ -53,4 +53,3 @@ nats = { group = "io.nats", name = "jnats", version.ref = "nats" }
 nats-embedded = { group = "berlin.yuna", name = "nats-server-embedded", version.ref = "nats-embedded" }
 spring-kafka = { module = "org.springframework.kafka:spring-kafka", version.ref = "spring-kafka" }
 reactor-kafka = { module = "io.projectreactor.kafka:reactor-kafka", version.ref = "reactor-kafka" }
-spring-kafka-test = { module = "org.springframework.kafka:spring-kafka-test", version.ref = "spring-kafka" }

@@ -17,6 +17,5 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":internal-api"))
     testImplementation(libs.nats.embedded)
-    testImplementation(libs.spring.kafka.test)
     testFixturesImplementation(libs.faker)
 }
