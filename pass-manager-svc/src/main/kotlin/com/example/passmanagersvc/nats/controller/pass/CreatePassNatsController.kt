@@ -33,7 +33,7 @@ class CreatePassNatsController(
                 .map { createdPass -> createdPass.toProto() }
                 .map { proto -> proto.toSuccessCreatePassResponse() }
                 .onErrorResume {
-                    logger.error("Error occurred while executing", it)
+                    logger.error("Error occurred in NATS controller. ", it)
                     failureCreatedPassResponse(it).toMono()
                 }
         }

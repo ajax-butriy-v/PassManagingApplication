@@ -26,6 +26,7 @@ import reactor.kotlin.test.test
 import java.math.BigDecimal
 import java.time.LocalDate
 import kotlin.test.Test
+import kotlin.test.assertFalse
 
 @ExtendWith(MockKExtension::class)
 internal class PassOwnerStatisticsServiceImplTest {
@@ -121,14 +122,14 @@ internal class PassOwnerStatisticsServiceImplTest {
         every { passTypeService.getById(any()) } returns passTypeWithNullPrice.toMono()
 
         // WHEN
-        val actual = passOwnerStatisticsService.mapToStatisticsWithPassTypeId(
+        val actual = passOwnerStatisticsService.createTransferPassStatistics(
             passTypeWithNullPrice,
             passWithNullPurchasedFor,
             previousPassOwnerId
         )
 
         // THEN
-        assertThat(actual.first.wasPurchasedWithDiscount).isFalse()
-        assertThat(actual.second).isEqualTo(singlePassType.id.toString())
+        assertFalse(message = "Difference in price should be zero") { actual.wasPurchasedWithDiscount }
+        assertThat(actual.passTypeId).isEqualTo(singlePassType.id.toString())
     }
 }

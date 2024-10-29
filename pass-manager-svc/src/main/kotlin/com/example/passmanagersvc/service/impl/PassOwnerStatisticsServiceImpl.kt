@@ -10,12 +10,12 @@ import com.example.passmanagersvc.service.PassOwnerStatisticsService
 import com.example.passmanagersvc.service.PassTypeService
 import com.example.passmanagersvc.web.dto.PriceDistribution
 import com.example.passmanagersvc.web.mapper.proto.pass.TransferredPassStatisticsMessageMapper.toTransferPassStatisticsMessage
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.math.BigDecimal
+import java.time.Duration
+import java.time.Instant
 import java.time.LocalDate
 
 @Service
@@ -36,32 +36,29 @@ internal class PassOwnerStatisticsServiceImpl(
 
     override fun publishTransferPassStatistics(pass: MongoPass, previousPassOwnerId: String): Mono<Unit> {
         return passTypeService.getById(pass.passTypeId.toString())
-            .map { passType -> mapToStatisticsWithPassTypeId(passType, pass, previousPassOwnerId) }
-            .flatMap { (message, passTypeId) ->
-                transferPassStatisticsMessageProducer.sendTransferPassStatisticsMessage(message, passTypeId)
+            .map { passType -> createTransferPassStatistics(passType, pass, previousPassOwnerId) }
+            .flatMap { message ->
+                transferPassStatisticsMessageProducer.sendTransferPassStatisticsMessage(message, message.passTypeId)
             }
             .thenReturn(Unit)
     }
 
-    fun mapToStatisticsWithPassTypeId(
+    fun createTransferPassStatistics(
         passType: MongoPassType,
         pass: MongoPass,
         previousOwnerId: String,
-    ): Pair<TransferredPassStatisticsMessage, String> {
+    ): TransferredPassStatisticsMessage {
         val passTypePrice = passType.price ?: BigDecimal.ZERO
         val deltaBetweenPassAndPassTypePrices = passTypePrice - (pass.purchasedFor ?: BigDecimal.ZERO)
         val isDeltaPositive = deltaBetweenPassAndPassTypePrices.signum() > 0
+        val durationUntilPassExpiration = Duration.between(Instant.now(), passType.activeTo)
 
         val transferStatisticsMessage = pass.toTransferPassStatisticsMessage(
             passType = passType,
             previousOwnerId = previousOwnerId,
-            isDeltaPositive = isDeltaPositive
+            isDeltaPositive = isDeltaPositive,
+            durationUntilPassExpiration = durationUntilPassExpiration
         )
-        log.info("Statistics message {}", transferStatisticsMessage)
-        return transferStatisticsMessage to passType.id.toString()
-    }
-
-    companion object {
-        val log: Logger = LoggerFactory.getLogger(this::class.java)
+        return transferStatisticsMessage
     }
 }

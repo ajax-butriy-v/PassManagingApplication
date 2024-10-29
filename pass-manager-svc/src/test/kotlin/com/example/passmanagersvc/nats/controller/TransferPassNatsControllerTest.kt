@@ -6,6 +6,7 @@ import com.example.passmanagersvc.kafka.producer.TransferPassMessageProducer
 import com.example.passmanagersvc.repositories.PassOwnerRepository
 import com.example.passmanagersvc.repositories.PassRepository
 import com.example.passmanagersvc.util.IntegrationTest
+import com.example.passmanagersvc.util.MockkKafka
 import com.example.passmanagersvc.util.PassFixture.passToCreate
 import com.example.passmanagersvc.util.PassOwnerFixture.getOwnerWithUniqueFields
 import com.example.passmanagersvc.util.PassProtoFixture.failureTransferPassResponseWithPassNotFound
@@ -18,14 +19,11 @@ import io.nats.client.Connection
 import org.assertj.core.api.Assertions.assertThat
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
 import reactor.kotlin.core.publisher.toMono
 import java.time.Duration
 import kotlin.test.Test
 
-@SpringBootTest
-@ActiveProfiles("test")
+@MockkKafka
 internal class TransferPassNatsControllerTest : IntegrationTest() {
     @Autowired
     private lateinit var connection: Connection

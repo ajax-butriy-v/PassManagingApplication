@@ -4,7 +4,6 @@ package com.example.internal.input.reqreply;
 
 import "com/example/internal/commonmodels/pass.proto";
 
-
 option java_multiple_files = true;
 
 message TransferredPassMessage {

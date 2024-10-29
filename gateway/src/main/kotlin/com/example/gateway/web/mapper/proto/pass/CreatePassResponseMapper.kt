@@ -22,7 +22,7 @@ object CreatePassResponseMapper {
 
     fun PassDto.toCreatePassRequest(): CreatePassRequest {
         return CreatePassRequest.newBuilder().also {
-            it.passToCreate = this.toProto()
+            it.passToCreate = toProto()
         }.build()
     }
 
