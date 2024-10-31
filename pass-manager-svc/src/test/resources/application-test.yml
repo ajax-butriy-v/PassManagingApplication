@@ -1,8 +1,13 @@
 spring:
-  application:
-    name: PassManagingApplication
   data:
     mongodb:
       uri: mongodb://root:test@localhost:27017/test_db?authSource=admin
+  kafka:
+    consumer:
+      auto-offset-reset: earliest
+      properties:
+        session.timeout.ms: 10000
+        max.poll.interval.ms: 10000
+    bootstrap-servers: http://localhost:29092
 nats:
   uri: nats://localhost:4222

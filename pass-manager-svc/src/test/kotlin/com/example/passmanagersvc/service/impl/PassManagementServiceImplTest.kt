@@ -1,5 +1,6 @@
 package com.example.passmanagersvc.service.impl
 
+import com.example.passmanagersvc.kafka.producer.TransferPassMessageProducer
 import com.example.passmanagersvc.repositories.PassRepository
 import com.example.passmanagersvc.service.PassOwnerService
 import com.example.passmanagersvc.service.PassService
@@ -10,6 +11,7 @@ import com.example.passmanagersvc.util.PassOwnerFixture.passOwnerIdFromDb
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
 import io.mockk.verifyOrder
@@ -28,6 +30,9 @@ internal class PassManagementServiceImplTest {
 
     @MockK
     private lateinit var passRepository: PassRepository
+
+    @RelaxedMockK
+    private lateinit var transferPassMessageProducer: TransferPassMessageProducer
 
     @InjectMockKs
     private lateinit var passManagementService: PassManagementServiceImpl
@@ -57,7 +62,11 @@ internal class PassManagementServiceImplTest {
         // GIVEN
         every { passService.getById(any()) } returns passFromDb.toMono()
         every { passOwnerService.getById(any()) } returns passOwnerFromDb.toMono()
-        every { passService.update(any()) } returns passFromDb.toMono()
+
+        val updatedPass = passFromDb.copy(passOwnerId = passOwnerFromDb.id)
+
+        every { passService.update(any()) } returns updatedPass.toMono()
+        every { transferPassMessageProducer.sendTransferPassMessage(any(), any(), any()) } returns Unit.toMono()
 
         // WHEN
         val transfer = passManagementService.transferPass(singlePassId, passOwnerIdFromDb)
@@ -71,6 +80,7 @@ internal class PassManagementServiceImplTest {
             passService.getById(any())
             passOwnerService.getById(any())
             passService.update(any())
+            transferPassMessageProducer.sendTransferPassMessage(any(), any(), any())
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.example.passmanagersvc.util
 
-import com.example.core.web.mapper.proto.DecimalProtoMapper.toBDecimal
 import com.example.internal.commonmodels.Error
 import com.example.internal.input.reqreply.CancelPassRequest
 import com.example.internal.input.reqreply.CancelPassResponse
@@ -12,7 +11,8 @@ import com.example.internal.input.reqreply.FindPassByIdRequest
 import com.example.internal.input.reqreply.FindPassByIdResponse
 import com.example.internal.input.reqreply.TransferPassRequest
 import com.example.internal.input.reqreply.TransferPassResponse
-import com.example.passmanagersvc.util.PassFixture.passToCreate
+import com.example.passmanagersvc.domain.MongoPass
+import com.example.passmanagersvc.web.mapper.proto.pass.FindPassByIdMapper.toProto
 import org.bson.types.ObjectId
 
 object PassProtoFixture {
@@ -38,11 +38,9 @@ object PassProtoFixture {
         }.build()
     }
 
-    fun createPassRequest(passOwnerId: String, passTypeId: String): CreatePassRequest {
+    fun createPassRequest(passToCreate: MongoPass): CreatePassRequest {
         return CreatePassRequest.newBuilder()
-            .setPassOwnerId(passOwnerId)
-            .setPassTypeId(passTypeId)
-            .setPurchasedFor(passToCreate.purchasedFor!!.toBDecimal())
+            .setPassToCreate(passToCreate.toProto())
             .build()
     }
 

@@ -1,5 +1,6 @@
 package com.example.passmanagersvc.service.impl
 
+import com.example.passmanagersvc.kafka.producer.TransferPassMessageProducer
 import com.example.passmanagersvc.repositories.PassRepository
 import com.example.passmanagersvc.service.PassManagementService
 import com.example.passmanagersvc.service.PassOwnerService
@@ -14,6 +15,7 @@ internal class PassManagementServiceImpl(
     private val passOwnerService: PassOwnerService,
     private val passService: PassService,
     private val passRepository: PassRepository,
+    private val transferPassMessageProducer: TransferPassMessageProducer,
 ) : PassManagementService {
     override fun cancelPass(passOwnerId: String, passId: String): Mono<Unit> {
         return passOwnerService.getById(passOwnerId).then(passRepository.deleteById(passId))
@@ -21,7 +23,17 @@ internal class PassManagementServiceImpl(
 
     override fun transferPass(passId: String, targetPassOwnerId: String): Mono<Unit> {
         return Mono.zip(passService.getById(passId), passOwnerService.getById(targetPassOwnerId))
-            .flatMap { (pass, passOwner) -> passService.update(pass.copy(passOwnerId = passOwner.id)) }
+            .flatMap { (pass, passOwner) ->
+                passService.update(pass.copy(passOwnerId = passOwner.id)).map { it to passOwner.id }
+            }
+            .flatMap { (updatedPass, previousPassOwnerId) ->
+                val key = updatedPass.passTypeId.toString()
+                transferPassMessageProducer.sendTransferPassMessage(
+                    updatedPass,
+                    key,
+                    previousPassOwnerId.toString()
+                )
+            }
             .thenReturn(Unit)
     }
 }

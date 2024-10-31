@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package com.example.internal.input.reqreply;
+
+import "google/protobuf/duration.proto";
+
+option java_multiple_files = true;
+
+message TransferredPassStatisticsMessage {
+  string current_pass_owner_id = 1;
+  string pass_id = 2;
+  string pass_type_id = 3;
+  bool was_purchased_with_discount = 4;
+  google.protobuf.Duration time_until_expiration = 5;
+  string previous_pass_owner_id = 6;
+}

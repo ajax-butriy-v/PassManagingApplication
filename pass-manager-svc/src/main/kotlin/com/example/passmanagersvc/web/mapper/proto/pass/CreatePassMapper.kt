@@ -5,13 +5,12 @@ import com.example.core.exception.PassTypeNotFoundException
 import com.example.core.web.mapper.proto.DecimalProtoMapper.toBigDecimal
 import com.example.internal.commonmodels.Error
 import com.example.internal.commonmodels.Pass
-import com.example.internal.input.reqreply.CreatePassRequest
 import com.example.internal.input.reqreply.CreatePassResponse
 import com.example.passmanagersvc.domain.MongoPass
 import org.bson.types.ObjectId
 
 object CreatePassMapper {
-    fun CreatePassRequest.toModel(): MongoPass {
+    fun Pass.toModel(): MongoPass {
         return MongoPass(
             id = null,
             purchasedFor = purchasedFor.toBigDecimal(),

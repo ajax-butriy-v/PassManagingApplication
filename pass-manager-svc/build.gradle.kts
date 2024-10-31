@@ -12,6 +12,8 @@ dependencies {
     implementation(libs.mongock.springboot.v3)
     implementation(libs.mongock.mongodb.springdata.v4.driver)
     implementation(libs.nats)
+    implementation(libs.spring.kafka)
+    implementation(libs.reactor.kafka)
     implementation(project(":core"))
     implementation(project(":internal-api"))
     testImplementation(libs.nats.embedded)
