@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package com.example.internal.input.reqreply;
 
-import "com/example/internal/commonmodels/pass.proto";
-import "com/example/internal/commonmodels/error.proto";
+import "com/example/commonmodel/pass.proto";
+import "com/example/commonmodel/error.proto";
 
 option java_multiple_files = true;
 
@@ -18,14 +18,14 @@ message FindPassByIdResponse {
   }
 
   message Success {
-    commonmodels.Pass pass = 1;
+    commonmodel.Pass pass = 1;
   }
 
   message Failure {
     string message = 100;
 
     oneof error {
-      commonmodels.Error not_found_by_id = 1;
+      commonmodel.Error not_found_by_id = 1;
     }
   }
 }

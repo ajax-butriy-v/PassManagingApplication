@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package com.example.internal.commonmodels;
+package com.example.commonmodel;
 
-import "com/example/internal/commonmodels/decimal.proto";
+import "com/example/commonmodel/decimal.proto";
 
 option java_multiple_files = true;
 

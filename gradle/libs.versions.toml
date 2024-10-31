@@ -17,6 +17,9 @@ nats = "2.20.2"
 nats-embedded = "2.10.22-rc.2"
 reactor-kafka = "1.3.23"
 spring-kafka = "3.2.4"
+grpc = "1.63.0"
+grpc-swag = "1.63.0"
+grpc-reactor = "1.2.4"
 
 
 [plugins]
@@ -53,3 +56,5 @@ nats = { group = "io.nats", name = "jnats", version.ref = "nats" }
 nats-embedded = { group = "berlin.yuna", name = "nats-server-embedded", version.ref = "nats-embedded" }
 spring-kafka = { module = "org.springframework.kafka:spring-kafka", version.ref = "spring-kafka" }
 reactor-kafka = { module = "io.projectreactor.kafka:reactor-kafka", version.ref = "reactor-kafka" }
+grpc-swag = { module = "io.grpc:protoc-gen-grpc-java", version.ref = "grpc-swag" }
+grpc-reactor = { module = "com.salesforce.servicelibs:reactor-grpc", version.ref = "grpc-reactor" }

@@ -1,18 +1,17 @@
 syntax = "proto3";
 
-package com.example.internal.input.reqreply;
+package com.example.grpcapi.reqrep.pass;
 
 import "com/example/commonmodel/pass.proto";
-import "com/example/commonmodel/decimal.proto";
 import "com/example/commonmodel/error.proto";
 
 option java_multiple_files = true;
 
-message CreatePassRequest {
-  commonmodel.Pass passToCreate = 1;
+message GetPassByIdRequest {
+  string id = 1;
 }
 
-message CreatePassResponse {
+message GetPassByIdResponse {
   oneof response {
     Success success = 1;
     Failure failure = 2;
@@ -26,8 +25,7 @@ message CreatePassResponse {
     string message = 100;
 
     oneof error {
-      commonmodel.Error owner_not_found_by_id = 2;
-      commonmodel.Error pass_type_not_found_id = 3;
+        commonmodel.Error not_found_by_id = 1;
     }
   }
 }

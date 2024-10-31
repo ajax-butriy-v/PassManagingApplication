@@ -5,7 +5,6 @@ plugins {
 
 dependencies {
     api(libs.protobuf)
-    api(project(":common-proto"))
 }
 protobuf {
     protoc {

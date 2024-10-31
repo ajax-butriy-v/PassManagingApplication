@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package com.example.grpcapi.service;
+
+import "com/example/grpcapi/reqrep/pass/get_all_transferred_passes.proto";
+import "com/example/grpcapi/reqrep/pass/get_pass_by_id.proto";
+
+
+service PassService {
+  rpc getAllTransferredPasses(grpcapi.reqrep.pass.GetAllTransferredPassesRequest)
+      returns (stream grpcapi.reqrep.pass.GetAllTransferredPassesResponse);
+
+  rpc getPassById(grpcapi.reqrep.pass.GetAllTransferredPassesRequest)
+      returns (grpcapi.reqrep.pass.GetPassByIdResponse);
+}
