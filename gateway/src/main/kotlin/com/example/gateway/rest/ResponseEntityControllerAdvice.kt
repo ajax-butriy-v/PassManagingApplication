@@ -1,4 +1,4 @@
-package com.example.gateway.web
+package com.example.gateway.rest
 
 import com.example.core.exception.PassNotFoundException
 import com.example.core.exception.PassOwnerNotFoundException

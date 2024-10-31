@@ -14,12 +14,12 @@ import reactor.kotlin.core.publisher.toMono
 
 @Component
 class TransferPassMessageConsumer(
-    private val kafkaReceiver: KafkaReceiver<String, ByteArray>,
+    private val transferPassKafkaReceiver: KafkaReceiver<String, ByteArray>,
     private val passOwnerStatisticsService: PassOwnerStatisticsService,
 ) {
     @EventListener(ApplicationReadyEvent::class)
     fun listenToTransferPassMessageTopic() {
-        kafkaReceiver.receiveBatch()
+        transferPassKafkaReceiver.receiveBatch()
             .flatMap { receiverRecords ->
                 receiverRecords.flatMap { record ->
                     record.toMono()

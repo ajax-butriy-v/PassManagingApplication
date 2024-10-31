@@ -1,11 +1,11 @@
-package com.example.gateway.web.mapper.proto.pass
+package com.example.gateway.mapper.rest
 
+import com.example.commonmodel.Pass
 import com.example.core.exception.InternalRuntimeException
 import com.example.core.exception.PassNotFoundException
 import com.example.core.web.mapper.proto.DecimalProtoMapper.toBDecimal
 import com.example.core.web.mapper.proto.DecimalProtoMapper.toBigDecimal
-import com.example.gateway.web.dto.PassDto
-import com.example.internal.commonmodels.Pass
+import com.example.gateway.dto.PassDto
 import com.example.internal.input.reqreply.FindPassByIdResponse
 import com.example.internal.input.reqreply.FindPassByIdResponse.Failure.ErrorCase.ERROR_NOT_SET
 import com.example.internal.input.reqreply.FindPassByIdResponse.Failure.ErrorCase.NOT_FOUND_BY_ID

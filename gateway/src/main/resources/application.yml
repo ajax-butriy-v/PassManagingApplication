@@ -3,3 +3,9 @@ nats:
 server:
   servlet:
     context-path: /api/v1
+
+grpc:
+  server:
+    port: 9091
+    security:
+      enabled: false

@@ -1,4 +1,4 @@
-package com.example.gateway.web.dto
+package com.example.gateway.dto
 
 import com.example.gateway.configuration.ValidObjectIdFormat
 import jakarta.validation.constraints.NotNull

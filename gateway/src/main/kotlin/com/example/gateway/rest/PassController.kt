@@ -1,13 +1,13 @@
-package com.example.gateway.web.rest
+package com.example.gateway.rest
 
 import com.example.gateway.configuration.NatsClient
-import com.example.gateway.web.dto.PassDto
-import com.example.gateway.web.mapper.proto.pass.CancelPassResponseMapper.toUnitResponse
-import com.example.gateway.web.mapper.proto.pass.CreatePassResponseMapper.toCreatePassRequest
-import com.example.gateway.web.mapper.proto.pass.CreatePassResponseMapper.toDto
-import com.example.gateway.web.mapper.proto.pass.DeletePassByIdResponseMapper.toDeleteResponse
-import com.example.gateway.web.mapper.proto.pass.FindPassByIdResponseMapper.toDto
-import com.example.gateway.web.mapper.proto.pass.TransferPassResponseMapper.toUnitResponse
+import com.example.gateway.dto.PassDto
+import com.example.gateway.mapper.rest.CancelPassResponseMapper.toUnitResponse
+import com.example.gateway.mapper.rest.CreatePassResponseMapper.toCreatePassRequest
+import com.example.gateway.mapper.rest.CreatePassResponseMapper.toDto
+import com.example.gateway.mapper.rest.DeletePassByIdResponseMapper.toDeleteResponse
+import com.example.gateway.mapper.rest.FindPassByIdResponseMapper.toDto
+import com.example.gateway.mapper.rest.TransferPassResponseMapper.toUnitResponse
 import com.example.internal.NatsSubject.Pass.CANCEL
 import com.example.internal.NatsSubject.Pass.CREATE
 import com.example.internal.NatsSubject.Pass.DELETE_BY_ID

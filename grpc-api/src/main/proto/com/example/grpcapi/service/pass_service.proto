@@ -4,12 +4,13 @@ package com.example.grpcapi.service;
 
 import "com/example/grpcapi/reqrep/pass/get_all_transferred_passes.proto";
 import "com/example/grpcapi/reqrep/pass/get_pass_by_id.proto";
+import "com/example/commonmodel/pass.proto";
 
 
 service PassService {
   rpc getAllTransferredPasses(grpcapi.reqrep.pass.GetAllTransferredPassesRequest)
-      returns (stream grpcapi.reqrep.pass.GetAllTransferredPassesResponse);
+      returns (stream commonmodel.Pass);
 
-  rpc getPassById(grpcapi.reqrep.pass.GetAllTransferredPassesRequest)
-      returns (grpcapi.reqrep.pass.GetPassByIdResponse);
+  rpc findPassById(grpcapi.reqrep.pass.FindPassByIdRequest)
+      returns (grpcapi.reqrep.pass.FindPassByIdResponse);
 }

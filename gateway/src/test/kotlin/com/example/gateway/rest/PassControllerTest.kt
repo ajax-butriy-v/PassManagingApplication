@@ -1,6 +1,8 @@
-package com.example.gateway.web.rest
+package com.example.gateway.rest
 
 import com.example.gateway.configuration.NatsClient
+import com.example.gateway.dto.PassDto
+import com.example.gateway.mapper.rest.CreatePassResponseMapper.toCreatePassRequest
 import com.example.gateway.util.PassDtoFixture.passDto
 import com.example.gateway.util.PassDtoFixture.passId
 import com.example.gateway.util.PassProtoFixture
@@ -13,8 +15,6 @@ import com.example.gateway.util.PassProtoFixture.successfulCreatePassResponse
 import com.example.gateway.util.PassProtoFixture.successfulFindPassByIdResponse
 import com.example.gateway.util.PassProtoFixture.successfulTransferPassResponse
 import com.example.gateway.util.PassProtoFixture.transferPassRequest
-import com.example.gateway.web.dto.PassDto
-import com.example.gateway.web.mapper.proto.pass.CreatePassResponseMapper.toCreatePassRequest
 import com.example.internal.NatsSubject.Pass.CANCEL
 import com.example.internal.NatsSubject.Pass.CREATE
 import com.example.internal.NatsSubject.Pass.DELETE_BY_ID

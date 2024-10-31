@@ -1,4 +1,4 @@
-package com.example.passmanagersvc.configuration
+package com.example.gateway.configuration
 
 import io.nats.client.Connection
 import io.nats.client.Dispatcher
@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class DispatcherConfig {
+class NatsDispatcherConfig {
     @Bean
     fun dispatcher(connection: Connection): Dispatcher = connection.createDispatcher()
 }

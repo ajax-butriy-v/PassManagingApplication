@@ -1,15 +1,15 @@
-package com.example.gateway.web.mapper.proto.pass
+package com.example.gateway.mapper.rest
 
 import com.example.core.exception.InternalRuntimeException
 import com.example.core.exception.PassOwnerNotFoundException
 import com.example.core.exception.PassTypeNotFoundException
+import com.example.gateway.mapper.rest.CreatePassResponseMapper.toDto
 import com.example.gateway.util.PassDtoFixture
 import com.example.gateway.util.PassProtoFixture.failureCreatePassResponse
 import com.example.gateway.util.PassProtoFixture.failureCreatePassResponseWithPassOwnerNotFound
 import com.example.gateway.util.PassProtoFixture.failureCreatePassResponseWithPassTypeNotFound
 import com.example.gateway.util.PassProtoFixture.protoPass
 import com.example.gateway.util.PassProtoFixture.successfulCreatePassResponse
-import com.example.gateway.web.mapper.proto.pass.CreatePassResponseMapper.toDto
 import com.example.internal.input.reqreply.CreatePassResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.bson.types.ObjectId

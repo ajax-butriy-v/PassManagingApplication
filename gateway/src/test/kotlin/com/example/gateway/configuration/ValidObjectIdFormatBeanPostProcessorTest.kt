@@ -1,14 +1,14 @@
 package com.example.gateway.configuration
 
+import com.example.gateway.dto.PassDto
 import com.example.gateway.exception.InvalidObjectIdFormatException
+import com.example.gateway.mapper.rest.CreatePassResponseMapper.toCreatePassRequest
+import com.example.gateway.rest.PassController
 import com.example.gateway.util.PassDtoFixture.passDto
 import com.example.gateway.util.PassDtoFixture.passDtoWithInvalidIdFormats
 import com.example.gateway.util.PassProtoFixture.failureCreatePassResponseWithPassOwnerNotFound
 import com.example.gateway.util.PassProtoFixture.protoPass
 import com.example.gateway.util.PassProtoFixture.successfulCreatePassResponse
-import com.example.gateway.web.dto.PassDto
-import com.example.gateway.web.mapper.proto.pass.CreatePassResponseMapper.toCreatePassRequest
-import com.example.gateway.web.rest.PassController
 import com.example.internal.NatsSubject.Pass.CREATE
 import com.example.internal.input.reqreply.CreatePassResponse
 import io.mockk.every

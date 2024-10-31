@@ -1,13 +1,13 @@
-package com.example.gateway.web.mapper.proto.pass
+package com.example.gateway.mapper.rest
 
 import com.example.core.exception.InternalRuntimeException
 import com.example.core.exception.PassNotFoundException
 import com.example.core.exception.PassOwnerNotFoundException
+import com.example.gateway.mapper.rest.TransferPassResponseMapper.toUnitResponse
 import com.example.gateway.util.PassProtoFixture.failureTransferPassResponse
 import com.example.gateway.util.PassProtoFixture.failureTransferPassResponseWithPassNotFound
 import com.example.gateway.util.PassProtoFixture.failureTransferPassResponseWithPassOwnerNotFound
 import com.example.gateway.util.PassProtoFixture.successfulTransferPassResponse
-import com.example.gateway.web.mapper.proto.pass.TransferPassResponseMapper.toUnitResponse
 import com.example.internal.input.reqreply.TransferPassResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.bson.types.ObjectId

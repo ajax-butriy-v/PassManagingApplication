@@ -1,4 +1,4 @@
-package com.example.gateway.web.mapper.proto.pass
+package com.example.gateway.mapper.rest
 
 import com.example.core.exception.InternalRuntimeException
 import com.example.core.exception.PassNotFoundException
