@@ -1,10 +1,10 @@
 package com.example.gateway.mapper.grpc
 
-import com.example.commonmodel.Error
 import com.example.core.exception.InternalRuntimeException
 import com.example.core.exception.PassNotFoundException
 import com.example.gateway.mapper.grpc.FindPassByIdMapper.toGrpcProto
 import com.example.gateway.mapper.grpc.FindPassByIdMapper.toInternalProto
+import com.example.gateway.util.PassGrpcProtoFixture.failureFindPassByIdResponseWithPassNotFound
 import com.example.grpcapi.reqrep.pass.FindPassByIdRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.bson.types.ObjectId
@@ -32,12 +32,9 @@ internal class FindPassByIdMapperTest {
     @Test
     fun `mapping error case not found by id from internal to grpc should result in throwing exception`() {
         // GIVEN
-        val passId = ObjectId.get().toString()
+        val passId = ObjectId.get()
         val exceptionMessage = "Pass not found by id $passId"
-        val errorFindPassByIdResponse = InternalFindPassByIdResponse.newBuilder().apply {
-            failureBuilder.notFoundById = Error.getDefaultInstance()
-            failureBuilder.message = exceptionMessage
-        }.build()
+        val errorFindPassByIdResponse = failureFindPassByIdResponseWithPassNotFound(exceptionMessage)
 
         // WHEN // THEN
         val exception = assertThrows<PassNotFoundException> { errorFindPassByIdResponse.toGrpcProto() }
