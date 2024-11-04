@@ -35,7 +35,7 @@ class TransferPassForNatsConsumer(
 
     private fun publishToNatsSubject(message: TransferredPassMessage): Mono<Unit> {
         return passTypeService.getById(message.pass.passTypeId)
-            .mapNotNull { passType -> passType.name.orEmpty() }
+            .map { passType -> passType.name.orEmpty() }
             .flatMap { passTypeName ->
                 natsConnection.publish(
                     NatsSubject.Pass.subjectByPassTypeName(passTypeName),
