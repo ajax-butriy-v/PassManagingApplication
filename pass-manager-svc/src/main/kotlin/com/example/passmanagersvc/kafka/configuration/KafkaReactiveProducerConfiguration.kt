@@ -25,20 +25,6 @@ class KafkaReactiveProducerConfiguration(
         )
         return KafkaSender.create(SenderOptions.create(properties))
     }
-//
-//    @Bean
-//    fun transferPassTopic(): NewTopic {
-//        return TopicBuilder.name(KafkaTopic.KafkaTransferPassEvents.TRANSFER)
-//            .partitions(TRANSFER_PASS_TOPICS_PARTITIONS_AMOUNT)
-//            .build()
-//    }
-//
-//    @Bean
-//    fun transferPassStatisticsTopic(): NewTopic {
-//        return TopicBuilder.name(KafkaTopic.KafkaTransferPassEvents.TRANSFER_STATISTICS)
-//            .partitions(TRANSFER_PASS_TOPICS_PARTITIONS_AMOUNT)
-//            .build()
-//    }
 
     @Bean
     fun topics(): NewTopics {

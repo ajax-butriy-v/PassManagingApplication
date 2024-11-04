@@ -12,6 +12,8 @@ dependencies {
     implementation(libs.nats)
     implementation("net.devh:grpc-spring-boot-starter:2.15.0.RELEASE")
     implementation("net.devh:grpc-server-spring-boot-starter:2.15.0.RELEASE")
+    implementation(libs.grpc.spring.boot.starter)
+    implementation(libs.grpc.server.spring.boot.starter)
     implementation(project(":internal-api"))
     implementation(project(":core"))
     implementation(project(":grpc-api"))

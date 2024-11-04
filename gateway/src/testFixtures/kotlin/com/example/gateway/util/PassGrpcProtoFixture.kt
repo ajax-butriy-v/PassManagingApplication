@@ -45,6 +45,4 @@ object PassGrpcProtoFixture {
             failureBuilder.message = exceptionMessage
         }.build()
     }
-
-
 }

@@ -17,7 +17,7 @@ reactor-kafka = "1.3.23"
 spring-kafka = "3.2.4"
 grpc = "1.63.0"
 grpc-reactor = "1.2.4"
-
+grpc-spring-boot-starter = "2.15.0.RELEASE"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -54,3 +54,5 @@ spring-kafka = { module = "org.springframework.kafka:spring-kafka", version.ref 
 reactor-kafka = { module = "io.projectreactor.kafka:reactor-kafka", version.ref = "reactor-kafka" }
 grpc = { module = "io.grpc:protoc-gen-grpc-java", version.ref = "grpc" }
 grpc-reactor = { module = "com.salesforce.servicelibs:reactor-grpc", version.ref = "grpc-reactor" }
+grpc-spring-boot-starter = { module = "net.devh:grpc-spring-boot-starter", version.ref = "grpc-spring-boot-starter" }
+grpc-server-spring-boot-starter = { module = "net.devh:grpc-server-spring-boot-starter", version.ref = "grpc-spring-boot-starter" }

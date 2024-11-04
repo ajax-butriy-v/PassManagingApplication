@@ -17,7 +17,7 @@ protobuf {
     }
     plugins {
         id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.59.0"
+            artifact = libs.grpc.asProvider().get().toString()
         }
         id("reactor-grpc") {
             artifact = libs.grpc.reactor.get().toString()
