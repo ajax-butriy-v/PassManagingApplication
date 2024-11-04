@@ -7,18 +7,15 @@ jackson-module-kotlin = "2.15.0"
 springmockk = "4.0.2"
 junit-platform-launcher = "1.10.0"
 delta-coverage = "2.4.0"
-mongodb-testcontainer = "1.19.8"
 faker = "1.16.0"
 mongock = "5.4.4"
 reactor-test = "3.5.11"
 protobuf-plugin = "0.9.4"
 protobuf = "3.21.9"
 nats = "2.20.2"
-nats-embedded = "2.10.22-rc.2"
 reactor-kafka = "1.3.23"
 spring-kafka = "3.2.4"
 grpc = "1.63.0"
-grpc-swag = "1.63.0"
 grpc-reactor = "1.2.4"
 
 
@@ -53,8 +50,7 @@ mongock-mongodb-springdata-v4-driver = { group = "io.mongock", name = "mongodb-s
 protobuf = { group = "com.google.protobuf", name = "protobuf-java", version.ref = "protobuf" }
 protoc = { module = "com.google.protobuf:protoc", version.ref = "protobuf" }
 nats = { group = "io.nats", name = "jnats", version.ref = "nats" }
-nats-embedded = { group = "berlin.yuna", name = "nats-server-embedded", version.ref = "nats-embedded" }
 spring-kafka = { module = "org.springframework.kafka:spring-kafka", version.ref = "spring-kafka" }
 reactor-kafka = { module = "io.projectreactor.kafka:reactor-kafka", version.ref = "reactor-kafka" }
-grpc-swag = { module = "io.grpc:protoc-gen-grpc-java", version.ref = "grpc-swag" }
+grpc = { module = "io.grpc:protoc-gen-grpc-java", version.ref = "grpc" }
 grpc-reactor = { module = "com.salesforce.servicelibs:reactor-grpc", version.ref = "grpc-reactor" }

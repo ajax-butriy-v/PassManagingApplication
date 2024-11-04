@@ -20,7 +20,7 @@ protobuf {
             artifact = "io.grpc:protoc-gen-grpc-java:1.59.0"
         }
         id("reactor-grpc") {
-            artifact = "com.salesforce.servicelibs:reactor-grpc:1.2.4"
+            artifact = libs.grpc.reactor.get().toString()
         }
     }
 
