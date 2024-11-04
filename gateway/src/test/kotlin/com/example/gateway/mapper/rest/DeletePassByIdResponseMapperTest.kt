@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 
-class DeletePassByIdResponseMapperTest {
+internal class DeletePassByIdResponseMapperTest {
 
     @Test
     fun `in case of successful completion should not throw exceptions`() {

@@ -24,7 +24,7 @@ object FindPassByIdMapper {
     fun InternalFindPassByIdResponse.toGrpcProto(): FindPassByIdResponse {
         when (responseCase!!) {
             SUCCESS -> return success.pass.toFindPassByIdResponse()
-            FAILURE -> failureCase()
+            FAILURE -> failure.asException()
             RESPONSE_NOT_SET -> throw InternalRuntimeException()
         }
     }
@@ -35,9 +35,9 @@ object FindPassByIdMapper {
         }.build()
     }
 
-    private fun InternalFindPassByIdResponse.failureCase(): Nothing {
-        val message = failure.message.orEmpty()
-        when (failure.errorCase!!) {
+    private fun InternalFindPassByIdResponse.Failure.asException(): Nothing {
+        val message = message.orEmpty()
+        when (errorCase!!) {
             NOT_FOUND_BY_ID -> throw PassNotFoundException(message)
             ERROR_NOT_SET -> throw InternalRuntimeException(message)
         }

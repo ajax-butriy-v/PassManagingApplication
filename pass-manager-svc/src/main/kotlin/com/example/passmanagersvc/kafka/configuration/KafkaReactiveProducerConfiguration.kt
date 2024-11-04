@@ -1,6 +1,7 @@
 package com.example.passmanagersvc.kafka.configuration
 
 import com.example.internal.KafkaTopic
+import org.apache.kafka.clients.admin.NewTopic
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.ByteArraySerializer
 import org.apache.kafka.common.serialization.StringSerializer
@@ -8,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.kafka.config.TopicBuilder
-import org.springframework.kafka.core.KafkaAdmin.NewTopics
 import reactor.kafka.sender.KafkaSender
 import reactor.kafka.sender.SenderOptions
 
@@ -27,15 +27,17 @@ class KafkaReactiveProducerConfiguration(
     }
 
     @Bean
-    fun topics(): NewTopics {
-        return NewTopics(
-            TopicBuilder.name(KafkaTopic.KafkaTransferPassEvents.TRANSFER)
-                .partitions(TRANSFER_PASS_TOPICS_PARTITIONS_AMOUNT)
-                .build(),
-            TopicBuilder.name(KafkaTopic.KafkaTransferPassEvents.TRANSFER_STATISTICS)
-                .partitions(TRANSFER_PASS_TOPICS_PARTITIONS_AMOUNT)
-                .build()
-        )
+    fun transferPassTopic(): NewTopic {
+        return TopicBuilder.name(KafkaTopic.KafkaTransferPassEvents.TRANSFER)
+            .partitions(TRANSFER_PASS_TOPICS_PARTITIONS_AMOUNT)
+            .build()
+    }
+
+    @Bean
+    fun transferPassStatisticsTopic(): NewTopic {
+        return TopicBuilder.name(KafkaTopic.KafkaTransferPassEvents.TRANSFER_STATISTICS)
+            .partitions(TRANSFER_PASS_TOPICS_PARTITIONS_AMOUNT)
+            .build()
     }
 
     companion object {

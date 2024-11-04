@@ -23,10 +23,8 @@ class TransferPassForNatsConsumer(
         transferPassForNatsKafkaReceiver.receiveBatch()
             .flatMap { receiverRecords ->
                 receiverRecords.flatMap { record ->
-                    record.toMono()
-                        .map { TransferredPassMessage.parseFrom(it.value()) }
-                        .flatMap(::publishToNatsSubject)
-                        .doFinally { record.receiverOffset().acknowledge() }
+                    val transferredPassMessage = TransferredPassMessage.parseFrom(record.value())
+                    publishToNatsSubject(transferredPassMessage).doFinally { record.receiverOffset().acknowledge() }
                 }
             }
             .subscribeOn(Schedulers.boundedElastic())

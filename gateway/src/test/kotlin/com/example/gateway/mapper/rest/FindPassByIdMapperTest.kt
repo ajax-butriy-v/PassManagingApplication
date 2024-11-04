@@ -13,7 +13,7 @@ import org.bson.types.ObjectId
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-class FindPassByIdMapperTest {
+internal class FindPassByIdMapperTest {
     @Test
     fun `in case of successful completion should map response to pass dto`() {
         // GIVEN

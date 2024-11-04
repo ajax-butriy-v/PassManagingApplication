@@ -4,7 +4,7 @@ import com.example.passmanagersvc.domain.MongoPassOwner
 import com.example.passmanagersvc.dto.PassOwnerDto
 import com.example.passmanagersvc.dto.PassOwnerUpdateDto
 
-internal object PassOwnerMapper {
+object PassOwnerMapper {
     fun MongoPassOwner.toDto(): PassOwnerDto {
         return PassOwnerDto(firstName, lastName, phoneNumber, email)
     }

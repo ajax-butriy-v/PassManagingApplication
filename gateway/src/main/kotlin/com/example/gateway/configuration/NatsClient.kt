@@ -7,6 +7,7 @@ import com.google.protobuf.GeneratedMessageV3
 import com.google.protobuf.Parser
 import io.nats.client.Connection
 import io.nats.client.Dispatcher
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -30,7 +31,14 @@ class NatsClient(private val natsConnection: Connection, private val dispatcher:
                 val transferredMessage = TransferredPassMessage.parseFrom(message.data)
                 fluxSink.next(transferredMessage)
             }
-            fluxSink.onDispose { dispatcher.unsubscribe(subscription) }
+            fluxSink.onDispose {
+                log.info("NATS Finalizing subscription to $passTypeName")
+                dispatcher.unsubscribe(subscription)
+            }
         }.map(TransferredPassMessage::getPass)
+    }
+
+    companion object {
+        private val log = LoggerFactory.getLogger(this::class.java)
     }
 }

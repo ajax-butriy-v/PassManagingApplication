@@ -14,7 +14,6 @@ import org.awaitility.Awaitility.await
 import org.bson.types.ObjectId
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
 import org.springframework.context.annotation.Bean
@@ -26,14 +25,13 @@ import reactor.kafka.receiver.ReceiverOptions
 import java.time.Duration
 
 @Import(TransferPassMessageConsumerTest.ConsumerForSecondTopic::class)
-class TransferPassMessageConsumerTest : IntegrationTest() {
+internal class TransferPassMessageConsumerTest : IntegrationTest() {
     @Autowired
     private lateinit var transferPassMessageProducer: TransferPassMessageProducer
 
     @Autowired
     private lateinit var reactiveMongoTemplate: ReactiveMongoTemplate
 
-    @Qualifier("consumerForTransferStatistics")
     @Autowired
     private lateinit var consumerForTransferStatistics: KafkaReceiver<String, ByteArray>
 

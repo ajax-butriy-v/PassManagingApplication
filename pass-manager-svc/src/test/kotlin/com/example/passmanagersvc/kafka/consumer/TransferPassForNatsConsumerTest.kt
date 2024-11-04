@@ -21,7 +21,7 @@ import reactor.kotlin.core.publisher.toFlux
 import reactor.kotlin.test.test
 import java.time.Duration
 
-class TransferPassForNatsConsumerTest : IntegrationTest() {
+internal class TransferPassForNatsConsumerTest : IntegrationTest() {
 
     @Autowired
     private lateinit var transferPassMessageProducer: TransferPassMessageProducer

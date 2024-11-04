@@ -16,7 +16,7 @@ import org.junit.jupiter.api.assertThrows
 import com.example.internal.input.reqreply.CreatePassRequest as InternalCreatePassRequest
 import com.example.internal.input.reqreply.CreatePassResponse as InternalCreatePassResponse
 
-class CreatePassMapperTest {
+internal class CreatePassMapperTest {
     @Test
     fun `converting grpc proto to internal should successfully map properties`() {
         // GIVEN

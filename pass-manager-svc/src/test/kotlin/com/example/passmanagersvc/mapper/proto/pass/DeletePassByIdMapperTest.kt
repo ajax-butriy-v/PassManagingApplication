@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import kotlin.test.Test
 
-class DeletePassByIdMapperTest {
+internal class DeletePassByIdMapperTest {
     @Test
     fun `successful response creation should return successful response`() {
         // GIVEN // WHEN

@@ -18,7 +18,7 @@ import reactor.kotlin.test.test
 import reactor.kotlin.test.verifyError
 
 @ExtendWith(MockKExtension::class)
-class PassTypeServiceImplTest {
+internal class PassTypeServiceImplTest {
     @MockK
     private lateinit var passTypeRepository: PassTypeRepository
 

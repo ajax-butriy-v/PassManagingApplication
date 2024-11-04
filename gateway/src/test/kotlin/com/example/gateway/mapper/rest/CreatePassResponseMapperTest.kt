@@ -16,7 +16,7 @@ import org.bson.types.ObjectId
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-class CreatePassResponseMapperTest {
+internal class CreatePassResponseMapperTest {
     @Test
     fun `in case of successful completion should not throw exceptions`() {
         // GIVEN

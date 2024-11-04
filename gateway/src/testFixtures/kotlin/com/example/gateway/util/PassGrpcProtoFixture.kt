@@ -1,6 +1,5 @@
 package com.example.gateway.util
 
-import com.example.commonmodel.Error
 import com.example.commonmodel.Pass
 import com.example.gateway.mapper.rest.FindPassByIdResponseMapper.toProto
 import com.example.gateway.util.PassDtoFixture.passDto
@@ -27,21 +26,21 @@ object PassGrpcProtoFixture {
 
     fun failureFindPassByIdResponseWithPassNotFound(exceptionMessage: String): InternalFindPassByIdResponse {
         return InternalFindPassByIdResponse.newBuilder().apply {
-            failureBuilder.notFoundById = Error.getDefaultInstance()
+            failureBuilder.notFoundByIdBuilder
             failureBuilder.message = exceptionMessage
         }.build()
     }
 
     fun failureCreatePassResponseWithPassOwnerNotFound(exceptionMessage: String): InternalCreatePassResponse {
         return InternalCreatePassResponse.newBuilder().apply {
-            failureBuilder.ownerNotFoundById = Error.getDefaultInstance()
+            failureBuilder.ownerNotFoundByIdBuilder
             failureBuilder.message = exceptionMessage
         }.build()
     }
 
     fun failureCreatePassResponseWithPassTypeNotFound(exceptionMessage: String): InternalCreatePassResponse {
         return InternalCreatePassResponse.newBuilder().apply {
-            failureBuilder.passTypeNotFoundId = Error.getDefaultInstance()
+            failureBuilder.passTypeNotFoundIdBuilder
             failureBuilder.message = exceptionMessage
         }.build()
     }

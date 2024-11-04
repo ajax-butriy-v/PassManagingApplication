@@ -28,12 +28,11 @@ internal class PassManagementServiceImpl(
             }
             .flatMap { (updatedPass, previousPassOwnerId) ->
                 val key = updatedPass.passTypeId.toString()
-                val temp = transferPassMessageProducer.sendTransferPassMessage(
+                transferPassMessageProducer.sendTransferPassMessage(
                     updatedPass,
                     key,
                     previousPassOwnerId.toString()
                 )
-                temp
             }
             .thenReturn(Unit)
     }

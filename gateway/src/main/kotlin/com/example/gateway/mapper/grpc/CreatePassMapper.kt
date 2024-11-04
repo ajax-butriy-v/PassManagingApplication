@@ -25,7 +25,7 @@ object CreatePassMapper {
     fun InternalCreatePassResponse.toGrpcProto(): CreatePassResponse {
         when (responseCase!!) {
             SUCCESS -> return success.pass.toCreatePassResponse()
-            FAILURE -> failureCase()
+            FAILURE -> failure.asException()
             RESPONSE_NOT_SET -> throw InternalRuntimeException()
         }
     }
@@ -36,9 +36,9 @@ object CreatePassMapper {
         }.build()
     }
 
-    private fun InternalCreatePassResponse.failureCase(): Nothing {
-        val message = failure.message.orEmpty()
-        when (failure.errorCase!!) {
+    private fun InternalCreatePassResponse.Failure.asException(): Nothing {
+        val message = message.orEmpty()
+        when (errorCase!!) {
             OWNER_NOT_FOUND_BY_ID -> throw PassOwnerNotFoundException(message)
             PASS_TYPE_NOT_FOUND_ID -> throw PassTypeNotFoundException(message)
             ERROR_NOT_SET -> throw InternalRuntimeException(message)
