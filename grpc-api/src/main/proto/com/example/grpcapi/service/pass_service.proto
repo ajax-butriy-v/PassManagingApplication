@@ -3,7 +3,11 @@ syntax = "proto3";
 package com.example.grpcapi.service;
 
 import "com/example/grpcapi/reqrep/pass/get_all_transferred_passes.proto";
-import "com/example/grpcapi/reqrep/pass/get_pass_by_id.proto";
+import "com/example/grpcapi/reqrep/pass/find_pass_by_id.proto";
+import "com/example/grpcapi/reqrep/pass/create_pass.proto";
+import "com/example/grpcapi/reqrep/pass/cancel_pass.proto";
+import "com/example/grpcapi/reqrep/pass/transfer_pass.proto";
+import "com/example/grpcapi/reqrep/pass/delete_pass_by_id.proto";
 import "com/example/commonmodel/pass.proto";
 
 
@@ -13,4 +17,7 @@ service PassService {
 
   rpc findPassById(grpcapi.reqrep.pass.FindPassByIdRequest)
       returns (grpcapi.reqrep.pass.FindPassByIdResponse);
+
+  rpc createPass(grpcapi.reqrep.pass.CreatePassRequest)
+      returns (grpcapi.reqrep.pass.CreatePassResponse);
 }

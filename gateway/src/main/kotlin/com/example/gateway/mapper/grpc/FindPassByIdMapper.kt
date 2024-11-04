@@ -22,7 +22,7 @@ object FindPassByIdMapper {
     }
 
     fun InternalFindPassByIdResponse.toGrpcProto(): FindPassByIdResponse {
-        when (this.responseCase!!) {
+        when (responseCase!!) {
             SUCCESS -> return success.pass.toFindPassByIdResponse()
             FAILURE -> failureCase()
             RESPONSE_NOT_SET -> throw InternalRuntimeException()

@@ -1,8 +1,8 @@
 package com.example.passmanagersvc.kafka.consumer
 
 import com.example.internal.input.reqreply.TransferredPassMessage
+import com.example.passmanagersvc.mapper.proto.pass.CreatePassMapper.toModel
 import com.example.passmanagersvc.service.PassOwnerStatisticsService
-import com.example.passmanagersvc.web.mapper.proto.pass.CreatePassMapper.toModel
 import org.bson.types.ObjectId
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener

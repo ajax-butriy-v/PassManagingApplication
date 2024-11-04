@@ -1,4 +1,4 @@
-package com.example.passmanagersvc.web.dto
+package com.example.passmanagersvc.dto
 
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank

@@ -2,11 +2,11 @@ package com.example.passmanagersvc.service.impl
 
 import com.example.core.exception.PassOwnerNotFoundException
 import com.example.passmanagersvc.domain.MongoPassOwner
+import com.example.passmanagersvc.dto.PassOwnerUpdateDto
+import com.example.passmanagersvc.mapper.PassOwnerMapper.partialUpdate
 import com.example.passmanagersvc.repositories.PassOwnerRepository
 import com.example.passmanagersvc.repositories.PassRepository
 import com.example.passmanagersvc.service.PassOwnerService
-import com.example.passmanagersvc.web.dto.PassOwnerUpdateDto
-import com.example.passmanagersvc.web.mapper.PassOwnerMapper.partialUpdate
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty

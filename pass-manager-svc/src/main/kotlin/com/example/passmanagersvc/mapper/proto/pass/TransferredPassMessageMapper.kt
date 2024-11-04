@@ -1,8 +1,8 @@
-package com.example.passmanagersvc.web.mapper.proto.pass
+package com.example.passmanagersvc.mapper.proto.pass
 
 import com.example.internal.input.reqreply.TransferredPassMessage
 import com.example.passmanagersvc.domain.MongoPass
-import com.example.passmanagersvc.web.mapper.proto.pass.FindPassByIdMapper.toProto
+import com.example.passmanagersvc.mapper.proto.pass.FindPassByIdMapper.toProto
 
 object TransferredPassMessageMapper {
 

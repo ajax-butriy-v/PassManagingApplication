@@ -17,6 +17,5 @@ dependencies {
     implementation(libs.reactor.kafka)
     implementation(project(":core"))
     implementation(project(":internal-api"))
-    testImplementation(libs.nats.embedded)
     testFixturesImplementation(libs.faker)
 }

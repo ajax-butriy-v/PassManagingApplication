@@ -1,4 +1,4 @@
-package com.example.passmanagersvc.web.dto
+package com.example.passmanagersvc.dto
 
 data class PassOwnerUpdateDto(
     val firstName: String?,

@@ -16,7 +16,7 @@ import reactor.kotlin.core.publisher.toMono
 class TransferPassForNatsConsumer(
     private val transferPassForNatsKafkaReceiver: KafkaReceiver<String, ByteArray>,
     private val passTypeService: PassTypeService,
-    private val natsConnection: Connection
+    private val natsConnection: Connection,
 ) {
     @EventListener(ApplicationReadyEvent::class)
     fun consumeTransferMessageAndPublishToNats() {
@@ -35,7 +35,6 @@ class TransferPassForNatsConsumer(
 
     private fun publishToNatsSubject(message: TransferredPassMessage): Mono<Unit> {
         return passTypeService.getById(message.pass.passTypeId)
-            // TODO empty string
             .mapNotNull { passType -> passType.name.orEmpty() }
             .flatMap { passTypeName ->
                 natsConnection.publish(

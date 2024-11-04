@@ -3,13 +3,13 @@ package com.example.passmanagersvc.service.impl
 import com.example.internal.input.reqreply.TransferredPassStatisticsMessage
 import com.example.passmanagersvc.domain.MongoPass
 import com.example.passmanagersvc.domain.MongoPassType
+import com.example.passmanagersvc.dto.PriceDistribution
 import com.example.passmanagersvc.kafka.producer.TransferPassStatisticsMessageProducer
+import com.example.passmanagersvc.mapper.proto.pass.TransferredPassStatisticsMessageMapper.toTransferPassStatisticsMessage
 import com.example.passmanagersvc.repositories.PassRepository
 import com.example.passmanagersvc.service.PassOwnerService
 import com.example.passmanagersvc.service.PassOwnerStatisticsService
 import com.example.passmanagersvc.service.PassTypeService
-import com.example.passmanagersvc.web.dto.PriceDistribution
-import com.example.passmanagersvc.web.mapper.proto.pass.TransferredPassStatisticsMessageMapper.toTransferPassStatisticsMessage
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono

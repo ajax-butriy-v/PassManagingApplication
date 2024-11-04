@@ -13,7 +13,6 @@ dependencies {
 
 protobuf {
     protoc {
-        // TODO version
         artifact = libs.protoc.get().toString()
     }
     plugins {

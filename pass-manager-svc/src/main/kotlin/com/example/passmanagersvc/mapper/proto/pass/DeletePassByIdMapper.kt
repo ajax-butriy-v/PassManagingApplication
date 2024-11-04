@@ -1,4 +1,4 @@
-package com.example.passmanagersvc.web.mapper.proto.pass
+package com.example.passmanagersvc.mapper.proto.pass
 
 import com.example.internal.input.reqreply.DeletePassByIdResponse
 

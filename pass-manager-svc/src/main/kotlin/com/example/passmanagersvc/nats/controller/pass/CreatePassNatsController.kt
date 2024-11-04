@@ -3,12 +3,12 @@ package com.example.passmanagersvc.nats.controller.pass
 import com.example.internal.NatsSubject.Pass.CREATE
 import com.example.internal.input.reqreply.CreatePassRequest
 import com.example.internal.input.reqreply.CreatePassResponse
+import com.example.passmanagersvc.mapper.proto.pass.CreatePassMapper.failureCreatedPassResponse
+import com.example.passmanagersvc.mapper.proto.pass.CreatePassMapper.toModel
+import com.example.passmanagersvc.mapper.proto.pass.CreatePassMapper.toSuccessCreatePassResponse
+import com.example.passmanagersvc.mapper.proto.pass.FindPassByIdMapper.toProto
 import com.example.passmanagersvc.nats.controller.NatsController
 import com.example.passmanagersvc.service.PassService
-import com.example.passmanagersvc.web.mapper.proto.pass.CreatePassMapper.failureCreatedPassResponse
-import com.example.passmanagersvc.web.mapper.proto.pass.CreatePassMapper.toModel
-import com.example.passmanagersvc.web.mapper.proto.pass.CreatePassMapper.toSuccessCreatePassResponse
-import com.example.passmanagersvc.web.mapper.proto.pass.FindPassByIdMapper.toProto
 import com.google.protobuf.Parser
 import io.nats.client.Connection
 import org.slf4j.Logger

@@ -1,4 +1,4 @@
-package com.example.passmanagersvc.web.dto
+package com.example.passmanagersvc.dto
 
 import java.math.BigDecimal
 

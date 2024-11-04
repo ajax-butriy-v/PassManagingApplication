@@ -2,13 +2,13 @@ package com.example.passmanagersvc.nats.controller
 
 import com.example.internal.NatsSubject.Pass.FIND_BY_ID
 import com.example.internal.input.reqreply.FindPassByIdResponse
+import com.example.passmanagersvc.mapper.proto.pass.FindPassByIdMapper.toProto
+import com.example.passmanagersvc.mapper.proto.pass.FindPassByIdMapper.toSuccessFindPassByIdResponse
 import com.example.passmanagersvc.repositories.PassRepository
 import com.example.passmanagersvc.util.IntegrationTest
 import com.example.passmanagersvc.util.PassFixture
 import com.example.passmanagersvc.util.PassProtoFixture.failureFindPassByIdResponseWithPassNotFound
 import com.example.passmanagersvc.util.PassProtoFixture.findPassByIdRequest
-import com.example.passmanagersvc.web.mapper.proto.pass.FindPassByIdMapper.toProto
-import com.example.passmanagersvc.web.mapper.proto.pass.FindPassByIdMapper.toSuccessFindPassByIdResponse
 import io.nats.client.Connection
 import org.assertj.core.api.Assertions.assertThat
 import org.bson.types.ObjectId

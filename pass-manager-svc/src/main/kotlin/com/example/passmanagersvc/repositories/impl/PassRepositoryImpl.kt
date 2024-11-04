@@ -2,8 +2,8 @@ package com.example.passmanagersvc.repositories.impl
 
 import com.example.passmanagersvc.domain.MongoPass
 import com.example.passmanagersvc.domain.MongoPass.Companion.COLLECTION_NAME
+import com.example.passmanagersvc.dto.PriceDistribution
 import com.example.passmanagersvc.repositories.PassRepository
-import com.example.passmanagersvc.web.dto.PriceDistribution
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.aggregate

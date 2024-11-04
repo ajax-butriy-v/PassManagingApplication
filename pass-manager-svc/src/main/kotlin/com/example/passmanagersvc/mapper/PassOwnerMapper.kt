@@ -1,8 +1,8 @@
-package com.example.passmanagersvc.web.mapper
+package com.example.passmanagersvc.mapper
 
 import com.example.passmanagersvc.domain.MongoPassOwner
-import com.example.passmanagersvc.web.dto.PassOwnerDto
-import com.example.passmanagersvc.web.dto.PassOwnerUpdateDto
+import com.example.passmanagersvc.dto.PassOwnerDto
+import com.example.passmanagersvc.dto.PassOwnerUpdateDto
 
 internal object PassOwnerMapper {
     fun MongoPassOwner.toDto(): PassOwnerDto {

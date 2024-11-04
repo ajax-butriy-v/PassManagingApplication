@@ -3,9 +3,9 @@ package com.example.passmanagersvc.nats.controller.pass
 import com.example.internal.NatsSubject.Pass.DELETE_BY_ID
 import com.example.internal.input.reqreply.DeletePassByIdRequest
 import com.example.internal.input.reqreply.DeletePassByIdResponse
+import com.example.passmanagersvc.mapper.proto.pass.DeletePassByIdMapper
 import com.example.passmanagersvc.nats.controller.NatsController
 import com.example.passmanagersvc.service.PassService
-import com.example.passmanagersvc.web.mapper.proto.pass.DeletePassByIdMapper
 import com.google.protobuf.Parser
 import io.nats.client.Connection
 import org.slf4j.Logger

@@ -2,6 +2,8 @@ package com.example.passmanagersvc.nats.controller
 
 import com.example.internal.NatsSubject.Pass.CREATE
 import com.example.internal.input.reqreply.CreatePassResponse
+import com.example.passmanagersvc.mapper.proto.pass.CreatePassMapper.toSuccessCreatePassResponse
+import com.example.passmanagersvc.mapper.proto.pass.FindPassByIdMapper.toProto
 import com.example.passmanagersvc.repositories.PassOwnerRepository
 import com.example.passmanagersvc.repositories.PassTypeRepository
 import com.example.passmanagersvc.util.IntegrationTest
@@ -10,8 +12,6 @@ import com.example.passmanagersvc.util.PassFixture.passTypeToCreate
 import com.example.passmanagersvc.util.PassOwnerFixture.getOwnerWithUniqueFields
 import com.example.passmanagersvc.util.PassProtoFixture
 import com.example.passmanagersvc.util.PassProtoFixture.createPassRequest
-import com.example.passmanagersvc.web.mapper.proto.pass.CreatePassMapper.toSuccessCreatePassResponse
-import com.example.passmanagersvc.web.mapper.proto.pass.FindPassByIdMapper.toProto
 import io.nats.client.Connection
 import org.assertj.core.api.Assertions.assertThat
 import org.bson.types.ObjectId

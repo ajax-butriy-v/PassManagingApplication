@@ -3,7 +3,8 @@ package com.example.passmanagersvc.kafka.consumer
 import com.example.internal.KafkaTopic
 import com.example.internal.input.reqreply.TransferredPassStatisticsMessage
 import com.example.passmanagersvc.kafka.producer.TransferPassMessageProducer
-import com.example.passmanagersvc.util.PassFixture.passFromDb
+import com.example.passmanagersvc.util.IntegrationTest
+import com.example.passmanagersvc.util.PassFixture.passToCreate
 import com.example.passmanagersvc.util.PassFixture.passTypeToCreate
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.ByteArrayDeserializer
@@ -15,20 +16,16 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
-import org.springframework.test.context.ActiveProfiles
 import reactor.core.scheduler.Schedulers
 import reactor.kafka.receiver.KafkaReceiver
 import reactor.kafka.receiver.ReceiverOptions
 import java.time.Duration
 
-@SpringBootTest
 @Import(TransferPassMessageConsumerTest.ConsumerForSecondTopic::class)
-@ActiveProfiles("test")
-class TransferPassMessageConsumerTest {
+class TransferPassMessageConsumerTest : IntegrationTest() {
     @Autowired
     private lateinit var transferPassMessageProducer: TransferPassMessageProducer
 
@@ -42,7 +39,7 @@ class TransferPassMessageConsumerTest {
     fun `transfer pass consumer, which is listening to transfer topic, should produce to transfer stats topic `() {
         // GIVEN
         val passType = reactiveMongoTemplate.insert(passTypeToCreate).block()!!
-        val updatedPass = reactiveMongoTemplate.insert(passFromDb.copy(passTypeId = passType.id)).block()!!
+        val updatedPass = reactiveMongoTemplate.insert(passToCreate.copy(passTypeId = passType.id)).block()!!
 
         val key = ObjectId.get().toString()
         val previousOwnerId = ObjectId.get().toString()
@@ -57,6 +54,7 @@ class TransferPassMessageConsumerTest {
         // WHEN
         transferPassMessageProducer.sendTransferPassMessage(updatedPass, key, previousOwnerId)
             .subscribeOn(Schedulers.boundedElastic())
+            .delaySubscription(Duration.ofSeconds(1))
             .subscribe()
 
         // THEN
@@ -68,7 +66,7 @@ class TransferPassMessageConsumerTest {
 
     class ConsumerForSecondTopic(@Value("\${spring.kafka.bootstrap-servers}") val bootstrapServers: String) {
         @Bean
-        fun consumerForTransferStatistics(kafkaProperties: KafkaProperties): KafkaReceiver<String, ByteArray>? {
+        fun consumerForTransferStatistics(kafkaProperties: KafkaProperties): KafkaReceiver<String, ByteArray> {
             val properties = kafkaProperties.consumer.buildProperties(null).apply {
                 putAll(
                     mapOf(

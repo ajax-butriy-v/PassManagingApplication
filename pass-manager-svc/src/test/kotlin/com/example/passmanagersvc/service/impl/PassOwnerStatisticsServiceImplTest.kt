@@ -1,5 +1,6 @@
 package com.example.passmanagersvc.service.impl
 
+import com.example.passmanagersvc.dto.PriceDistribution
 import com.example.passmanagersvc.kafka.producer.TransferPassStatisticsMessageProducer
 import com.example.passmanagersvc.repositories.PassRepository
 import com.example.passmanagersvc.service.PassOwnerService
@@ -9,7 +10,6 @@ import com.example.passmanagersvc.util.PassFixture.passToCreate
 import com.example.passmanagersvc.util.PassFixture.singlePassType
 import com.example.passmanagersvc.util.PassOwnerFixture.passOwnerFromDb
 import com.example.passmanagersvc.util.PassOwnerFixture.passOwnerIdFromDb
-import com.example.passmanagersvc.web.dto.PriceDistribution
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

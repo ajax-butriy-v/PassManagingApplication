@@ -1,5 +1,6 @@
 package com.example.passmanagersvc.web.mapper.proto.pass
 
+import com.example.passmanagersvc.mapper.proto.pass.DeletePassByIdMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
