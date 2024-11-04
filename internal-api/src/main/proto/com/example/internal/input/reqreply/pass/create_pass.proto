@@ -2,14 +2,14 @@ syntax = "proto3";
 
 package com.example.internal.input.reqreply;
 
-import "com/example/commonmodel/pass.proto";
-import "com/example/commonmodel/decimal.proto";
-import "com/example/commonmodel/error.proto";
+import "com/example/commonmodels/pass.proto";
+import "com/example/commonmodels/decimal.proto";
+import "com/example/commonmodels/error.proto";
 
 option java_multiple_files = true;
 
 message CreatePassRequest {
-  commonmodel.Pass passToCreate = 1;
+  commonmodels.Pass pass_to_create = 1;
 }
 
 message CreatePassResponse {
@@ -19,15 +19,15 @@ message CreatePassResponse {
   }
 
   message Success {
-    commonmodel.Pass pass = 1;
+    commonmodels.Pass pass = 1;
   }
 
   message Failure {
     string message = 100;
 
     oneof error {
-      commonmodel.Error owner_not_found_by_id = 2;
-      commonmodel.Error pass_type_not_found_id = 3;
+      commonmodels.Error owner_not_found_by_id = 2;
+      commonmodels.Error pass_type_not_found_id = 3;
     }
   }
 }

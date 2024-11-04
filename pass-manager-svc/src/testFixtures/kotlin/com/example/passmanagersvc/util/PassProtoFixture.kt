@@ -1,6 +1,6 @@
 package com.example.passmanagersvc.util
 
-import com.example.commonmodel.Error
+import com.example.commonmodels.Error
 import com.example.internal.input.reqreply.CancelPassRequest
 import com.example.internal.input.reqreply.CancelPassResponse
 import com.example.internal.input.reqreply.CreatePassRequest

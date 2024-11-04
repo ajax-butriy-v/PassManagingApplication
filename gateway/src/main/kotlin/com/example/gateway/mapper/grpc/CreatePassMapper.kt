@@ -1,6 +1,6 @@
 package com.example.gateway.mapper.grpc
 
-import com.example.commonmodel.Pass
+import com.example.commonmodels.Pass
 import com.example.core.exception.InternalRuntimeException
 import com.example.core.exception.PassOwnerNotFoundException
 import com.example.core.exception.PassTypeNotFoundException

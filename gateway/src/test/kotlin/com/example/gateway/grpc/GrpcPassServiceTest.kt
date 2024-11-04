@@ -26,12 +26,12 @@ import com.example.internal.input.reqreply.CreatePassResponse as InternalCreateP
 import com.example.internal.input.reqreply.FindPassByIdResponse as InternalFindPassByIdResponse
 
 @ExtendWith(MockKExtension::class)
-internal class PassGrpcServiceTest {
+internal class GrpcPassServiceTest {
     @MockK
     private lateinit var natsClient: NatsClient
 
     @InjectMockKs
-    private lateinit var passGrpcService: PassGrpcService
+    private lateinit var grpcPassService: GrpcPassService
 
     @Test
     fun `get all transferred passes by pass type name should return flux from nats subject`() {
@@ -48,7 +48,7 @@ internal class PassGrpcServiceTest {
         } returns passesToReturn.toFlux()
 
         // WHEN
-        val response = passGrpcService.getAllTransferredPasses(getAllTransferredPassesGrpcRequest)
+        val response = grpcPassService.getAllTransferredPasses(getAllTransferredPassesGrpcRequest)
 
         // THEN
         response.collectList()
@@ -73,7 +73,7 @@ internal class PassGrpcServiceTest {
         } returns PassProtoFixture.successfulCreatePassResponse(PassProtoFixture.protoPass).toMono()
 
         // WHEN
-        val createdPass = passGrpcService.createPass(createPassGrpcRequest)
+        val createdPass = grpcPassService.createPass(createPassGrpcRequest)
 
         // THEN
         createdPass.test()
@@ -92,7 +92,7 @@ internal class PassGrpcServiceTest {
         } returns PassProtoFixture.successfulFindPassByIdResponse(PassProtoFixture.protoPass).toMono()
 
         // WHEN
-        val findById = passGrpcService.findPassById(findByIdGrpcRequest)
+        val findById = grpcPassService.findPassById(findByIdGrpcRequest)
 
         // THEN
         findById.test()

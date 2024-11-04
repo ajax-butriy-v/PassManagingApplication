@@ -1,6 +1,6 @@
 package com.example.gateway.mapper.rest
 
-import com.example.commonmodel.Pass
+import com.example.commonmodels.Pass
 import com.example.core.exception.InternalRuntimeException
 import com.example.core.exception.PassNotFoundException
 import com.example.core.web.mapper.proto.DecimalProtoMapper.toBDecimal

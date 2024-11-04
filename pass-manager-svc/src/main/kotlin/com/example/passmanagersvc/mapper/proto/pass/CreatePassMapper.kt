@@ -1,7 +1,7 @@
 package com.example.passmanagersvc.mapper.proto.pass
 
-import com.example.commonmodel.Error
-import com.example.commonmodel.Pass
+import com.example.commonmodels.Error
+import com.example.commonmodels.Pass
 import com.example.core.exception.PassOwnerNotFoundException
 import com.example.core.exception.PassTypeNotFoundException
 import com.example.core.web.mapper.proto.DecimalProtoMapper.toBigDecimal

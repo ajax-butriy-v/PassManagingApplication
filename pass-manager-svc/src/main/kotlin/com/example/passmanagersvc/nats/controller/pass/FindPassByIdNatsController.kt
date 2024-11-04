@@ -39,6 +39,6 @@ class FindPassByIdNatsController(
 
     companion object {
         const val PASS_QUEUE_GROUP = "passQueueGroup"
-        private val logger: Logger = LoggerFactory.getLogger(this::class.java)
+        private val logger: Logger = LoggerFactory.getLogger(FindPassByIdNatsController::class.java)
     }
 }

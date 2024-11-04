@@ -1,6 +1,6 @@
 package com.example.core.web.mapper.proto
 
-import com.example.commonmodel.BDecimal
+import com.example.commonmodels.BDecimal
 import com.google.protobuf.ByteString
 import java.math.BigDecimal
 import java.math.BigInteger

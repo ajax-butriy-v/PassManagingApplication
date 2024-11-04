@@ -1,9 +1,9 @@
 package com.example.gateway.util
 
-import com.example.gateway.util.PassDtoFixture.passDto
+import com.example.commonmodels.Error
+import com.example.commonmodels.Pass
 import com.example.gateway.mapper.rest.FindPassByIdResponseMapper.toProto
-import com.example.commonmodel.Error
-import com.example.commonmodel.Pass
+import com.example.gateway.util.PassDtoFixture.passDto
 import com.example.internal.input.reqreply.CancelPassRequest
 import com.example.internal.input.reqreply.CancelPassResponse
 import com.example.internal.input.reqreply.CreatePassResponse

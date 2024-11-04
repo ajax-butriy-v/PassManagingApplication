@@ -1,6 +1,6 @@
 package com.example.gateway.configuration
 
-import com.example.commonmodel.Pass
+import com.example.commonmodels.Pass
 import com.example.internal.NatsSubject
 import com.example.internal.input.reqreply.TransferredPassMessage
 import com.google.protobuf.GeneratedMessageV3
@@ -39,6 +39,6 @@ class NatsClient(private val natsConnection: Connection, private val dispatcher:
     }
 
     companion object {
-        private val log = LoggerFactory.getLogger(this::class.java)
+        private val log = LoggerFactory.getLogger(NatsClient::class.java)
     }
 }

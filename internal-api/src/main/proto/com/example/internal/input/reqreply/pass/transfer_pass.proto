@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package com.example.internal.input.reqreply;
 
-import "com/example/commonmodel/error.proto";
+import "com/example/commonmodels/error.proto";
 
 option java_multiple_files = true;
 
@@ -23,8 +23,8 @@ message TransferPassResponse {
     string message = 100;
 
     oneof error {
-      commonmodel.Error pass_not_found_by_id = 1;
-      commonmodel.Error pass_owner_not_found_by_id = 2;
+      commonmodels.Error pass_not_found_by_id = 1;
+      commonmodels.Error pass_owner_not_found_by_id = 2;
     }
   }
 }

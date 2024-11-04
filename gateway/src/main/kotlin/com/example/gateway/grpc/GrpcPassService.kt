@@ -1,6 +1,6 @@
 package com.example.gateway.grpc
 
-import com.example.commonmodel.Pass
+import com.example.commonmodels.Pass
 import com.example.gateway.configuration.NatsClient
 import com.example.gateway.mapper.grpc.CreatePassMapper.toGrpcProto
 import com.example.gateway.mapper.grpc.CreatePassMapper.toInternalProto
@@ -21,7 +21,7 @@ import com.example.internal.input.reqreply.CreatePassResponse as InternalCreateP
 import com.example.internal.input.reqreply.FindPassByIdResponse as InternalFindPassByIdResponse
 
 @GrpcService
-class PassGrpcService(
+class GrpcPassService(
     private val natsClient: NatsClient,
 ) : ReactorPassServiceGrpc.PassServiceImplBase() {
     override fun getAllTransferredPasses(request: Mono<GetAllTransferredPassesRequest>): Flux<Pass> {

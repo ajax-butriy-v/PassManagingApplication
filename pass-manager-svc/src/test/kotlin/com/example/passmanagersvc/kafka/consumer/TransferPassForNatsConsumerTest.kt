@@ -1,6 +1,6 @@
 package com.example.passmanagersvc.kafka.consumer
 
-import com.example.commonmodel.Pass
+import com.example.commonmodels.Pass
 import com.example.internal.NatsSubject
 import com.example.internal.input.reqreply.TransferredPassMessage
 import com.example.passmanagersvc.kafka.producer.TransferPassMessageProducer
@@ -27,9 +27,6 @@ internal class TransferPassForNatsConsumerTest : IntegrationTest() {
     private lateinit var transferPassMessageProducer: TransferPassMessageProducer
 
     @Autowired
-    private lateinit var transferPassForNatsKafkaReceiver: TransferPassForNatsConsumer
-
-    @Autowired
     private lateinit var dispatcher: Dispatcher
 
     @Autowired
@@ -48,7 +45,7 @@ internal class TransferPassForNatsConsumerTest : IntegrationTest() {
         val previousOwnerId = ObjectId.get().toString()
 
         val receivedMessages = mutableListOf<Pass>()
-        transferPassForNatsKafkaReceiver.consumeTransferMessageAndPublishToNats()
+
         subscribeToPassesByType(passTypeName)
             .doOnNext { receivedMessages.add(it) }
             .subscribeOn(Schedulers.boundedElastic())

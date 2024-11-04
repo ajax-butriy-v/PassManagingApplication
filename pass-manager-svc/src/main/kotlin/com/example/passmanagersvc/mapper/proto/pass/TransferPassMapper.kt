@@ -1,6 +1,6 @@
 package com.example.passmanagersvc.mapper.proto.pass
 
-import com.example.commonmodel.Error
+import com.example.commonmodels.Error
 import com.example.core.exception.PassNotFoundException
 import com.example.core.exception.PassOwnerNotFoundException
 import com.example.internal.input.reqreply.TransferPassResponse
