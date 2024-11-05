@@ -22,6 +22,8 @@ spec:
           ports:
             - containerPort: 8080
               protocol: TCP
+            - containerPort: 9091
+              protocol: TCP
           env:
             - name: NATS_CONNECTION_URI
               valueFrom:
@@ -34,9 +36,16 @@ kind: Service
 metadata:
   name: gateway-service
 spec:
+  type: NodePort
   selector:
     app: gateway
   ports:
-    - protocol: TCP
+    - name: rest
+      protocol: TCP
       port: 8080
       targetPort: 8080
+    - name: grpc
+      protocol: TCP
+      port: 9091
+      targetPort: 9091
+      nodePort: 30091

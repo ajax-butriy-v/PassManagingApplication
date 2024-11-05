@@ -21,6 +21,5 @@ kubectl wait --for=condition=ready pod -l app=mongodb --timeout=300s
 kubectl wait --for=condition=ready pod -l app=kafka --timeout=300s
 
 kubectl apply -f app.yaml \
-              -f app-ingress.yaml \
               -f gateway.yaml \
-              -f gateway-ingress.yaml
+              -f ingress.yaml
