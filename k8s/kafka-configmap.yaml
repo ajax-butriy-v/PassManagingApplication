@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-configmap
+data:
+  kafka_broker_id: "1"
+  kafka_zookeeper_connect: "zookeeper-service:2181"
+  kafka_advertised_listeners: "PLAINTEXT://kafka-service:9092,PLAINTEXT_HOST://kafka-service:29092"
+  kafka_listener_security_protocol_map: "PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
+  kafka_inter_listener_name: "PLAINTEXT"
+  kafka_offsets_topic_replication_factor: "1"
