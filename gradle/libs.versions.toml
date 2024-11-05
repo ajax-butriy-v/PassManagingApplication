@@ -18,6 +18,7 @@ spring-kafka = "3.2.4"
 grpc = "1.63.0"
 grpc-reactor = "1.2.4"
 grpc-spring-boot-starter = "2.15.0.RELEASE"
+mongodb-bson = "5.2.0"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -56,3 +57,4 @@ grpc = { module = "io.grpc:protoc-gen-grpc-java", version.ref = "grpc" }
 grpc-reactor = { module = "com.salesforce.servicelibs:reactor-grpc", version.ref = "grpc-reactor" }
 grpc-spring-boot-starter = { module = "net.devh:grpc-spring-boot-starter", version.ref = "grpc-spring-boot-starter" }
 grpc-server-spring-boot-starter = { module = "net.devh:grpc-server-spring-boot-starter", version.ref = "grpc-spring-boot-starter" }
+mongodb-bson = { module = "org.mongodb:bson", version.ref = "mongodb-bson" }
