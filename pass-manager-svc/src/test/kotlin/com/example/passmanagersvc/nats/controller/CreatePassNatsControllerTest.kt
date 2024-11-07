@@ -4,8 +4,8 @@ import com.example.internal.NatsSubject.Pass.CREATE
 import com.example.internal.input.reqreply.CreatePassResponse
 import com.example.passmanagersvc.mapper.proto.pass.CreatePassMapper.toSuccessCreatePassResponse
 import com.example.passmanagersvc.mapper.proto.pass.FindPassByIdMapper.toProto
-import com.example.passmanagersvc.repositories.PassOwnerRepository
 import com.example.passmanagersvc.repositories.PassTypeRepository
+import com.example.passmanagersvc.repositories.impl.MongoPassOwnerRepository
 import com.example.passmanagersvc.util.IntegrationTest
 import com.example.passmanagersvc.util.PassFixture.passToCreate
 import com.example.passmanagersvc.util.PassFixture.passTypeToCreate
@@ -24,7 +24,8 @@ internal class CreatePassNatsControllerTest : IntegrationTest() {
     private lateinit var connection: Connection
 
     @Autowired
-    private lateinit var passOwnerRepository: PassOwnerRepository
+    //@Qualifier("redisPassOwnerRepository")
+    private lateinit var passOwnerRepository: MongoPassOwnerRepository
 
     @Autowired
     private lateinit var passTypeRepository: PassTypeRepository

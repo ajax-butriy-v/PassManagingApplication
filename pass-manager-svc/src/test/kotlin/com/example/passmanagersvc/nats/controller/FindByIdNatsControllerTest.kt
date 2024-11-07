@@ -4,7 +4,7 @@ import com.example.internal.NatsSubject.Pass.FIND_BY_ID
 import com.example.internal.input.reqreply.FindPassByIdResponse
 import com.example.passmanagersvc.mapper.proto.pass.FindPassByIdMapper.toProto
 import com.example.passmanagersvc.mapper.proto.pass.FindPassByIdMapper.toSuccessFindPassByIdResponse
-import com.example.passmanagersvc.repositories.PassRepository
+import com.example.passmanagersvc.repositories.impl.MongoPassRepository
 import com.example.passmanagersvc.util.IntegrationTest
 import com.example.passmanagersvc.util.PassFixture
 import com.example.passmanagersvc.util.PassProtoFixture.failureFindPassByIdResponseWithPassNotFound
@@ -21,7 +21,8 @@ internal class FindByIdNatsControllerTest : IntegrationTest() {
     private lateinit var connection: Connection
 
     @Autowired
-    private lateinit var passRepository: PassRepository
+    // @Qualifier("redisPassRepository")
+    private lateinit var passRepository: MongoPassRepository
 
     @Test
     fun `find by id should return corresponding valid proto response`() {

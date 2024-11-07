@@ -15,7 +15,7 @@ object PassFixture {
     private val clock = Clock.fixed(Instant.now(), ZoneId.systemDefault())
     private val instant = Instant.now(clock).truncatedTo(ChronoUnit.MILLIS)
 
-    private val passTypesToCreate = listOf("First type", "Second type", "Third type")
+    private val passTypesToCreate = listOf("First", "Second", "Third")
         .map {
             MongoPassType(
                 id = null,

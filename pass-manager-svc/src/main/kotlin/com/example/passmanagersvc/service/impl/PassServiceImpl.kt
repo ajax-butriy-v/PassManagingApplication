@@ -6,6 +6,7 @@ import com.example.passmanagersvc.repositories.PassRepository
 import com.example.passmanagersvc.service.PassOwnerService
 import com.example.passmanagersvc.service.PassService
 import com.example.passmanagersvc.service.PassTypeService
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -18,6 +19,7 @@ import java.time.LocalDate
 internal class PassServiceImpl(
     private val passOwnerService: PassOwnerService,
     private val passTypeService: PassTypeService,
+    @Qualifier("mongoPassRepository")
     private val passRepository: PassRepository,
 ) : PassService {
     override fun findById(passId: String): Mono<MongoPass> {

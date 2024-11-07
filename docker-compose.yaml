@@ -64,6 +64,15 @@ services:
       - backend
     profiles: [ dev, test ]
 
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
+    profiles: [ dev, test ]
+
   mongo-test:
     image: mongo
     restart: always

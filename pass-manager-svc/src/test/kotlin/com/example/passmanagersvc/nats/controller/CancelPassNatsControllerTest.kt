@@ -2,8 +2,8 @@ package com.example.passmanagersvc.nats.controller
 
 import com.example.internal.NatsSubject.Pass.CANCEL
 import com.example.internal.input.reqreply.CancelPassResponse
-import com.example.passmanagersvc.repositories.PassOwnerRepository
-import com.example.passmanagersvc.repositories.PassRepository
+import com.example.passmanagersvc.repositories.impl.MongoPassOwnerRepository
+import com.example.passmanagersvc.repositories.impl.MongoPassRepository
 import com.example.passmanagersvc.util.IntegrationTest
 import com.example.passmanagersvc.util.PassFixture.passToCreate
 import com.example.passmanagersvc.util.PassOwnerFixture.getOwnerWithUniqueFields
@@ -22,10 +22,10 @@ internal class CancelPassNatsControllerTest : IntegrationTest() {
     private lateinit var connection: Connection
 
     @Autowired
-    private lateinit var passRepository: PassRepository
+    private lateinit var passRepository: MongoPassRepository
 
     @Autowired
-    private lateinit var passOwnerRepository: PassOwnerRepository
+    private lateinit var passOwnerRepository: MongoPassOwnerRepository
 
     @Test
     fun `canceling pass should return successful proto response`() {
