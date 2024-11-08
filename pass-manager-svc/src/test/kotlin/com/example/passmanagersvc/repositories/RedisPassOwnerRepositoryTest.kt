@@ -57,7 +57,6 @@ internal class RedisPassOwnerRepositoryTest : IntegrationTest() {
         val passOwnerById = redisPassOwnerRepository.findById(insertedPassOwnerId)
 
         // THEN
-
         val doesCacheContainsPassOwner = redisTemplate.hasKey(passOwnerKey(insertedPassOwnerId))
 
         passOwnerById.test()
@@ -79,7 +78,7 @@ internal class RedisPassOwnerRepositoryTest : IntegrationTest() {
         // WHEN
         val savedPassOwner = redisPassOwnerRepository.save(updatedPassOwner)
 
-        // WHEN
+        // THEN
         val passOwnerInCache = redisTemplate.opsForValue().get(passOwnerKey(insertedPassOwner.id.toString()))
 
         savedPassOwner.test()

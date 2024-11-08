@@ -2,8 +2,8 @@ package com.example.passmanagersvc.nats.controller
 
 import com.example.internal.NatsSubject.Pass.CANCEL
 import com.example.internal.input.reqreply.CancelPassResponse
-import com.example.passmanagersvc.repositories.impl.MongoPassOwnerRepository
-import com.example.passmanagersvc.repositories.impl.MongoPassRepository
+import com.example.passmanagersvc.repositories.PassOwnerRepository
+import com.example.passmanagersvc.repositories.PassRepository
 import com.example.passmanagersvc.util.IntegrationTest
 import com.example.passmanagersvc.util.PassFixture.passToCreate
 import com.example.passmanagersvc.util.PassOwnerFixture.getOwnerWithUniqueFields
@@ -14,6 +14,7 @@ import io.nats.client.Connection
 import org.assertj.core.api.Assertions.assertThat
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import java.time.Duration
 import kotlin.test.Test
 
@@ -22,10 +23,12 @@ internal class CancelPassNatsControllerTest : IntegrationTest() {
     private lateinit var connection: Connection
 
     @Autowired
-    private lateinit var passRepository: MongoPassRepository
+    @Qualifier("redisPassRepository")
+    private lateinit var passRepository: PassRepository
 
     @Autowired
-    private lateinit var passOwnerRepository: MongoPassOwnerRepository
+    @Qualifier("redisPassOwnerRepository")
+    private lateinit var passOwnerRepository: PassOwnerRepository
 
     @Test
     fun `canceling pass should return successful proto response`() {

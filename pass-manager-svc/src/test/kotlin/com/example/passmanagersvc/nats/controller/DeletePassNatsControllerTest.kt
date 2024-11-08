@@ -2,7 +2,7 @@ package com.example.passmanagersvc.nats.controller
 
 import com.example.internal.NatsSubject.Pass.DELETE_BY_ID
 import com.example.internal.input.reqreply.DeletePassByIdResponse
-import com.example.passmanagersvc.repositories.impl.MongoPassRepository
+import com.example.passmanagersvc.repositories.PassRepository
 import com.example.passmanagersvc.util.IntegrationTest
 import com.example.passmanagersvc.util.PassFixture.passToCreate
 import com.example.passmanagersvc.util.PassProtoFixture.deletePassByIdRequest
@@ -10,6 +10,7 @@ import com.example.passmanagersvc.util.PassProtoFixture.succesfulDeletePassByIdR
 import io.nats.client.Connection
 import org.assertj.core.api.Assertions.assertThat
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import java.time.Duration
 import kotlin.test.Test
 
@@ -18,8 +19,8 @@ internal class DeletePassNatsControllerTest : IntegrationTest() {
     private lateinit var connection: Connection
 
     @Autowired
-    // @Qualifier("redisPassRepository")
-    private lateinit var passRepository: MongoPassRepository
+    @Qualifier("redisPassRepository")
+    private lateinit var passRepository: PassRepository
 
     @Test
     fun `deleting pass should return proto response with no content`() {
