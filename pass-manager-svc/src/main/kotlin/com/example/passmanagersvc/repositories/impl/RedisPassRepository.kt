@@ -13,7 +13,7 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.kotlin.core.publisher.switchIfEmptyDeferred
-import reactor.kotlin.core.publisher.toMono
+import reactor.kotlin.core.publisher.toFlux
 import java.math.BigDecimal
 import java.time.Duration
 import java.time.LocalDate
@@ -45,44 +45,48 @@ class RedisPassRepository(
             }
     }
 
-
     override fun getPassesPriceDistribution(passOwnerId: String): Flux<PriceDistribution> {
         val key = priceDistributionsKey(passOwnerId)
         return reactiveRedisTemplate.opsForList().range(key, 0, -1)
-            .map { objectMapper.readValue<PriceDistribution>(it) }
+            .flatMap { objectMapper.readValue<List<PriceDistribution>>(it).toFlux() }
             .switchIfEmptyDeferred {
                 mongoPassRepository.getPassesPriceDistribution(passOwnerId)
-                    .flatMap { priceDistribution ->
-                        val byteArray = objectMapper.writeValueAsBytes(priceDistribution)
-                        val durationInSeconds = Duration.ofMinutes(redisExpirationTimeoutInMinutes).seconds
-                        val script = """
-                                local key = KEYS[1]
-                                local value = unpack(ARGV)
-                                redis.call("RPUSH", key, value)
-                                redis.call("EXPIRE", key, tonumber(${durationInSeconds}))
-                        """
-                        reactiveRedisTemplate.execute(
-                            RedisScript.of<Boolean>(script),
-                            listOf(key),
-                            listOf(byteArray)
-                        ).then(priceDistribution.toMono())
-                    }
+                    .collectList()
+                    .flatMapMany { addPriceDistributionsToRedis(it, key) }
             }
             .onErrorResume(::isRedisOrSocketException) {
                 mongoPassRepository.getPassesPriceDistribution(passOwnerId)
             }
+    }
 
+    private fun addPriceDistributionsToRedis(
+        priceDistributions: List<PriceDistribution>,
+        key: String,
+    ): Flux<PriceDistribution> {
+        val byteArray = objectMapper.writeValueAsBytes(priceDistributions)
+        val durationInSeconds = Duration.ofMinutes(redisExpirationTimeoutInMinutes).seconds
+        val script = """
+                local key = KEYS[1]
+                local value = unpack(ARGV)
+                redis.call("RPUSH", key, value)
+                redis.call("EXPIRE", key, tonumber($durationInSeconds))
+        """
+        return reactiveRedisTemplate.execute(
+            RedisScript.of<Boolean>(script),
+            listOf(key),
+            listOf(byteArray)
+        ).thenMany(priceDistributions.toFlux())
     }
 
     companion object {
-        private val keyPrefix = "key-"
+        private const val KEY_PREFIX = "key-"
 
         fun purchaseAfterDateKey(passOwnerId: String, afterDate: LocalDate): String {
-            return "$keyPrefix${RedisPassRepository::sumPurchasedAtAfterDate.name}-$passOwnerId-$afterDate"
+            return "$KEY_PREFIX${RedisPassRepository::sumPurchasedAtAfterDate.name}-$passOwnerId-$afterDate"
         }
 
         fun priceDistributionsKey(passOwnerId: String): String {
-            return "$keyPrefix${RedisPassRepository::getPassesPriceDistribution.name}-$passOwnerId"
+            return "$KEY_PREFIX${RedisPassRepository::getPassesPriceDistribution.name}-$passOwnerId"
         }
     }
 }

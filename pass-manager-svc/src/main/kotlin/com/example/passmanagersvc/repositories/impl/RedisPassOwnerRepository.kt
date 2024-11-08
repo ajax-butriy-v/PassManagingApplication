@@ -1,5 +1,6 @@
 package com.example.passmanagersvc.repositories.impl
 
+import com.example.core.exception.PassOwnerNotFoundException
 import com.example.core.util.isRedisOrSocketException
 import com.example.passmanagersvc.domain.MongoPassOwner
 import com.example.passmanagersvc.repositories.PassOwnerRepository
@@ -25,8 +26,21 @@ class RedisPassOwnerRepository(
     override fun findById(passOwnerId: String): Mono<MongoPassOwner> {
         val key = passOwnerKey(passOwnerId)
         return reactiveRedisTemplate.opsForValue().get(key)
+            .handle { item, sink ->
+                if (item.isEmpty()) {
+                    sink.error(PassOwnerNotFoundException("Could not find pass owner by id $passOwnerId"))
+                } else {
+                    sink.next(item)
+                }
+            }
             .map { objectMapper.readValue<MongoPassOwner>(it) }
-            .switchIfEmpty { mongoPassOwnerRepository.findById(passOwnerId).flatMap(::savePassOwnerToRedis) }
+            .switchIfEmpty {
+                mongoPassOwnerRepository.findById(passOwnerId)
+                    .flatMap(::savePassOwnerToRedis)
+                    .switchIfEmpty {
+                        reactiveRedisTemplate.opsForValue().set(key, byteArrayOf()).then(Mono.empty())
+                    }
+            }
             .onErrorResume({ isRedisOrSocketException(it) }, { mongoPassOwnerRepository.findById(passOwnerId) })
     }
 
@@ -38,7 +52,6 @@ class RedisPassOwnerRepository(
                     Mono.empty()
                 }.thenReturn(created)
         }
-
     }
 
     override fun deleteById(passOwnerId: String): Mono<Unit> {
@@ -72,15 +85,12 @@ class RedisPassOwnerRepository(
         ).thenReturn(passOwner)
     }
 
-
     companion object {
-        private val keyPrefix = "key-"
+        private const val KEY_PREFIX = "key-"
         private val log = LoggerFactory.getLogger(RedisPassOwnerRepository::class.java)
 
         fun passOwnerKey(passOwnerId: String): String {
-            return "$keyPrefix$passOwnerId"
+            return "$KEY_PREFIX$passOwnerId"
         }
-
     }
 }
-

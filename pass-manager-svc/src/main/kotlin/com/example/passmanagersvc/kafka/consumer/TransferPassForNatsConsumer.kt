@@ -35,7 +35,6 @@ class TransferPassForNatsConsumer(
         return passTypeService.getById(message.pass.passTypeId)
             .map { passType -> passType.name.orEmpty() }
             .flatMap { passTypeName ->
-                val sub = NatsSubject.Pass.subjectByPassTypeName(passTypeName).let { println(it + " SUBJECT") }
                 natsConnection.publish(
                     NatsSubject.Pass.subjectByPassTypeName(passTypeName),
                     message.toByteArray()

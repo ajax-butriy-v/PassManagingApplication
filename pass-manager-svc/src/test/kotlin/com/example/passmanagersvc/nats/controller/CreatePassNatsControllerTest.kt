@@ -4,8 +4,8 @@ import com.example.internal.NatsSubject.Pass.CREATE
 import com.example.internal.input.reqreply.CreatePassResponse
 import com.example.passmanagersvc.mapper.proto.pass.CreatePassMapper.toSuccessCreatePassResponse
 import com.example.passmanagersvc.mapper.proto.pass.FindPassByIdMapper.toProto
+import com.example.passmanagersvc.repositories.PassOwnerRepository
 import com.example.passmanagersvc.repositories.PassTypeRepository
-import com.example.passmanagersvc.repositories.impl.MongoPassOwnerRepository
 import com.example.passmanagersvc.util.IntegrationTest
 import com.example.passmanagersvc.util.PassFixture.passToCreate
 import com.example.passmanagersvc.util.PassFixture.passTypeToCreate
@@ -16,6 +16,7 @@ import io.nats.client.Connection
 import org.assertj.core.api.Assertions.assertThat
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import java.time.Duration
 import kotlin.test.Test
 
@@ -24,8 +25,8 @@ internal class CreatePassNatsControllerTest : IntegrationTest() {
     private lateinit var connection: Connection
 
     @Autowired
-    //@Qualifier("redisPassOwnerRepository")
-    private lateinit var passOwnerRepository: MongoPassOwnerRepository
+    @Qualifier("redisPassOwnerRepository")
+    private lateinit var passOwnerRepository: PassOwnerRepository
 
     @Autowired
     private lateinit var passTypeRepository: PassTypeRepository

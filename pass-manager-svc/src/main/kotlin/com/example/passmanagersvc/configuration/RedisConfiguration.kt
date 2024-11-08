@@ -35,7 +35,7 @@ class RedisConfiguration(
     }
 
     @Bean
-    fun reactiveByteArrayRedisTemplate(factory: ReactiveRedisConnectionFactory): ReactiveRedisTemplate<String, ByteArray> {
+    fun reactiveRedisTemplate(factory: ReactiveRedisConnectionFactory): ReactiveRedisTemplate<String, ByteArray> {
         val context = RedisSerializationContext.newSerializationContext<String, ByteArray>(StringRedisSerializer())
             .value(RedisSerializer.byteArray())
             .build()

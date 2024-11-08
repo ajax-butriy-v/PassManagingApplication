@@ -65,9 +65,7 @@ internal class TransferPassForNatsConsumerTest : IntegrationTest() {
         receivedMessages.map { it.passTypeId }.toFlux()
             .flatMap { passTypeId -> passTypeService.getById(passTypeId) }
             .test()
-            .assertNext {
-                assertThat(it.name).isEqualTo(passTypeName)
-            }
+            .expectNext(passType)
             .verifyComplete()
     }
 
