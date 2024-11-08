@@ -38,10 +38,12 @@ class RedisPassOwnerRepository(
                 mongoPassOwnerRepository.findById(passOwnerId)
                     .flatMap(::savePassOwnerToRedis)
                     .switchIfEmpty {
-                        reactiveRedisTemplate.opsForValue().set(key, byteArrayOf()).then(Mono.empty())
+                        reactiveRedisTemplate.opsForValue()
+                            .set(key, byteArrayOf(), Duration.ofMinutes(redisExpirationTimeoutInMinutes))
+                            .then(Mono.empty())
                     }
             }
-            .onErrorResume({ isRedisOrSocketException(it) }, { mongoPassOwnerRepository.findById(passOwnerId) })
+            .onErrorResume(::isRedisOrSocketException) { mongoPassOwnerRepository.findById(passOwnerId) }
     }
 
     override fun insert(newMongoPassOwner: MongoPassOwner): Mono<MongoPassOwner> {

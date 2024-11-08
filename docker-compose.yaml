@@ -17,7 +17,7 @@ services:
       - mongo
     networks:
       - backend
-    profiles: [ dev ]
+    profiles: [ app ]
 
   gateway:
     image: gateway
@@ -30,7 +30,7 @@ services:
       - "8080:8080"
     networks:
       - backend
-    profiles: [ dev ]
+    profiles: [ app ]
 
   mongo:
     image: mongo
