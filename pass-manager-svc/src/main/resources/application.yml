@@ -3,12 +3,12 @@ spring:
     mongodb:
       uri: mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}:${MONGODB_PORT}/${MONGODB_DATABASE}?authSource=admin
     redis:
-      host: localhost
-      port: 6379
+      host: localhost ${REDIS_HOST}
+      port: 6379 ${REDIS_PORT}
       timeout:
-        millis: 10
+        millis: 10 ${REDIS_TIMEOUT_MILLIS}
       ttl:
-        minutes: 3
+        minutes: 3 ${REDIS_TTL_MINUTES}
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
 mongock:
