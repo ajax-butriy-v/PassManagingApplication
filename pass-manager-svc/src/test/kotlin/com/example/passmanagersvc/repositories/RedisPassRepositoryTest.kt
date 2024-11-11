@@ -2,6 +2,7 @@ package com.example.passmanagersvc.repositories
 
 import com.example.passmanagersvc.dto.PriceDistribution
 import com.example.passmanagersvc.repositories.impl.RedisPassRepository
+import com.example.passmanagersvc.repositories.impl.RedisPassRepository.Companion.priceDistributionsKey
 import com.example.passmanagersvc.util.IntegrationTest
 import com.example.passmanagersvc.util.PassFixture.passTypes
 import com.example.passmanagersvc.util.PassFixture.passesToCreate
@@ -41,11 +42,8 @@ internal class RedisPassRepositoryTest : IntegrationTest() {
         val priceDistributionFlux = redisPassRepository.getPassesPriceDistribution(passOwnerId)
 
         // THEN
-        val doesCacheContainsListUnderKey = redisTemplate.opsForList().range(
-            RedisPassRepository.priceDistributionsKey(passOwnerId),
-            0,
-            -1
-        )
+        val key = priceDistributionsKey(passOwnerId)
+        val doesCacheContainsListUnderKey = redisTemplate.opsForList().range(key, 0, -1)
 
         priceDistributionFlux.collectList()
             .test()
