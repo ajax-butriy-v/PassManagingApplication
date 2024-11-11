@@ -27,23 +27,17 @@ class RedisPassOwnerRepository(
         val key = passOwnerKey(passOwnerId)
         return reactiveRedisTemplate.opsForValue().get(key)
             .handle { item, sink ->
-                println("in handle")
                 if (item.isEmpty()) {
-                    println("in sink empty")
-
                     sink.error(PassOwnerNotFoundException("Could not find pass owner by id $passOwnerId"))
                 } else {
-                    println("in sink next")
                     sink.next(item)
                 }
             }
             .map { objectMapper.readValue<MongoPassOwner>(it) }
             .switchIfEmpty {
-                println("in switch if empty")
                 mongoPassOwnerRepository.findById(passOwnerId)
                     .flatMap(::savePassOwnerToRedis)
                     .switchIfEmpty {
-                        println("in second switch")
                         reactiveRedisTemplate.opsForValue()
                             .set(key, byteArrayOf(), Duration.ofMinutes(redisExpirationTimeoutInMinutes))
                             .then(Mono.empty())
