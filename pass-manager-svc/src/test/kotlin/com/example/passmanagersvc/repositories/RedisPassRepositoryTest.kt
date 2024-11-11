@@ -100,7 +100,6 @@ internal class RedisPassRepositoryTest : IntegrationTest() {
         // GIVEN
         val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields()).block()!!
         val passOwnerId = insertedPassOwner.id.toString()
-
         val afterDate = LocalDate.now()
 
         // WHEN
