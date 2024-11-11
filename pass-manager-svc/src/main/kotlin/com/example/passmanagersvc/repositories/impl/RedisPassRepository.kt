@@ -6,6 +6,7 @@ import com.example.passmanagersvc.repositories.PassRepository
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.io.ClassPathResource
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.data.redis.core.script.RedisScript
 import org.springframework.stereotype.Repository
@@ -65,16 +66,12 @@ class RedisPassRepository(
     ): Flux<PriceDistribution> {
         val byteArray = objectMapper.writeValueAsBytes(priceDistributions)
         val durationInSeconds = Duration.ofMinutes(redisExpirationTimeoutInMinutes).seconds
-        val script = """
-                local key = KEYS[1]
-                local value = unpack(ARGV)
-                redis.call("RPUSH", key, value)
-                redis.call("EXPIRE", key, tonumber($durationInSeconds))
-        """
+        val redisScript = RedisScript.of<Unit>(ClassPathResource("scripts/rpush_and_expire.lua"))
+
         return reactiveRedisTemplate.execute(
-            RedisScript.of<Boolean>(script),
+            redisScript,
             listOf(key),
-            listOf(byteArray)
+            listOf(byteArray, durationInSeconds.toString().toByteArray())
         ).thenMany(priceDistributions.toFlux())
     }
 
