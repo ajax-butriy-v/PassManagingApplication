@@ -1,5 +1,6 @@
 package com.example.passmanagersvc.repositories
 
+import com.example.core.exception.PassOwnerNotFoundException
 import com.example.passmanagersvc.domain.MongoPassOwner
 import com.example.passmanagersvc.repositories.impl.RedisPassOwnerRepository
 import com.example.passmanagersvc.repositories.impl.RedisPassOwnerRepository.Companion.passOwnerKey
@@ -8,8 +9,10 @@ import com.example.passmanagersvc.util.PassOwnerFixture.getOwnerWithUniqueFields
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.assertj.core.api.Assertions.assertThat
+import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.redis.core.ReactiveRedisTemplate
+import reactor.kotlin.test.expectError
 import reactor.kotlin.test.test
 import kotlin.test.Test
 
@@ -44,6 +47,30 @@ internal class RedisPassOwnerRepositoryTest : IntegrationTest() {
         doesCacheContainsPassOwner.test()
             .expectNext(true)
             .verifyComplete()
+    }
+
+    @Test
+    fun `finding pass owner by invalid id second time should return not found exception according to redis cache`() {
+        // GIVEN
+        val invalidPassOwnerId = ObjectId.get().toString()
+        // first call to findById() triggers adding empty byte array to redis cache
+        redisPassOwnerRepository.findById(invalidPassOwnerId).block()
+
+        // WHEN
+        val actualResponse = redisPassOwnerRepository.findById(invalidPassOwnerId)
+
+        // THEN
+        val keyWithEmptyValue = redisTemplate.opsForValue().get(passOwnerKey(invalidPassOwnerId))
+
+        keyWithEmptyValue.test()
+            .assertNext { byteArray ->
+                assertThat(byteArray).isEmpty()
+            }
+            .verifyComplete()
+
+        actualResponse.test()
+            .expectError<PassOwnerNotFoundException>()
+            .verify()
     }
 
     @Test
