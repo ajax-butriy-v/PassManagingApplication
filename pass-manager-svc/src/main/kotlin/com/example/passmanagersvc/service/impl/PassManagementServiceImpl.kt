@@ -5,7 +5,6 @@ import com.example.passmanagersvc.repositories.PassRepository
 import com.example.passmanagersvc.service.PassManagementService
 import com.example.passmanagersvc.service.PassOwnerService
 import com.example.passmanagersvc.service.PassService
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.util.function.component1
@@ -15,7 +14,6 @@ import reactor.kotlin.core.util.function.component2
 internal class PassManagementServiceImpl(
     private val passOwnerService: PassOwnerService,
     private val passService: PassService,
-    @Qualifier("mongoPassRepository")
     private val passRepository: PassRepository,
     private val transferPassMessageProducer: TransferPassMessageProducer,
 ) : PassManagementService {

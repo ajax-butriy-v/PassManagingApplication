@@ -1,6 +1,5 @@
 package com.example.passmanagersvc.configuration
 
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
@@ -15,22 +14,15 @@ import org.springframework.data.redis.serializer.StringRedisSerializer
 import java.time.Duration
 
 @Configuration
-class RedisConfiguration(
-    @Value("\${spring.data.redis.timeout.millis}")
-    private val redisCommandTimeoutInMillis: Long,
-    @Value("\${spring.data.redis.port}")
-    private val redisPort: Int,
-    @Value("\${spring.data.redis.host}")
-    private val redisHost: String,
-) {
+class RedisConfiguration(private val redisProperties: RedisProperties) {
 
     @Bean
     @Primary
     fun reactiveRedisConnectionFactory(): ReactiveRedisConnectionFactory {
         val lettuceClientConfiguration = LettuceClientConfiguration.builder()
-            .commandTimeout(Duration.ofMillis(redisCommandTimeoutInMillis))
+            .commandTimeout(Duration.ofMillis(redisProperties.timeout.millis))
             .build()
-        val serverConfig = RedisStandaloneConfiguration(redisHost, redisPort)
+        val serverConfig = RedisStandaloneConfiguration(redisProperties.host, redisProperties.port)
         return LettuceConnectionFactory(serverConfig, lettuceClientConfiguration)
     }
 

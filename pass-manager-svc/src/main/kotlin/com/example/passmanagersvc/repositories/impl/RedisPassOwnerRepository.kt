@@ -34,17 +34,20 @@ class RedisPassOwnerRepository(
                 }
             }
             .map { objectMapper.readValue<MongoPassOwner>(it) }
-            .switchIfEmpty {
-                mongoPassOwnerRepository.findById(passOwnerId)
-                    .flatMap(::savePassOwnerToRedis)
-                    .switchIfEmpty {
-                        reactiveRedisTemplate.opsForValue()
-                            .set(key, byteArrayOf(), Duration.ofMinutes(redisExpirationTimeoutInMinutes))
-                            .then(Mono.empty())
-                    }
-            }
+            .switchIfEmpty { findInMongoAndWriteToRedis(passOwnerId, key) }
             .onErrorResume(::isRedisOrSocketException) { mongoPassOwnerRepository.findById(passOwnerId) }
     }
+
+    private fun findInMongoAndWriteToRedis(
+        passOwnerId: String,
+        key: String
+    ) = mongoPassOwnerRepository.findById(passOwnerId)
+        .flatMap(::savePassOwnerToRedis)
+        .switchIfEmpty {
+            reactiveRedisTemplate.opsForValue()
+                .set(key, byteArrayOf(), Duration.ofMinutes(redisExpirationTimeoutInMinutes))
+                .then(Mono.empty())
+        }
 
     override fun insert(newMongoPassOwner: MongoPassOwner): Mono<MongoPassOwner> {
         return mongoPassOwnerRepository.insert(newMongoPassOwner).flatMap { created ->
@@ -88,7 +91,7 @@ class RedisPassOwnerRepository(
     }
 
     companion object {
-        private const val KEY_PREFIX = "key-"
+        private const val KEY_PREFIX = "key-pass-owner"
         private val log = LoggerFactory.getLogger(RedisPassOwnerRepository::class.java)
 
         fun passOwnerKey(passOwnerId: String): String {

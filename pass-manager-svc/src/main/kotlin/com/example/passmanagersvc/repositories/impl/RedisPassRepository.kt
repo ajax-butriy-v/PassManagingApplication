@@ -6,6 +6,7 @@ import com.example.passmanagersvc.repositories.PassRepository
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Primary
 import org.springframework.core.io.ClassPathResource
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.data.redis.core.script.RedisScript
@@ -19,6 +20,7 @@ import java.math.BigDecimal
 import java.time.Duration
 import java.time.LocalDate
 
+@Primary
 @Repository
 class RedisPassRepository(
     @Value("\${spring.data.redis.ttl.minutes}")
@@ -76,7 +78,7 @@ class RedisPassRepository(
     }
 
     companion object {
-        private const val KEY_PREFIX = "key-"
+        private const val KEY_PREFIX = "key-pass"
 
         fun purchaseAfterDateKey(passOwnerId: String, afterDate: LocalDate): String {
             return "$KEY_PREFIX${RedisPassRepository::sumPurchasedAtAfterDate.name}-$passOwnerId-$afterDate"
