@@ -1,13 +1,13 @@
 package com.example.passmanagersvc.rest.controller
 
+import com.example.passmanagersvc.dto.PassOwnerDto
+import com.example.passmanagersvc.dto.PassOwnerUpdateDto
+import com.example.passmanagersvc.dto.PriceDistribution
+import com.example.passmanagersvc.dto.SpentAfterDateDto
+import com.example.passmanagersvc.mapper.PassOwnerMapper.toDto
+import com.example.passmanagersvc.mapper.PassOwnerMapper.toEntity
 import com.example.passmanagersvc.service.PassOwnerService
 import com.example.passmanagersvc.service.PassOwnerStatisticsService
-import com.example.passmanagersvc.web.dto.PassOwnerDto
-import com.example.passmanagersvc.web.dto.PassOwnerUpdateDto
-import com.example.passmanagersvc.web.dto.PriceDistribution
-import com.example.passmanagersvc.web.dto.SpentAfterDateDto
-import com.example.passmanagersvc.web.mapper.PassOwnerMapper.toDto
-import com.example.passmanagersvc.web.mapper.PassOwnerMapper.toEntity
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.DeleteMapping

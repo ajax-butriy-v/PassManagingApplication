@@ -1,8 +1,12 @@
 kubectl delete -f app.yaml \
                -f app-configmap.yaml \
+               -f kafka-configmap.yaml \
+               -f zookeeper-configmap.yaml \
                -f app-ingress.yaml \
                -f gateway.yaml \
                -f gateway-ingress.yaml \
                -f mongo.yaml \
                -f mongo-secret.yaml \
                -f nats.yaml \
+               -f kafka.yaml \
+               -f zookeeper.yaml

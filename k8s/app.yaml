@@ -53,6 +53,11 @@ spec:
                 configMapKeyRef:
                   key: nats_uri
                   name: pass-manager-app-configmap
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              valueFrom:
+                configMapKeyRef:
+                  key: kafka-bootstrap-servers
+                  name: pass-manager-app-configmap
 ---
 apiVersion: v1
 kind: Service

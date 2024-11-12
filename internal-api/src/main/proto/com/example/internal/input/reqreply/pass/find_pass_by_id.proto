@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package com.example.internal.input.reqreply;
 
-import "com/example/internal/commonmodels/pass.proto";
-import "com/example/internal/commonmodels/error.proto";
+import "com/example/commonmodels/pass.proto";
+import "com/example/commonmodels/error.proto";
 
 option java_multiple_files = true;
 

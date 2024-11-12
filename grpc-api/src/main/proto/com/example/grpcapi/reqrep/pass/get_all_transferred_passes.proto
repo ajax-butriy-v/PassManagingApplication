@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package com.example.grpcapi.reqrep.pass;
+
+import "com/example/commonmodels/pass.proto";
+
+option java_multiple_files = true;
+
+message GetAllTransferredPassesRequest {
+  string pass_type_name = 1;
+}
+

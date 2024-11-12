@@ -1,8 +1,8 @@
 package com.example.passmanagersvc.kafka.consumer
 
 import com.example.internal.input.reqreply.TransferredPassMessage
+import com.example.passmanagersvc.mapper.proto.pass.CreatePassMapper.toModel
 import com.example.passmanagersvc.service.PassOwnerStatisticsService
-import com.example.passmanagersvc.web.mapper.proto.pass.CreatePassMapper.toModel
 import org.bson.types.ObjectId
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
@@ -14,12 +14,12 @@ import reactor.kotlin.core.publisher.toMono
 
 @Component
 class TransferPassMessageConsumer(
-    private val kafkaReceiver: KafkaReceiver<String, ByteArray>,
+    private val transferPassKafkaReceiver: KafkaReceiver<String, ByteArray>,
     private val passOwnerStatisticsService: PassOwnerStatisticsService,
 ) {
     @EventListener(ApplicationReadyEvent::class)
     fun listenToTransferPassMessageTopic() {
-        kafkaReceiver.receiveBatch()
+        transferPassKafkaReceiver.receiveBatch()
             .flatMap { receiverRecords ->
                 receiverRecords.flatMap { record ->
                     record.toMono()

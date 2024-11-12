@@ -2,6 +2,13 @@ spring:
   data:
     mongodb:
       uri: mongodb://root:test@localhost:27017/test_db?authSource=admin
+    redis:
+      host: localhost
+      port: 6379
+      timeout:
+        millis: 10
+      ttl:
+        minutes: 3
   kafka:
     consumer:
       auto-offset-reset: earliest

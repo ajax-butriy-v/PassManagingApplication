@@ -2,8 +2,8 @@ package com.example.passmanagersvc.util
 
 
 import com.example.passmanagersvc.domain.MongoPassOwner
-import com.example.passmanagersvc.web.dto.PassOwnerDto
-import com.example.passmanagersvc.web.dto.PassOwnerUpdateDto
+import com.example.passmanagersvc.dto.PassOwnerDto
+import com.example.passmanagersvc.dto.PassOwnerUpdateDto
 import io.github.serpro69.kfaker.Faker
 import org.bson.types.ObjectId
 

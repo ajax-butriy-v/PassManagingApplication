@@ -18,23 +18,41 @@ class KafkaReactiveConsumerConfiguration(
 ) {
 
     @Bean
-    fun kafkaReceiver(): KafkaReceiver<String, ByteArray> {
+    fun transferPassKafkaReceiver(): KafkaReceiver<String, ByteArray> {
+        return KafkaReceiver.create(
+            createConsumerProperties(
+                consumerGroup = CONSUMER_TRANSFER_PASS_GROUP,
+                topic = KafkaTopic.KafkaTransferPassEvents.TRANSFER
+            )
+        )
+    }
+
+    @Bean
+    fun transferPassForNatsKafkaReceiver(): KafkaReceiver<String, ByteArray> {
+        return KafkaReceiver.create(
+            createConsumerProperties(
+                consumerGroup = CONSUMER_TRANSFER_PASS_FOR_NATS_GROUP,
+                topic = KafkaTopic.KafkaTransferPassEvents.TRANSFER
+            )
+        )
+    }
+
+    private fun createConsumerProperties(consumerGroup: String, topic: String): ReceiverOptions<String, ByteArray> {
         val properties = kafkaProperties.consumer.buildProperties(null).apply {
             putAll(
                 mapOf(
                     ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to bootstrapServers,
                     ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
                     ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to ByteArrayDeserializer::class.java,
-                    ConsumerConfig.GROUP_ID_CONFIG to CONSUMER_TRANSFER_PASS_GROUP
+                    ConsumerConfig.GROUP_ID_CONFIG to consumerGroup
                 )
             )
         }
-        val receiverOptions = ReceiverOptions.create<String, ByteArray>(properties)
-            .subscription(setOf(KafkaTopic.KafkaTransferPassEvents.TRANSFER))
-        return KafkaReceiver.create(receiverOptions)
+        return ReceiverOptions.create<String, ByteArray>(properties).subscription(setOf(topic))
     }
 
     companion object {
         private const val CONSUMER_TRANSFER_PASS_GROUP = "transferPassConsumerGroup"
+        private const val CONSUMER_TRANSFER_PASS_FOR_NATS_GROUP = "transferPassForNatsConsumerGroup"
     }
 }

@@ -1,13 +1,13 @@
 package com.example.passmanagersvc.rest.controller
 
+import com.example.passmanagersvc.dto.PassOwnerDto
+import com.example.passmanagersvc.dto.PriceDistribution
+import com.example.passmanagersvc.dto.SpentAfterDateDto
+import com.example.passmanagersvc.mapper.PassOwnerMapper.toDto
 import com.example.passmanagersvc.service.PassOwnerService
 import com.example.passmanagersvc.service.PassOwnerStatisticsService
 import com.example.passmanagersvc.util.PassOwnerFixture.passOwnerFromDb
 import com.example.passmanagersvc.util.PassOwnerFixture.passOwnerIdFromDb
-import com.example.passmanagersvc.web.dto.PassOwnerDto
-import com.example.passmanagersvc.web.dto.PriceDistribution
-import com.example.passmanagersvc.web.dto.SpentAfterDateDto
-import com.example.passmanagersvc.web.mapper.PassOwnerMapper.toDto
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import org.junit.jupiter.api.Test

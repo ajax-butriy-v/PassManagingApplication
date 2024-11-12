@@ -7,3 +7,4 @@ data:
   mongo_host: "mongodb-service"
   mongo_database: "test_db"
   nats_uri: "nats://nats-service:4222"
+  kafka-bootstrap-servers: "http://kafka-service:9092"

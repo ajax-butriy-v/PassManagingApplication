@@ -11,5 +11,7 @@ object NatsSubject {
         const val CANCEL = "$PASS_PREFIX.cancel"
         const val TRANSFER = "$PASS_PREFIX.transfer"
         const val DELETE_BY_ID = "$PASS_PREFIX.delete_by_id"
+
+        fun subjectByPassTypeName(passTypeName: String) = "$TRANSFER.$passTypeName"
     }
 }

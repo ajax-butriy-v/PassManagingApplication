@@ -1,7 +1,7 @@
 package com.example.passmanagersvc.service
 
 import com.example.passmanagersvc.domain.MongoPass
-import com.example.passmanagersvc.web.dto.PriceDistribution
+import com.example.passmanagersvc.dto.PriceDistribution
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.math.BigDecimal

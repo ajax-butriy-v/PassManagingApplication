@@ -1,5 +1,6 @@
 plugins {
     `spring-conventions`
+    `grpc-conventions`
 }
 
 dependencies {
@@ -7,8 +8,11 @@ dependencies {
     implementation(libs.jackson.module.kotlin)
     implementation(libs.spring.boot.starter.validation)
     implementation(libs.spring.boot.starter.webflux)
-    implementation(libs.spring.boot.starter.data.mongodb.reactive)
     implementation(libs.nats)
+    implementation(libs.grpc.spring.boot.starter)
+    implementation(libs.mongodb.bson)
+    implementation(libs.grpc.server.spring.boot.starter)
     implementation(project(":internal-api"))
     implementation(project(":core"))
+    implementation(project(":grpc-api"))
 }

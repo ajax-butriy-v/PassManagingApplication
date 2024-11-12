@@ -1,6 +1,6 @@
 package com.example.passmanagersvc.util
 
-import com.example.internal.commonmodels.Error
+import com.example.commonmodels.Error
 import com.example.internal.input.reqreply.CancelPassRequest
 import com.example.internal.input.reqreply.CancelPassResponse
 import com.example.internal.input.reqreply.CreatePassRequest
@@ -12,7 +12,7 @@ import com.example.internal.input.reqreply.FindPassByIdResponse
 import com.example.internal.input.reqreply.TransferPassRequest
 import com.example.internal.input.reqreply.TransferPassResponse
 import com.example.passmanagersvc.domain.MongoPass
-import com.example.passmanagersvc.web.mapper.proto.pass.FindPassByIdMapper.toProto
+import com.example.passmanagersvc.mapper.proto.pass.FindPassByIdMapper.toProto
 import org.bson.types.ObjectId
 
 object PassProtoFixture {

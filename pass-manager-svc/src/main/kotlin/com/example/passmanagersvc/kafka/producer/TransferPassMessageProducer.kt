@@ -2,7 +2,7 @@ package com.example.passmanagersvc.kafka.producer
 
 import com.example.internal.KafkaTopic
 import com.example.passmanagersvc.domain.MongoPass
-import com.example.passmanagersvc.web.mapper.proto.pass.TransferredPassMessageMapper.toTransferredPassMessage
+import com.example.passmanagersvc.mapper.proto.pass.TransferredPassMessageMapper.toTransferredPassMessage
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono

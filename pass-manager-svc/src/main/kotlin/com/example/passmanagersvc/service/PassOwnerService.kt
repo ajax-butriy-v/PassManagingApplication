@@ -1,7 +1,7 @@
 package com.example.passmanagersvc.service
 
 import com.example.passmanagersvc.domain.MongoPassOwner
-import com.example.passmanagersvc.web.dto.PassOwnerUpdateDto
+import com.example.passmanagersvc.dto.PassOwnerUpdateDto
 import reactor.core.publisher.Mono
 
 interface PassOwnerService {

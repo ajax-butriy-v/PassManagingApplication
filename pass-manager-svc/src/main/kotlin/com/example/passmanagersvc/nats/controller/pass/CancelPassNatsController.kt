@@ -3,10 +3,10 @@ package com.example.passmanagersvc.nats.controller.pass
 import com.example.internal.NatsSubject.Pass.CANCEL
 import com.example.internal.input.reqreply.CancelPassRequest
 import com.example.internal.input.reqreply.CancelPassResponse
+import com.example.passmanagersvc.mapper.proto.pass.CancelPassMapper.failureCancelPassResponse
+import com.example.passmanagersvc.mapper.proto.pass.CancelPassMapper.successCancelPassResponse
 import com.example.passmanagersvc.nats.controller.NatsController
 import com.example.passmanagersvc.service.PassManagementService
-import com.example.passmanagersvc.web.mapper.proto.pass.CancelPassMapper.failureCancelPassResponse
-import com.example.passmanagersvc.web.mapper.proto.pass.CancelPassMapper.successCancelPassResponse
 import com.google.protobuf.Parser
 import io.nats.client.Connection
 import org.slf4j.Logger
@@ -36,6 +36,6 @@ class CancelPassNatsController(
 
     companion object {
         const val PASS_QUEUE_GROUP = "passQueueGroup"
-        private val logger: Logger = LoggerFactory.getLogger(this::class.java)
+        private val logger: Logger = LoggerFactory.getLogger(CancelPassNatsController::class.java)
     }
 }

@@ -1,5 +1,6 @@
 plugins {
     `spring-conventions`
+    `grpc-conventions`
 }
 
 dependencies {
@@ -9,6 +10,7 @@ dependencies {
     implementation(libs.spring.boot.starter.data.mongodb)
     implementation(libs.spring.boot.starter.validation)
     implementation(libs.spring.boot.starter.data.mongodb.reactive)
+    implementation(libs.spring.boot.starter.data.redis.reactive)
     implementation(libs.mongock.springboot.v3)
     implementation(libs.mongock.mongodb.springdata.v4.driver)
     implementation(libs.nats)
@@ -16,6 +18,5 @@ dependencies {
     implementation(libs.reactor.kafka)
     implementation(project(":core"))
     implementation(project(":internal-api"))
-    testImplementation(libs.nats.embedded)
     testFixturesImplementation(libs.faker)
 }
