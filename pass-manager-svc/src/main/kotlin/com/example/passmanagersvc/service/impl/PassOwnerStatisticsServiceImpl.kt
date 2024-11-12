@@ -10,7 +10,6 @@ import com.example.passmanagersvc.repositories.PassRepository
 import com.example.passmanagersvc.service.PassOwnerService
 import com.example.passmanagersvc.service.PassOwnerStatisticsService
 import com.example.passmanagersvc.service.PassTypeService
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -22,7 +21,6 @@ import java.time.LocalDate
 @Service
 internal class PassOwnerStatisticsServiceImpl(
     private val passOwnerService: PassOwnerService,
-    @Qualifier("redisPassRepository")
     private val passRepository: PassRepository,
     private val passTypeService: PassTypeService,
     private val transferPassStatisticsMessageProducer: TransferPassStatisticsMessageProducer,

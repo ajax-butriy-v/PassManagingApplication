@@ -1,6 +1,7 @@
 package com.example.passmanagersvc.repositories
 
 import com.example.passmanagersvc.domain.MongoPass
+import com.example.passmanagersvc.repositories.impl.MongoPassRepository
 import com.example.passmanagersvc.util.IntegrationTest
 import com.example.passmanagersvc.util.PassFixture.passToCreate
 import com.example.passmanagersvc.util.PassFixture.passTypes
@@ -30,8 +31,7 @@ internal class MongoPassRepositoryTest : IntegrationTest() {
     private lateinit var mongoTemplate: ReactiveMongoTemplate
 
     @Autowired
-    @Qualifier("mongoPassRepository")
-    private lateinit var passRepository: PassRepository
+    private lateinit var passRepository: MongoPassRepository
 
     @Test
     fun `finding pass by existing id should return pass by id`() {

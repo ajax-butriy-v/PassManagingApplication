@@ -7,16 +7,13 @@ import com.example.passmanagersvc.mapper.PassOwnerMapper.partialUpdate
 import com.example.passmanagersvc.repositories.PassOwnerRepository
 import com.example.passmanagersvc.repositories.PassRepository
 import com.example.passmanagersvc.service.PassOwnerService
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 
 @Service
 internal class PassOwnerServiceImpl(
-    @Qualifier("redisPassOwnerRepository")
     private val passOwnerRepository: PassOwnerRepository,
-    @Qualifier("redisPassRepository")
     private val passRepository: PassRepository,
 ) : PassOwnerService {
 

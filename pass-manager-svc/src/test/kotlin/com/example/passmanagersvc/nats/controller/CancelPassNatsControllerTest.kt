@@ -23,11 +23,9 @@ internal class CancelPassNatsControllerTest : IntegrationTest() {
     private lateinit var connection: Connection
 
     @Autowired
-    @Qualifier("redisPassRepository")
     private lateinit var passRepository: PassRepository
 
     @Autowired
-    @Qualifier("redisPassOwnerRepository")
     private lateinit var passOwnerRepository: PassOwnerRepository
 
     @Test

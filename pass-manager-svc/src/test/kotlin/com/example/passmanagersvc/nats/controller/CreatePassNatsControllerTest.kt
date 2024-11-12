@@ -25,7 +25,6 @@ internal class CreatePassNatsControllerTest : IntegrationTest() {
     private lateinit var connection: Connection
 
     @Autowired
-    @Qualifier("redisPassOwnerRepository")
     private lateinit var passOwnerRepository: PassOwnerRepository
 
     @Autowired

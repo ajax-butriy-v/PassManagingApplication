@@ -1,11 +1,11 @@
 package com.example.passmanagersvc.repositories
 
 import com.example.passmanagersvc.domain.MongoPassOwner
+import com.example.passmanagersvc.repositories.impl.MongoPassOwnerRepository
 import com.example.passmanagersvc.util.IntegrationTest
 import com.example.passmanagersvc.util.PassOwnerFixture.getOwnerWithUniqueFields
 import org.assertj.core.api.Assertions.assertThat
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.aggregation.Fields
 import org.springframework.data.mongodb.core.exists
@@ -21,8 +21,7 @@ internal class MongoPassOwnerRepositoryTest : IntegrationTest() {
     private lateinit var mongoTemplate: ReactiveMongoTemplate
 
     @Autowired
-    @Qualifier("mongoPassOwnerRepository")
-    private lateinit var passOwnerRepository: PassOwnerRepository
+    private lateinit var passOwnerRepository: MongoPassOwnerRepository
 
     @Test
     fun `finding pass by existing id should return pass owner by id`() {

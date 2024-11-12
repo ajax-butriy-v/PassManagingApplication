@@ -22,7 +22,6 @@ internal class FindByIdNatsControllerTest : IntegrationTest() {
     private lateinit var connection: Connection
 
     @Autowired
-    @Qualifier("redisPassRepository")
     private lateinit var passRepository: PassRepository
 
     @Test
