@@ -9,16 +9,15 @@ import com.example.passmanagersvc.util.IntegrationTest
 import com.example.passmanagersvc.util.PassFixture
 import com.example.passmanagersvc.util.PassProtoFixture.failureFindPassByIdResponseWithPassNotFound
 import com.example.passmanagersvc.util.PassProtoFixture.findPassByIdRequest
-import io.nats.client.Connection
-import org.assertj.core.api.Assertions.assertThat
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
-import java.time.Duration
+import reactor.kotlin.test.test
+import systems.ajax.nats.publisher.api.NatsMessagePublisher
 import kotlin.test.Test
 
 internal class FindByIdNatsControllerTest : IntegrationTest() {
     @Autowired
-    private lateinit var connection: Connection
+    private lateinit var natsMessagePublisher: NatsMessagePublisher
 
     @Autowired
     private lateinit var passRepository: PassRepository
@@ -31,12 +30,16 @@ internal class FindByIdNatsControllerTest : IntegrationTest() {
         val expectedResponse = pass.toProto().toSuccessFindPassByIdResponse()
 
         // WHEN
-        val message = connection.requestWithTimeout(FIND_BY_ID, findByIdRequest.toByteArray(), Duration.ofSeconds(10))
+        val message = natsMessagePublisher.request(
+            FIND_BY_ID,
+            findByIdRequest,
+            FindPassByIdResponse.parser()
+        )
 
         // THEN
-        val actualResponse = FindPassByIdResponse.parser().parseFrom(message.get().data)
-
-        assertThat(actualResponse).isEqualTo(expectedResponse)
+        message.test()
+            .expectNext(expectedResponse)
+            .verifyComplete()
     }
 
     @Test
@@ -47,11 +50,15 @@ internal class FindByIdNatsControllerTest : IntegrationTest() {
         val expectedResponse = failureFindPassByIdResponseWithPassNotFound(invalidId)
 
         // WHEN
-        val message =
-            connection.requestWithTimeout(FIND_BY_ID, invalidFindByIdRequest.toByteArray(), Duration.ofSeconds(10))
+        val message = natsMessagePublisher.request(
+            FIND_BY_ID,
+            invalidFindByIdRequest,
+            FindPassByIdResponse.parser()
+        )
 
         // THEN
-        val actualResponse = FindPassByIdResponse.parser().parseFrom(message.get().data)
-        assertThat(actualResponse).isEqualTo(expectedResponse)
+        message.test()
+            .expectNext(expectedResponse)
+            .verifyComplete()
     }
 }

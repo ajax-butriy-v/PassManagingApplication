@@ -19,6 +19,7 @@ import reactor.core.publisher.Flux
 import reactor.core.scheduler.Schedulers
 import reactor.kotlin.core.publisher.toFlux
 import reactor.kotlin.test.test
+import systems.ajax.kafka.handler.manager.KafkaHandlerManager
 import java.time.Duration
 
 internal class TransferPassForNatsConsumerTest : IntegrationTest() {
@@ -27,10 +28,10 @@ internal class TransferPassForNatsConsumerTest : IntegrationTest() {
     private lateinit var transferPassMessageProducer: TransferPassMessageProducer
 
     @Autowired
-    private lateinit var dispatcher: Dispatcher
+    private lateinit var reactiveMongoTemplate: ReactiveMongoTemplate
 
     @Autowired
-    private lateinit var reactiveMongoTemplate: ReactiveMongoTemplate
+    private lateinit var kafkaHandlerManager: KafkaHandlerManager
 
     @Autowired
     private lateinit var passTypeService: PassTypeService

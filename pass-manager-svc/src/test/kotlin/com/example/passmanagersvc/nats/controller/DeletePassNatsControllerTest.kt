@@ -7,15 +7,14 @@ import com.example.passmanagersvc.util.IntegrationTest
 import com.example.passmanagersvc.util.PassFixture.passToCreate
 import com.example.passmanagersvc.util.PassProtoFixture.deletePassByIdRequest
 import com.example.passmanagersvc.util.PassProtoFixture.succesfulDeletePassByIdResponse
-import io.nats.client.Connection
-import org.assertj.core.api.Assertions.assertThat
 import org.springframework.beans.factory.annotation.Autowired
-import java.time.Duration
+import reactor.kotlin.test.test
+import systems.ajax.nats.publisher.api.NatsMessagePublisher
 import kotlin.test.Test
 
 internal class DeletePassNatsControllerTest : IntegrationTest() {
     @Autowired
-    private lateinit var connection: Connection
+    private lateinit var natsMessagePublisher: NatsMessagePublisher
 
     @Autowired
     private lateinit var passRepository: PassRepository
@@ -28,14 +27,15 @@ internal class DeletePassNatsControllerTest : IntegrationTest() {
         val deletePassByIdRequest = deletePassByIdRequest(pass.id.toString())
 
         // WHEN
-        val cancelMessage = connection.requestWithTimeout(
+        val cancelMessage = natsMessagePublisher.request(
             DELETE_BY_ID,
-            deletePassByIdRequest.toByteArray(),
-            Duration.ofSeconds(10)
+            deletePassByIdRequest,
+            DeletePassByIdResponse.parser()
         )
 
         // THEN
-        val actualResponse = DeletePassByIdResponse.parser().parseFrom(cancelMessage.get().data)
-        assertThat(actualResponse).isEqualTo(expectedResponse)
+        cancelMessage.test()
+            .expectNext(expectedResponse)
+            .verifyComplete()
     }
 }

@@ -10,16 +10,15 @@ import com.example.passmanagersvc.util.PassOwnerFixture.getOwnerWithUniqueFields
 import com.example.passmanagersvc.util.PassProtoFixture.cancelPassRequest
 import com.example.passmanagersvc.util.PassProtoFixture.failureCancelPassResponseWithOwnerNotFound
 import com.example.passmanagersvc.util.PassProtoFixture.succesfulCancelPassResponse
-import io.nats.client.Connection
-import org.assertj.core.api.Assertions.assertThat
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
-import java.time.Duration
+import reactor.kotlin.test.test
+import systems.ajax.nats.publisher.api.NatsMessagePublisher
 import kotlin.test.Test
 
 internal class CancelPassNatsControllerTest : IntegrationTest() {
     @Autowired
-    private lateinit var connection: Connection
+    private lateinit var natsMessagePublisher: NatsMessagePublisher
 
     @Autowired
     private lateinit var passRepository: PassRepository
@@ -31,20 +30,22 @@ internal class CancelPassNatsControllerTest : IntegrationTest() {
     fun `canceling pass should return successful proto response`() {
         // GIVEN
         val passOwner = passOwnerRepository.insert(getOwnerWithUniqueFields()).block()!!
-        val pass = passRepository.insert(passToCreate).block()!!
+        val pass = passRepository.insert(passToCreate.copy(passOwnerId = passOwner.id)).block()!!
         val expectedResponse = succesfulCancelPassResponse
         val cancelPassRequest = cancelPassRequest(pass.id.toString(), passOwner.id.toString())
 
         // WHEN
-        val cancelMessage = connection.requestWithTimeout(
+        val actualResponse = natsMessagePublisher.request(
             CANCEL,
-            cancelPassRequest.toByteArray(),
-            Duration.ofSeconds(10)
+            cancelPassRequest,
+            CancelPassResponse.parser()
         )
 
+
         // THEN
-        val actualResponse = CancelPassResponse.parser().parseFrom(cancelMessage.get().data)
-        assertThat(actualResponse).isEqualTo(expectedResponse)
+        actualResponse.test()
+            .expectNext(expectedResponse)
+            .verifyComplete()
     }
 
     @Test
@@ -52,17 +53,18 @@ internal class CancelPassNatsControllerTest : IntegrationTest() {
         // GIVEN
         val invalidOwnerId = ObjectId.get().toString()
         val invalidCancelPassRequest = cancelPassRequest(ObjectId.get().toString(), invalidOwnerId)
-        val exceptedResponse = failureCancelPassResponseWithOwnerNotFound(invalidOwnerId)
+        val expectedResponse = failureCancelPassResponseWithOwnerNotFound(invalidOwnerId)
 
         // WHEN
-        val invalidCancelMessage = connection.requestWithTimeout(
+        val invalidCancelMessage = natsMessagePublisher.request(
             CANCEL,
-            invalidCancelPassRequest.toByteArray(),
-            Duration.ofSeconds(10)
+            invalidCancelPassRequest,
+            CancelPassResponse.parser()
         )
 
         // THEN
-        val actualResponse = CancelPassResponse.parser().parseFrom(invalidCancelMessage.get().data)
-        assertThat(actualResponse).isEqualTo(exceptedResponse)
+        invalidCancelMessage.test()
+            .expectNext(expectedResponse)
+            .verifyComplete()
     }
 }
