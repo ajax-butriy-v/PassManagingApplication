@@ -1,9 +1,12 @@
-nats:
-  uri: ${NATS_CONNECTION_URI}
 server:
   servlet:
     context-path: /api/v1
-
+nats:
+  spring:
+    io:
+      nats:
+        client:
+          servers: nats://localhost:4222
 grpc:
   server:
     port: 9091

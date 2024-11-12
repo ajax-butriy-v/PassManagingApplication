@@ -1,6 +1,5 @@
 package com.example.gateway.rest
 
-import com.example.gateway.configuration.NatsClient
 import com.example.gateway.dto.PassDto
 import com.example.gateway.mapper.rest.CreatePassResponseMapper.toCreatePassRequest
 import com.example.gateway.util.PassDtoFixture.passDto

@@ -1,35 +1,34 @@
 package com.example.passmanagersvc.kafka.consumer
 
+import com.example.internal.KafkaTopic
 import com.example.internal.input.reqreply.TransferredPassMessage
 import com.example.passmanagersvc.mapper.proto.pass.CreatePassMapper.toModel
 import com.example.passmanagersvc.service.PassOwnerStatisticsService
+import com.google.protobuf.Parser
 import org.bson.types.ObjectId
-import org.springframework.boot.context.event.ApplicationReadyEvent
-import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
-import reactor.core.scheduler.Schedulers
-import reactor.kafka.receiver.KafkaReceiver
 import reactor.kotlin.core.publisher.toMono
+import systems.ajax.kafka.handler.KafkaEvent
+import systems.ajax.kafka.handler.KafkaHandler
+import systems.ajax.kafka.handler.subscription.topic.TopicSingle
 
 @Component
 class TransferPassMessageConsumer(
-    private val transferPassKafkaReceiver: KafkaReceiver<String, ByteArray>,
     private val passOwnerStatisticsService: PassOwnerStatisticsService,
-) {
-    @EventListener(ApplicationReadyEvent::class)
-    fun listenToTransferPassMessageTopic() {
-        transferPassKafkaReceiver.receiveBatch()
-            .flatMap { receiverRecords ->
-                receiverRecords.flatMap { record ->
-                    record.toMono()
-                        .map { TransferredPassMessage.parseFrom(it.value()) }
-                        .flatMap(::delegateToStatisticsService)
-                        .doFinally { record.receiverOffset().acknowledge() }
-                }
+) : KafkaHandler<TransferredPassMessage, TopicSingle> {
+
+    override val groupId: String = CONSUMER_TRANSFER_PASS_GROUP
+    override val parser: Parser<TransferredPassMessage> = TransferredPassMessage.parser()
+    override val subscriptionTopics: TopicSingle = TopicSingle(KafkaTopic.KafkaTransferPassEvents.TRANSFER)
+
+    override fun handle(kafkaEvent: KafkaEvent<TransferredPassMessage>): Mono<Unit> {
+        return kafkaEvent.toMono()
+            .flatMap { event ->
+                delegateToStatisticsService(event.data)
+                    .doOnSuccess { event.ack() }
             }
-            .subscribeOn(Schedulers.boundedElastic())
-            .subscribe()
+            .thenReturn(Unit)
     }
 
     private fun delegateToStatisticsService(message: TransferredPassMessage): Mono<Unit> {
@@ -38,5 +37,9 @@ class TransferPassMessageConsumer(
             mongoPass,
             message.previousPassOwnerId
         )
+    }
+
+    companion object {
+        private const val CONSUMER_TRANSFER_PASS_GROUP = "transferPassConsumerGroup"
     }
 }

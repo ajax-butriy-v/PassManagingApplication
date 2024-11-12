@@ -1,20 +1,24 @@
 spring:
   data:
     mongodb:
-      uri: mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}:${MONGODB_PORT}/${MONGODB_DATABASE}?authSource=admin
+      uri: mongodb://root:example@localhost:27017/test_db?authSource=admin
     redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
+      host: localhost
+      port: 6379
       timeout:
-        millis: ${REDIS_TIMEOUT_MILLIS}
+        millis: 100
       ttl:
-        minutes: ${REDIS_TTL_MINUTES}
+        minutes: 3
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    bootstrap-servers: http://localhost:29092
 mongock:
   migration-scan-package: com.example.passmanagersvc.migration
 nats:
-  uri: ${NATS_CONNECTION_URI}
+  spring:
+    io:
+      nats:
+        client:
+          servers: nats://localhost:4222
 server:
   servlet:
     context-path: /api/v1
