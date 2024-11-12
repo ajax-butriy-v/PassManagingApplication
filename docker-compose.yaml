@@ -17,7 +17,7 @@ services:
       - mongo
     networks:
       - backend
-    profiles: [ dev ]
+    profiles: [ app ]
 
   gateway:
     image: gateway
@@ -30,7 +30,7 @@ services:
       - "8080:8080"
     networks:
       - backend
-    profiles: [ dev ]
+    profiles: [ app ]
 
   mongo:
     image: mongo
@@ -60,6 +60,15 @@ services:
     ports:
       - "4222:4222"
       - "8222:8222"
+    networks:
+      - backend
+    profiles: [ dev, test ]
+
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
     networks:
       - backend
     profiles: [ dev, test ]

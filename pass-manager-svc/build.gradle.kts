@@ -10,6 +10,7 @@ dependencies {
     implementation(libs.spring.boot.starter.data.mongodb)
     implementation(libs.spring.boot.starter.validation)
     implementation(libs.spring.boot.starter.data.mongodb.reactive)
+    implementation(libs.spring.boot.starter.data.redis.reactive)
     implementation(libs.mongock.springboot.v3)
     implementation(libs.mongock.mongodb.springdata.v4.driver)
     implementation(libs.nats)

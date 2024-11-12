@@ -1,6 +1,7 @@
 package com.example.passmanagersvc.repositories
 
 import com.example.passmanagersvc.domain.MongoPassOwner
+import com.example.passmanagersvc.repositories.impl.MongoPassOwnerRepository
 import com.example.passmanagersvc.util.IntegrationTest
 import com.example.passmanagersvc.util.PassOwnerFixture.getOwnerWithUniqueFields
 import org.assertj.core.api.Assertions.assertThat
@@ -15,12 +16,12 @@ import reactor.kotlin.test.test
 import kotlin.test.Test
 import kotlin.test.assertFalse
 
-internal class PassOwnerRepositoryImplTest : IntegrationTest() {
+internal class MongoPassOwnerRepositoryTest : IntegrationTest() {
     @Autowired
     private lateinit var mongoTemplate: ReactiveMongoTemplate
 
     @Autowired
-    private lateinit var passOwnerRepository: PassOwnerRepository
+    private lateinit var passOwnerRepository: MongoPassOwnerRepository
 
     @Test
     fun `finding pass by existing id should return pass owner by id`() {

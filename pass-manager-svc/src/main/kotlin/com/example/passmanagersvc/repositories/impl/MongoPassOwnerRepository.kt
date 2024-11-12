@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 
 @Repository
-class PassOwnerRepositoryImpl(private val mongoTemplate: ReactiveMongoTemplate) : PassOwnerRepository {
+class MongoPassOwnerRepository(private val mongoTemplate: ReactiveMongoTemplate) : PassOwnerRepository {
     override fun findById(passOwnerId: String): Mono<MongoPassOwner> {
         return mongoTemplate.findById(passOwnerId)
     }

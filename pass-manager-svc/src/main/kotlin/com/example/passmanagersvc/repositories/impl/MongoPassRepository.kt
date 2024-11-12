@@ -30,7 +30,7 @@ import com.example.passmanagersvc.domain.MongoPassType.Companion.COLLECTION_NAME
 
 @Suppress("TooManyFunctions")
 @Repository
-class PassRepositoryImpl(private val mongoTemplate: ReactiveMongoTemplate) :
+class MongoPassRepository(private val mongoTemplate: ReactiveMongoTemplate) :
     PassRepository {
     override fun findByOwnerAndPurchasedAfter(passOwnerId: String, afterDate: LocalDate): Flux<MongoPass> {
         val aggregation = newAggregation(
