@@ -24,11 +24,8 @@ class TransferPassForNatsConsumer(
     override val subscriptionTopics: TopicSingle = TopicSingle(KafkaTopic.KafkaTransferPassEvents.TRANSFER)
 
     override fun handle(kafkaEvent: KafkaEvent<TransferredPassMessage>): Mono<Unit> {
-        return kafkaEvent.toMono()
-            .flatMap { event ->
-                publishToNatsSubject(event.data)
-                    .doOnSuccess { event.ack() }
-            }
+        return publishToNatsSubject(kafkaEvent.data)
+            .doOnSuccess { kafkaEvent.ack() }
             .thenReturn(Unit)
     }
 

@@ -15,10 +15,8 @@ mongock:
   migration-scan-package: com.example.passmanagersvc.migration
 nats:
   spring:
-    io:
-      nats:
-        client:
-          servers: ${NATS_CONNECTION_URI}
+    io.nats.client:
+      servers: ${NATS_CONNECTION_URI}
 server:
   servlet:
     context-path: /api/v1

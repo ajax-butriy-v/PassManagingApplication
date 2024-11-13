@@ -18,7 +18,5 @@ spring:
     bootstrap-servers: http://localhost:29092
 nats:
   spring:
-    io:
-      nats:
-        client:
-          servers: nats://localhost:4222
+    io.nats.client:
+      servers: nats://localhost:4222
