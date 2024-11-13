@@ -24,7 +24,6 @@ class TransferPassNatsController(
     override val subject: String = TRANSFER
 
     override fun doOnUnexpectedError(inMsg: TransferPassRequest?, e: Exception): Mono<TransferPassResponse> {
-        log.error("Error occurred while executing", e)
         return failureTransferPassResponse(e).toMono()
     }
 

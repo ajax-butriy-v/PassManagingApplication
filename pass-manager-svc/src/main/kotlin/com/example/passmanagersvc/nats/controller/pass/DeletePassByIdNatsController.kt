@@ -23,7 +23,6 @@ class DeletePassByIdNatsController(
     override val subject: String = DELETE_BY_ID
 
     override fun doOnUnexpectedError(inMsg: DeletePassByIdRequest?, e: Exception): Mono<DeletePassByIdResponse> {
-        log.error("Error occurred while executing", e)
         return DeletePassByIdMapper.failureDeletePassByIdResponse(e).toMono()
     }
 

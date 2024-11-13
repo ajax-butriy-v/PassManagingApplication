@@ -24,7 +24,6 @@ class CancelPassNatsController(
     override val subject = CANCEL
 
     override fun doOnUnexpectedError(inMsg: CancelPassRequest?, e: Exception): Mono<CancelPassResponse> {
-        logger.error("Error occurred while executing", e)
         return failureCancelPassResponse(e).toMono()
     }
 
@@ -35,6 +34,5 @@ class CancelPassNatsController(
 
     companion object {
         const val PASS_QUEUE_GROUP = "passQueueGroup"
-        private val logger: Logger = LoggerFactory.getLogger(CancelPassNatsController::class.java)
     }
 }

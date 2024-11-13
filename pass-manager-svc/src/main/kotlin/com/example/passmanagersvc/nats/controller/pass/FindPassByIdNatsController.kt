@@ -25,7 +25,6 @@ class FindPassByIdNatsController(
     override val subject: String = FIND_BY_ID
 
     override fun doOnUnexpectedError(inMsg: FindPassByIdRequest?, e: Exception): Mono<FindPassByIdResponse> {
-        log.error("Error occurred while executing", e)
         return failureFindByIdPassResponse(e).toMono()
     }
 
