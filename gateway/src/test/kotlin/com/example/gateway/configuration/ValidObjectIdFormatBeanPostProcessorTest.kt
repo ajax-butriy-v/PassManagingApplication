@@ -12,8 +12,9 @@ import com.example.gateway.util.PassProtoFixture.successfulCreatePassResponse
 import com.example.internal.NatsSubject.Pass.CREATE
 import com.example.internal.input.reqreply.CreatePassResponse
 import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.aop.support.AopUtils
@@ -21,6 +22,7 @@ import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import reactor.kotlin.test.test
 import reactor.kotlin.test.verifyError
+import systems.ajax.nats.publisher.api.NatsMessagePublisher
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFalse
@@ -28,9 +30,11 @@ import kotlin.test.assertTrue
 
 @ExtendWith(MockKExtension::class)
 internal class ValidObjectIdFormatBeanPostProcessorTest {
-    private val natsClient: NatsClient = mockk()
+    @MockK
+    private lateinit var natsMessagePublisher: NatsMessagePublisher
 
-    private val passController = PassController(natsClient)
+    @InjectMockKs
+    private lateinit var passController: PassController
 
     private val beanPostProcessor: ValidObjectIdFormatBeanPostProcessor = ValidObjectIdFormatBeanPostProcessor()
 
@@ -52,12 +56,12 @@ internal class ValidObjectIdFormatBeanPostProcessorTest {
     fun `processing bean, which not match BPP logic, must return bean`() {
         // WHEN
         val beanNotToBeProxied = beanPostProcessor.postProcessAfterInitialization(
-            natsClient,
-            natsClient::class.java.simpleName
+            natsMessagePublisher,
+            natsMessagePublisher::class.java.simpleName
         )
 
         // THEN
-        assertThat(beanNotToBeProxied).isEqualTo(natsClient)
+        assertThat(beanNotToBeProxied).isEqualTo(natsMessagePublisher)
         assertFalse(AopUtils.isCglibProxy(beanNotToBeProxied), message = "Bean must not be proxy")
     }
 
@@ -96,7 +100,7 @@ internal class ValidObjectIdFormatBeanPostProcessorTest {
     }
 
     private fun doCreateRequest(passDto: PassDto): Mono<CreatePassResponse> {
-        return natsClient.request(
+        return natsMessagePublisher.request(
             CREATE,
             passDto.toCreatePassRequest(),
             CreatePassResponse.parser()

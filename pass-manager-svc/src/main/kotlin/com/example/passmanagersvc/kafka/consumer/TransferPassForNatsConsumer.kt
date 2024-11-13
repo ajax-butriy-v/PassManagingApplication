@@ -25,8 +25,9 @@ class TransferPassForNatsConsumer(
 
     override fun handle(kafkaEvent: KafkaEvent<TransferredPassMessage>): Mono<Unit> {
         return kafkaEvent.toMono()
-            .flatMap { event -> publishToNatsSubject(event.data)
-                .doOnSuccess { event.ack()}
+            .flatMap { event ->
+                publishToNatsSubject(event.data)
+                    .doOnSuccess { event.ack() }
             }
             .thenReturn(Unit)
     }

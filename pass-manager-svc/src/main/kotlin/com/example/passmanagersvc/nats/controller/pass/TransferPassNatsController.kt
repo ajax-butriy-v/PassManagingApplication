@@ -31,7 +31,6 @@ class TransferPassNatsController(
     override fun doHandle(inMsg: TransferPassRequest): Mono<TransferPassResponse> {
         return passManagementService.transferPass(inMsg.id, inMsg.ownerId)
             .thenReturn(successTransferPassResponse())
-
     }
 
     companion object {

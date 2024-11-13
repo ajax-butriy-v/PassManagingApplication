@@ -33,6 +33,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 import reactor.kotlin.core.publisher.toMono
+import systems.ajax.nats.publisher.api.NatsMessagePublisher
 
 @WebFluxTest(PassController::class)
 internal class PassControllerTest {
@@ -41,13 +42,13 @@ internal class PassControllerTest {
     private lateinit var webTestClient: WebTestClient
 
     @MockkBean
-    private lateinit var natsClient: NatsClient
+    private lateinit var natsMessagePublisher: NatsMessagePublisher
 
     @Test
     fun `find by id should return pass by id`() {
         // GIVEN
         every {
-            natsClient.request(
+            natsMessagePublisher.request(
                 FIND_BY_ID, PassProtoFixture.findPassByIdRequest(passId), FindPassByIdResponse.parser()
             )
         } returns successfulFindPassByIdResponse(protoPass).toMono()
@@ -61,7 +62,7 @@ internal class PassControllerTest {
     fun `creating pass should create a new pass`() {
         // GIVEN
         every {
-            natsClient.request(
+            natsMessagePublisher.request(
                 CREATE, passDto.toCreatePassRequest(), CreatePassResponse.parser()
             )
         } returns successfulCreatePassResponse(protoPass).toMono()
@@ -76,7 +77,7 @@ internal class PassControllerTest {
         // GIVEN
 
         every {
-            natsClient.request(
+            natsMessagePublisher.request(
                 CANCEL, cancelPassRequest(passId, protoPass.passOwnerId), CancelPassResponse.parser()
             )
         } returns succesfulCancelPassResponse.toMono()
@@ -90,7 +91,7 @@ internal class PassControllerTest {
     fun `transferring a pass should transfer a pass`() {
         // GIVEN
         every {
-            natsClient.request(
+            natsMessagePublisher.request(
                 TRANSFER, transferPassRequest(passId, protoPass.passOwnerId), TransferPassResponse.parser()
             )
         } returns successfulTransferPassResponse.toMono()
@@ -104,7 +105,7 @@ internal class PassControllerTest {
     fun `deleting pass by id should delete pass by id`() {
         // GIVEN
         every {
-            natsClient.request(
+            natsMessagePublisher.request(
                 DELETE_BY_ID, deletePassByIdRequest(passId), DeletePassByIdResponse.parser()
             )
         } returns succesfulDeletePassByIdResponse.toMono()

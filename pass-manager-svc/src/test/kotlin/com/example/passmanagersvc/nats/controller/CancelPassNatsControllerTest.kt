@@ -41,7 +41,6 @@ internal class CancelPassNatsControllerTest : IntegrationTest() {
             CancelPassResponse.parser()
         )
 
-
         // THEN
         actualResponse.test()
             .expectNext(expectedResponse)

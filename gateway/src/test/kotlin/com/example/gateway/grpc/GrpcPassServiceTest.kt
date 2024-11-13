@@ -9,17 +9,22 @@ import com.example.gateway.util.PassProtoFixture
 import com.example.grpcapi.reqrep.pass.CreatePassRequest
 import com.example.grpcapi.reqrep.pass.FindPassByIdRequest
 import com.example.grpcapi.reqrep.pass.GetAllTransferredPassesRequest
+import com.example.internal.NatsSubject
 import com.example.internal.NatsSubject.Pass.CREATE
 import com.example.internal.NatsSubject.Pass.FIND_BY_ID
+import com.example.internal.input.reqreply.TransferredPassMessage
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
+import io.nats.client.Message
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.extension.ExtendWith
 import reactor.kotlin.core.publisher.toFlux
 import reactor.kotlin.core.publisher.toMono
 import reactor.kotlin.test.test
+import systems.ajax.nats.handler.api.NatsHandlerManager
+import systems.ajax.nats.publisher.api.NatsMessagePublisher
 import kotlin.test.Test
 import com.example.internal.input.reqreply.CreatePassResponse as InternalCreatePassResponse
 import com.example.internal.input.reqreply.FindPassByIdResponse as InternalFindPassByIdResponse
@@ -27,7 +32,10 @@ import com.example.internal.input.reqreply.FindPassByIdResponse as InternalFindP
 @ExtendWith(MockKExtension::class)
 internal class GrpcPassServiceTest {
     @MockK
-    private lateinit var natsClient: NatsClient
+    private lateinit var natsHandlerManager: NatsHandlerManager
+
+    @MockK
+    private lateinit var natsMessagePublisher: NatsMessagePublisher
 
     @InjectMockKs
     private lateinit var grpcPassService: GrpcPassService
@@ -40,10 +48,13 @@ internal class GrpcPassServiceTest {
             .setPassTypeName(passTypeName)
             .build()
 
-        val passesToReturn = List(3) { protoPass }
+        val passesToReturn = List(3) { TransferredPassMessage.getDefaultInstance() }
 
         every {
-            natsClient.subscribeToPassesByType(passTypeName)
+            natsHandlerManager.subscribe(
+                NatsSubject.Pass.subjectByPassTypeName(passTypeName),
+                any<(Message) -> TransferredPassMessage>()
+            )
         } returns passesToReturn.toFlux()
 
         // WHEN
@@ -54,7 +65,7 @@ internal class GrpcPassServiceTest {
             .test()
             .assertNext {
                 assertThat(it).hasSize(3)
-                assertThat(it).isEqualTo(passesToReturn)
+                assertThat(it).isEqualTo(passesToReturn.map { it.pass })
             }
             .verifyComplete()
     }
@@ -66,7 +77,7 @@ internal class GrpcPassServiceTest {
             .setPassToCreate(protoPass)
             .build()
         every {
-            natsClient.request(
+            natsMessagePublisher.request(
                 CREATE, passDto.toCreatePassRequest(), InternalCreatePassResponse.parser()
             )
         } returns PassProtoFixture.successfulCreatePassResponse(PassProtoFixture.protoPass).toMono()
@@ -85,7 +96,7 @@ internal class GrpcPassServiceTest {
         // GIVEN
         val findByIdGrpcRequest = FindPassByIdRequest.newBuilder().setId(passId).build()
         every {
-            natsClient.request(
+            natsMessagePublisher.request(
                 FIND_BY_ID, PassProtoFixture.findPassByIdRequest(passId), InternalFindPassByIdResponse.parser()
             )
         } returns PassProtoFixture.successfulFindPassByIdResponse(PassProtoFixture.protoPass).toMono()

@@ -9,7 +9,7 @@ import systems.ajax.kafka.handler.KafkaEvent
 import systems.ajax.kafka.handler.notifier.KafkaGlobalExceptionHandler
 
 @Configuration
-class KafkaConfig {
+class KafkaConfiguration {
 
     @Bean
     fun kafkaGlobalExceptionHandler(): KafkaGlobalExceptionHandler {
@@ -22,6 +22,6 @@ class KafkaConfig {
     }
 
     companion object {
-        private val log = LoggerFactory.getLogger(KafkaConfig::class.java)
+        private val log = LoggerFactory.getLogger(KafkaConfiguration::class.java)
     }
 }
