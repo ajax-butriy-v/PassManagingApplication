@@ -26,7 +26,7 @@ class CreatePassNatsController(
     override val subject: String = CREATE
 
     override fun doOnUnexpectedError(inMsg: CreatePassRequest?, e: Exception): Mono<CreatePassResponse> {
-        log.error("Error occurred in NATS controller. ", e)
+        log.error("Error occurred while executing", e)
         return failureCreatedPassResponse(e).toMono()
     }
 

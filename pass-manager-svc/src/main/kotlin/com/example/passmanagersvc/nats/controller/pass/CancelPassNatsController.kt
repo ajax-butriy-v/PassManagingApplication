@@ -31,10 +31,6 @@ class CancelPassNatsController(
     override fun doHandle(inMsg: CancelPassRequest): Mono<CancelPassResponse> {
         return passManagementService.cancelPass(inMsg.ownerId, inMsg.id)
             .thenReturn(successCancelPassResponse())
-            .onErrorResume {
-                logger.error("Error occurred while executing", it)
-                failureCancelPassResponse(it).toMono()
-            }
     }
 
     companion object {
