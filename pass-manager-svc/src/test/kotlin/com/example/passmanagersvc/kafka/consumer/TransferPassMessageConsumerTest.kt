@@ -41,8 +41,10 @@ internal class TransferPassMessageConsumerTest : IntegrationTest() {
             .subscribeOn(Schedulers.boundedElastic())
             .subscribe()
 
-        val transferPassStatisticsMessage = result.awaitFirst({ it.passId == updatedPass.id.toString() })
-        assertThat(transferPassStatisticsMessage).isNotNull
+        val transferredPassStatisticsMessage = result.awaitFirst({
+            it.passId == updatedPass.id.toString()
+        })
+        assertThat(transferredPassStatisticsMessage).isNotNull
     }
 
     companion object {

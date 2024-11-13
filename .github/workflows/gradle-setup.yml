@@ -7,6 +7,12 @@ on:
     branches:
       - '**'
 
+env:
+  gradle_cmd: ./gradlew --parallel --build-cache
+    -PAWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+    -PAWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    -Prepository=${{ secrets.PRIVATEMAVENREPO }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -35,11 +41,11 @@ jobs:
           cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/release' }}
 
       - name: Build with Gradle Wrapper
-        run: ./gradlew build -x deltaCoverage --parallel
+        run: ${gradle_cmd} build -x deltaCoverage
 
       - name: Perform Delta coverage
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}
-        run: ./gradlew deltaCoverage -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF"
+        run: ${gradle_cmd} deltaCoverage -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF"
 
       - name: Post comment
         uses: gw-kit/delta-coverage-plugin/actions/delta-coverage-report@main

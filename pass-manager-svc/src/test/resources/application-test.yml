@@ -17,4 +17,8 @@ spring:
         max.poll.interval.ms: 10000
     bootstrap-servers: http://localhost:29092
 nats:
-  uri: nats://localhost:4222
+  spring:
+    io:
+      nats:
+        client:
+          servers: nats://localhost:4222
