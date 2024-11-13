@@ -12,16 +12,16 @@ import com.example.passmanagersvc.util.PassFixture.passTypeToCreate
 import com.example.passmanagersvc.util.PassOwnerFixture.getOwnerWithUniqueFields
 import com.example.passmanagersvc.util.PassProtoFixture
 import com.example.passmanagersvc.util.PassProtoFixture.createPassRequest
-import io.nats.client.Connection
-import org.assertj.core.api.Assertions.assertThat
+import com.example.passmanagersvc.util.PassProtoFixture.failureCreatePassResponseWithPassOwnerNotFound
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
-import java.time.Duration
+import reactor.kotlin.test.test
+import systems.ajax.nats.publisher.api.NatsMessagePublisher
 import kotlin.test.Test
 
 internal class CreatePassNatsControllerTest : IntegrationTest() {
     @Autowired
-    private lateinit var connection: Connection
+    private lateinit var natsMessagePublisher: NatsMessagePublisher
 
     @Autowired
     private lateinit var passOwnerRepository: PassOwnerRepository
@@ -39,15 +39,16 @@ internal class CreatePassNatsControllerTest : IntegrationTest() {
         val createRequest = createPassRequest(pass)
 
         // WHEN
-        val createdPassMessage = connection.requestWithTimeout(
+        val createdPassMessage = natsMessagePublisher.request(
             CREATE,
-            createRequest.toByteArray(),
-            Duration.ofSeconds(5)
+            createRequest,
+            CreatePassResponse.parser()
         )
 
         // THEN
-        val actualResponse = CreatePassResponse.parser().parseFrom(createdPassMessage.get().data)
-        assertThat(actualResponse).isEqualTo(expectedResponse)
+        createdPassMessage.test()
+            .expectNext(expectedResponse)
+            .verifyComplete()
     }
 
     @Test
@@ -60,15 +61,16 @@ internal class CreatePassNatsControllerTest : IntegrationTest() {
         val invalidCreateRequest = createPassRequest(passToCreate)
 
         // WHEN
-        val createdPassMessage = connection.requestWithTimeout(
+        val createdPassMessage = natsMessagePublisher.request(
             CREATE,
-            invalidCreateRequest.toByteArray(),
-            Duration.ofSeconds(5)
+            invalidCreateRequest,
+            CreatePassResponse.parser()
         )
 
         // THEN
-        val actualResponse = CreatePassResponse.parser().parseFrom(createdPassMessage.get().data)
-        assertThat(actualResponse).isEqualTo(expectedResponse)
+        createdPassMessage.test()
+            .expectNext(expectedResponse)
+            .verifyComplete()
     }
 
     @Test
@@ -76,20 +78,21 @@ internal class CreatePassNatsControllerTest : IntegrationTest() {
         // GIVEN
         val invalidPassOwnerId = ObjectId.get()
         val passType = passTypeRepository.insert(passTypeToCreate).block()!!
-        val invalidCreateRequest =
-            createPassRequest(passToCreate.copy(passTypeId = passType.id, passOwnerId = invalidPassOwnerId))
-        val expectedResponse =
-            PassProtoFixture.failureCreatePassResponseWithPassOwnerNotFound(invalidPassOwnerId.toString())
+        val invalidCreateRequest = createPassRequest(
+            passToCreate.copy(passTypeId = passType.id, passOwnerId = invalidPassOwnerId)
+        )
+        val expectedResponse = failureCreatePassResponseWithPassOwnerNotFound(invalidPassOwnerId.toString())
 
         // WHEN
-        val createdPassMessage = connection.requestWithTimeout(
+        val createdPassMessage = natsMessagePublisher.request(
             CREATE,
-            invalidCreateRequest.toByteArray(),
-            Duration.ofSeconds(5)
+            invalidCreateRequest,
+            CreatePassResponse.parser()
         )
 
         // THEN
-        val actualResponse = CreatePassResponse.parser().parseFrom(createdPassMessage.get().data)
-        assertThat(actualResponse).isEqualTo(expectedResponse)
+        createdPassMessage.test()
+            .expectNext(expectedResponse)
+            .verifyComplete()
     }
 }

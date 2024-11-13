@@ -2,25 +2,18 @@ package com.example.passmanagersvc.kafka.producer
 
 import com.example.internal.KafkaTopic
 import com.example.internal.input.reqreply.TransferredPassStatisticsMessage
-import org.apache.kafka.clients.producer.ProducerRecord
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
-import reactor.kafka.sender.KafkaSender
-import reactor.kafka.sender.SenderRecord
-import reactor.kotlin.core.publisher.toMono
+import systems.ajax.kafka.publisher.KafkaPublisher
 
 @Component
-class TransferPassStatisticsMessageProducer(private val kafkaSender: KafkaSender<String, ByteArray>) {
+class TransferPassStatisticsMessageProducer(private val kafkaPublisher: KafkaPublisher) {
 
     fun sendTransferPassStatisticsMessage(message: TransferredPassStatisticsMessage, passTypeId: String): Mono<Unit> {
-        val senderRecord = SenderRecord.create(
-            ProducerRecord(
-                KafkaTopic.KafkaTransferPassEvents.TRANSFER_STATISTICS,
-                passTypeId,
-                message.toByteArray()
-            ),
-            null
-        )
-        return kafkaSender.send(senderRecord.toMono()).then(Unit.toMono())
+        return kafkaPublisher.publish(
+            topic = KafkaTopic.KafkaTransferPassEvents.TRANSFER_STATISTICS,
+            key = passTypeId,
+            value = message.toByteArray()
+        ).thenReturn(Unit)
     }
 }

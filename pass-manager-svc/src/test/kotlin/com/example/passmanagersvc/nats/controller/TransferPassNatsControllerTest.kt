@@ -11,16 +11,15 @@ import com.example.passmanagersvc.util.PassProtoFixture.failureTransferPassRespo
 import com.example.passmanagersvc.util.PassProtoFixture.failureTransferPassResponseWithPassOwnerNotFound
 import com.example.passmanagersvc.util.PassProtoFixture.successfulTransferPassResponse
 import com.example.passmanagersvc.util.PassProtoFixture.transferPassRequest
-import io.nats.client.Connection
-import org.assertj.core.api.Assertions.assertThat
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
-import java.time.Duration
+import reactor.kotlin.test.test
+import systems.ajax.nats.publisher.api.NatsMessagePublisher
 import kotlin.test.Test
 
 internal class TransferPassNatsControllerTest : IntegrationTest() {
     @Autowired
-    private lateinit var connection: Connection
+    private lateinit var natsMessagePublisher: NatsMessagePublisher
 
     @Autowired
     private lateinit var passRepository: PassRepository
@@ -39,15 +38,16 @@ internal class TransferPassNatsControllerTest : IntegrationTest() {
         val transferPassRequest = transferPassRequest(pass.id.toString(), passOwner.id.toString())
 
         // WHEN
-        val transferMessage = connection.requestWithTimeout(
+        val transferMessage = natsMessagePublisher.request(
             TRANSFER,
-            transferPassRequest.toByteArray(),
-            Duration.ofSeconds(15)
+            transferPassRequest,
+            TransferPassResponse.parser()
         )
 
         // THEN
-        val actualResponse = TransferPassResponse.parser().parseFrom(transferMessage.get().data)
-        assertThat(actualResponse).isEqualTo(expectedResponse)
+        transferMessage.test()
+            .expectNext(expectedResponse)
+            .verifyComplete()
     }
 
     @Test
@@ -57,19 +57,20 @@ internal class TransferPassNatsControllerTest : IntegrationTest() {
             getOwnerWithUniqueFields()
         ).block()!!
         val invalidPassId = ObjectId.get().toString()
-        val exceptedResponse = failureTransferPassResponseWithPassNotFound(invalidPassId)
+        val expectedResponse = failureTransferPassResponseWithPassNotFound(invalidPassId)
         val transferPassRequest = transferPassRequest(invalidPassId, passOwner.id.toString())
 
         // WHEN
-        val transferMessage = connection.requestWithTimeout(
+        val transferMessage = natsMessagePublisher.request(
             TRANSFER,
-            transferPassRequest.toByteArray(),
-            Duration.ofSeconds(10)
+            transferPassRequest,
+            TransferPassResponse.parser()
         )
 
         // THEN
-        val actualResponse = TransferPassResponse.parser().parseFrom(transferMessage.get().data)
-        assertThat(actualResponse).isEqualTo(exceptedResponse)
+        transferMessage.test()
+            .expectNext(expectedResponse)
+            .verifyComplete()
     }
 
     @Test
@@ -77,18 +78,19 @@ internal class TransferPassNatsControllerTest : IntegrationTest() {
         // GIVEN
         val pass = passRepository.insert(passToCreate).block()!!
         val invalidPassOwnerId = ObjectId.get().toString()
-        val exceptedResponse = failureTransferPassResponseWithPassOwnerNotFound(invalidPassOwnerId)
+        val expectedResponse = failureTransferPassResponseWithPassOwnerNotFound(invalidPassOwnerId)
         val transferPassRequest = transferPassRequest(pass.id.toString(), invalidPassOwnerId)
 
         // WHEN
-        val transferMessage = connection.requestWithTimeout(
+        val transferMessage = natsMessagePublisher.request(
             TRANSFER,
-            transferPassRequest.toByteArray(),
-            Duration.ofSeconds(10)
+            transferPassRequest,
+            TransferPassResponse.parser()
         )
 
         // THEN
-        val actualResponse = TransferPassResponse.parser().parseFrom(transferMessage.get().data)
-        assertThat(actualResponse).isEqualTo(exceptedResponse)
+        transferMessage.test()
+            .expectNext(expectedResponse)
+            .verifyComplete()
     }
 }

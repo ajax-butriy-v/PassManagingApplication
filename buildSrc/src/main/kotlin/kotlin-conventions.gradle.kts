@@ -11,7 +11,7 @@ dependencies {
 }
 
 
-val targetJvmVersion = JavaLanguageVersion.of(17)
+val targetJvmVersion = JavaLanguageVersion.of(21)
 kotlin {
     jvmToolchain {
         languageVersion.set(targetJvmVersion)
