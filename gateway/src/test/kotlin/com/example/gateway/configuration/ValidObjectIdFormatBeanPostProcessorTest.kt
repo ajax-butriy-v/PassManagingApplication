@@ -1,9 +1,10 @@
 package com.example.gateway.configuration
 
-import com.example.gateway.dto.PassDto
-import com.example.gateway.exception.InvalidObjectIdFormatException
-import com.example.gateway.mapper.rest.CreatePassResponseMapper.toCreatePassRequest
-import com.example.gateway.rest.PassController
+import com.example.core.exception.InvalidObjectIdFormatException
+import com.example.core.infrastructure.bpp.ValidObjectIdFormatBeanPostProcessor
+import com.example.gateway.infrastructure.mapper.rest.CreatePassResponseMapper.toCreatePassRequest
+import com.example.gateway.infrastructure.rest.PassController
+import com.example.gateway.infrastructure.rest.dto.PassDto
 import com.example.gateway.util.PassDtoFixture.passDto
 import com.example.gateway.util.PassDtoFixture.passDtoWithInvalidIdFormats
 import com.example.gateway.util.PassProtoFixture.failureCreatePassResponseWithPassOwnerNotFound

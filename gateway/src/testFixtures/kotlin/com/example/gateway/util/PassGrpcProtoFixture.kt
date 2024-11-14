@@ -1,7 +1,7 @@
 package com.example.gateway.util
 
 import com.example.commonmodels.Pass
-import com.example.gateway.mapper.rest.FindPassByIdResponseMapper.toProto
+import com.example.gateway.infrastructure.mapper.rest.FindPassByIdResponseMapper.toProto
 import com.example.gateway.util.PassDtoFixture.passDto
 import com.example.grpcapi.reqrep.pass.CreatePassResponse
 import com.example.grpcapi.reqrep.pass.FindPassByIdResponse

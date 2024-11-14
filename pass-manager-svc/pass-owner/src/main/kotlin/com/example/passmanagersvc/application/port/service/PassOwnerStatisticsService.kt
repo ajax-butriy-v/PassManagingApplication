@@ -1,0 +1,3 @@
+package com.example.passmanagersvc.application.port.service
+
+class PassOwnerStatisticsService

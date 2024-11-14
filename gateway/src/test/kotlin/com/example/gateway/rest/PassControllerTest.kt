@@ -1,7 +1,8 @@
 package com.example.gateway.rest
 
-import com.example.gateway.dto.PassDto
-import com.example.gateway.mapper.rest.CreatePassResponseMapper.toCreatePassRequest
+import com.example.gateway.infrastructure.mapper.rest.CreatePassResponseMapper.toCreatePassRequest
+import com.example.gateway.infrastructure.rest.PassController
+import com.example.gateway.infrastructure.rest.dto.PassDto
 import com.example.gateway.util.PassDtoFixture.passDto
 import com.example.gateway.util.PassDtoFixture.passId
 import com.example.gateway.util.PassProtoFixture

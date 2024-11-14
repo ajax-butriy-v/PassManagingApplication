@@ -1,11 +1,13 @@
 package com.example.gateway.rest
 
+import com.example.core.exception.InvalidObjectIdFormatException
 import com.example.core.exception.PassNotFoundException
 import com.example.core.exception.PassOwnerNotFoundException
 import com.example.core.exception.PassTypeNotFoundException
-import com.example.gateway.exception.InvalidObjectIdFormatException
-import com.example.gateway.rest.ResponseEntityControllerAdvice.handleBadRequest
-import com.example.gateway.rest.ResponseEntityControllerAdvice.handleNotFound
+import com.example.gateway.infrastructure.rest.PassController
+import com.example.gateway.infrastructure.rest.ResponseEntityControllerAdvice
+import com.example.gateway.infrastructure.rest.ResponseEntityControllerAdvice.handleBadRequest
+import com.example.gateway.infrastructure.rest.ResponseEntityControllerAdvice.handleNotFound
 import com.example.gateway.util.PassDtoFixture.passDto
 import com.example.gateway.util.PassDtoFixture.passDtoWithInvalidIdFormats
 import com.example.gateway.util.PassDtoFixture.passId

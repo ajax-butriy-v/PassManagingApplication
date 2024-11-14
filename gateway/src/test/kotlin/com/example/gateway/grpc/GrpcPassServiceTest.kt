@@ -1,6 +1,7 @@
 package com.example.gateway.grpc
 
-import com.example.gateway.mapper.rest.CreatePassResponseMapper.toCreatePassRequest
+import com.example.gateway.infrastructure.grpc.GrpcPassService
+import com.example.gateway.infrastructure.mapper.rest.CreatePassResponseMapper.toCreatePassRequest
 import com.example.gateway.util.PassDtoFixture.passDto
 import com.example.gateway.util.PassDtoFixture.passId
 import com.example.gateway.util.PassGrpcProtoFixture

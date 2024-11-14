@@ -1,7 +1,7 @@
 package com.example.gateway.mapper.rest
 
 import com.example.core.exception.InternalRuntimeException
-import com.example.gateway.mapper.rest.DeletePassByIdResponseMapper.toDeleteResponse
+import com.example.gateway.infrastructure.mapper.rest.DeletePassByIdResponseMapper.toDeleteResponse
 import com.example.gateway.util.PassProtoFixture.failureDeletePassByIdResponse
 import com.example.gateway.util.PassProtoFixture.succesfulDeletePassByIdResponse
 import com.example.internal.input.reqreply.DeletePassByIdResponse
