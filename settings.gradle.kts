@@ -14,4 +14,3 @@ include("pass-manager-svc:core")
 include("pass-manager-svc:pass")
 include("migration")
 include("pass-manager-svc:migration")
-findProject(":pass-manager-svc:migration")?.name = "migration"
