@@ -74,13 +74,9 @@ internal class RedisPassOwnerRepositoryTest : IntegrationTest() {
         val actualResponse = redisPassOwnerRepository.findById(invalidPassOwnerId)
 
         // THEN
-        val keyWithEmptyValue = redisTemplate.opsForValue().get(passOwnerKey(invalidPassOwnerId))
+        val keyWithEmptyValue = redisTemplate.opsForValue().get(passOwnerKey(invalidPassOwnerId)).block()!!
 
-        keyWithEmptyValue.test()
-            .assertNext { byteArray ->
-                assertThat(byteArray).isEmpty()
-            }
-            .verifyComplete()
+        assertThat(keyWithEmptyValue).isEmpty()
 
         actualResponse.test()
             .expectError<PassOwnerNotFoundException>()
@@ -160,9 +156,9 @@ internal class RedisPassOwnerRepositoryTest : IntegrationTest() {
     @Test
     fun `getting passes price distributions should return correct distribution per type`() {
         val passOwnerId = mongoPassOwnerFromDb.id
-        mongoTemplate.insert(getOwnerWithUniqueFields().copy(id = passOwnerId)).subscribe()
-        mongoTemplate.insertAll(passTypes).subscribe()
-        mongoTemplate.insertAll(mongoPassesFromDb).subscribe()
+        mongoTemplate.insert(getOwnerWithUniqueFields().copy(id = passOwnerId)).block()!!
+        mongoTemplate.insertAll(passTypes).collectList().block()!!
+        mongoTemplate.insertAll(mongoPassesFromDb).collectList().block()!!
 
         // WHEN
         val priceDistributionFlux = redisPassOwnerRepository.getPassesPriceDistribution(passOwnerId.toString())
