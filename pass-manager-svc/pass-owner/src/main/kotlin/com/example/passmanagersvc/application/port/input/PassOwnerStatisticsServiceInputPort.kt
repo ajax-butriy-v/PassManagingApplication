@@ -9,6 +9,4 @@ import java.time.LocalDate
 interface PassOwnerStatisticsServiceInputPort {
     fun calculateSpentAfterDate(afterDate: LocalDate, passOwnerId: String): Mono<BigDecimal>
     fun calculatePriceDistributions(passOwnerId: String): Flux<PriceDistribution>
-    // TODO when add pass domain
-    // fun publishTransferPassStatistics(pass: MongoPass, previousPassOwnerId: String): Mono<Unit>
 }

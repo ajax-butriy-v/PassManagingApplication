@@ -16,7 +16,7 @@ nats = "4.1.0.186.MASTER-SNAPSHOT"
 kafka = "3.0.3.170.MASTER-SNAPSHOT"
 grpc = "1.63.0"
 grpc-reactor = "1.2.4"
-grpc-spring-boot-starter = "2.15.0.RELEASE"
+grpc-spring-boot-starter = "3.1.0.RELEASE"
 mongodb-bson = "5.2.0"
 
 [plugins]

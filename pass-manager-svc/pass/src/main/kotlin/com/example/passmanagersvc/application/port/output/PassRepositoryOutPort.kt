@@ -1,10 +1,8 @@
 package com.example.passmanagersvc.application.port.output
 
 import com.example.passmanagersvc.domain.Pass
-import com.example.passmanagersvc.domain.PriceDistribution
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import java.math.BigDecimal
 import java.time.LocalDate
 
 interface PassRepositoryOutPort {
@@ -15,6 +13,4 @@ interface PassRepositoryOutPort {
     fun save(pass: Pass): Mono<Pass>
     fun deleteById(passId: String): Mono<Unit>
     fun deleteAllByOwnerId(passOwnerId: String): Mono<Unit>
-    fun sumPurchasedAtAfterDate(passOwnerId: String, afterDate: LocalDate): Mono<BigDecimal>
-    fun getPassesPriceDistribution(passOwnerId: String): Flux<PriceDistribution>
 }

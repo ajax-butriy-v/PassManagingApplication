@@ -1,42 +1,45 @@
 package com.example.passmanagersvc.util
 
 
-import com.example.passmanagersvc.domain.MongoPassOwner
-import com.example.passmanagersvc.dto.PassOwnerDto
-import com.example.passmanagersvc.dto.PassOwnerUpdateDto
+import com.example.passmanagersvc.infrastructure.mongo.entity.MongoPassOwner
+import com.example.passmanagersvc.infrastructure.mongo.mapper.PassOwnerMapper.toDomain
+import com.example.passmanagersvc.infrastructure.rest.dto.PassOwnerDto
+import com.example.passmanagersvc.infrastructure.rest.dto.PassOwnerUpdateDto
 import io.github.serpro69.kfaker.Faker
 import org.bson.types.ObjectId
 
 object PassOwnerFixture {
     val id: ObjectId = ObjectId.get()
-    val passOwnerToCreate = MongoPassOwner(
+    val mongoPassOwnerToCreate = MongoPassOwner(
         id = null,
         firstName = "First Name",
         lastName = "Last Name",
         phoneNumber = "1234567890",
         email = "example@gmail.com",
     )
+    val passOwnerToCreate = mongoPassOwnerToCreate.toDomain()
 
-    val passOwnerFromDb = passOwnerToCreate.copy(id = id)
+    val mongoPassOwnerFromDb = mongoPassOwnerToCreate.copy(id = id)
+    val passOwnerFromDb = mongoPassOwnerFromDb.toDomain()
     val passOwnerIdFromDb = id.toString()
 
     val passOwnerDto = PassOwnerDto(
-        firstName = passOwnerFromDb.firstName,
-        lastName = passOwnerFromDb.lastName,
-        phoneNumber = passOwnerFromDb.phoneNumber,
-        email = passOwnerFromDb.email
+        firstName = mongoPassOwnerFromDb.firstName,
+        lastName = mongoPassOwnerFromDb.lastName,
+        phoneNumber = mongoPassOwnerFromDb.phoneNumber,
+        email = mongoPassOwnerFromDb.email
     )
 
     val passOwnerUpdateDto = PassOwnerUpdateDto(
-        firstName = passOwnerFromDb.firstName,
-        lastName = passOwnerFromDb.lastName,
-        phoneNumber = passOwnerFromDb.phoneNumber,
-        email = passOwnerFromDb.email
+        firstName = mongoPassOwnerFromDb.firstName,
+        lastName = mongoPassOwnerFromDb.lastName,
+        phoneNumber = mongoPassOwnerFromDb.phoneNumber,
+        email = mongoPassOwnerFromDb.email
     )
 
     fun getOwnerWithUniqueFields(): MongoPassOwner {
         return Faker().run {
-            passOwnerToCreate.copy(
+            mongoPassOwnerToCreate.copy(
                 email = internet.safeEmail(),
                 phoneNumber = string.numerify("#".repeat(10))
             )

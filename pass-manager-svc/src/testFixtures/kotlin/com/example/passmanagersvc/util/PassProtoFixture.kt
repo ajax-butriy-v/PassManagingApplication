@@ -11,9 +11,8 @@ import com.example.internal.input.reqreply.FindPassByIdRequest
 import com.example.internal.input.reqreply.FindPassByIdResponse
 import com.example.internal.input.reqreply.TransferPassRequest
 import com.example.internal.input.reqreply.TransferPassResponse
-import com.example.passmanagersvc.domain.MongoPass
-import com.example.passmanagersvc.mapper.proto.pass.FindPassByIdMapper.toProto
-import org.bson.types.ObjectId
+import com.example.passmanagersvc.domain.Pass
+import com.example.passmanagersvc.infrastructure.kafka.mapper.TransferredPassMessageMapper.toProto
 
 object PassProtoFixture {
     private const val PASS_OWNER_NOT_FOUND = "Could not find pass owner by id "
@@ -38,7 +37,7 @@ object PassProtoFixture {
         }.build()
     }
 
-    fun createPassRequest(passToCreate: MongoPass): CreatePassRequest {
+    fun createPassRequest(passToCreate: Pass): CreatePassRequest {
         return CreatePassRequest.newBuilder()
             .setPassToCreate(passToCreate.toProto())
             .build()
@@ -51,7 +50,7 @@ object PassProtoFixture {
         }.build()
     }
 
-    fun failureCreatePassResponseWithPassTypeNotFound(passTypeId: ObjectId): CreatePassResponse {
+    fun failureCreatePassResponseWithPassTypeNotFound(passTypeId: String): CreatePassResponse {
         return CreatePassResponse.newBuilder().apply {
             failureBuilder.passTypeNotFoundId = Error.getDefaultInstance()
             failureBuilder.message = PASS_TYPE_NOT_FOUND + passTypeId

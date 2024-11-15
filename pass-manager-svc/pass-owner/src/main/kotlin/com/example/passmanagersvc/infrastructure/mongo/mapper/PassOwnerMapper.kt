@@ -18,7 +18,7 @@ object PassOwnerMapper {
 
     fun MongoPassOwner.toDomain(): PassOwner {
         return PassOwner(
-            id = id.toString(),
+            id = id?.toString(),
             firstName = firstName.orEmpty(),
             lastName = lastName.orEmpty(),
             phoneNumber = phoneNumber.orEmpty(),

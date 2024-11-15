@@ -20,7 +20,7 @@ object PassMapper {
 
     fun MongoPass.toDomain(): Pass {
         return Pass(
-            id = id.toString(),
+            id = id?.toString(),
             purchasedFor = purchasedFor ?: BigDecimal.ZERO,
             passOwnerId = passOwnerId.toString(),
             passTypeId = passTypeId.toString(),

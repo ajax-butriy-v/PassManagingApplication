@@ -20,7 +20,7 @@ object PassTypeMapper {
 
     fun MongoPassType.toDomain(): PassType {
         return PassType(
-            id = id.toString(),
+            id = id?.toString(),
             activeFrom = activeFrom,
             activeTo = activeTo ?: Instant.now(),
             name = name.orEmpty(),

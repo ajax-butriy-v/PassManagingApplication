@@ -26,7 +26,6 @@ class PassTypeService(private val passTypeRepositoryOutPort: PassTypeRepositoryO
 
     override fun update(modifiedPassType: PassType): Mono<PassType> {
         return passTypeRepositoryOutPort.save(modifiedPassType)
-
     }
 
     override fun deleteById(id: String): Mono<Unit> {

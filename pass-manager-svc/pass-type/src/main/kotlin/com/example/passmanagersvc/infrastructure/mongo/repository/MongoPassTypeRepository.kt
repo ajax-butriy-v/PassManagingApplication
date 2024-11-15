@@ -17,8 +17,8 @@ import reactor.core.publisher.Mono
 
 @Repository
 class MongoPassTypeRepository(private val mongoTemplate: ReactiveMongoTemplate) : PassTypeRepositoryOutPort {
-    override fun findById(passOwnerId: String): Mono<PassType> {
-        return mongoTemplate.findById<MongoPassType>(passOwnerId)
+    override fun findById(passTypeId: String): Mono<PassType> {
+        return mongoTemplate.findById<MongoPassType>(passTypeId)
             .map { it.toDomain() }
     }
 
@@ -32,8 +32,8 @@ class MongoPassTypeRepository(private val mongoTemplate: ReactiveMongoTemplate) 
             .map { it.toDomain() }
     }
 
-    override fun deleteById(passOwnerId: String): Mono<Unit> {
-        val query = query(where(Fields.UNDERSCORE_ID).isEqualTo(passOwnerId))
+    override fun deleteById(passTypeId: String): Mono<Unit> {
+        val query = query(where(Fields.UNDERSCORE_ID).isEqualTo(passTypeId))
         return mongoTemplate.remove<MongoPassType>(query).thenReturn(Unit)
     }
 }
