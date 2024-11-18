@@ -191,7 +191,7 @@ internal class RedisPassOwnerRepositoryTest : IntegrationTest() {
         val afterDate = LocalDate.now()
 
         // WHEN
-        val actualSum = redisPassOwnerRepository.sumPurchasedAtAfterDate(passOwnerId.toString(), afterDate)
+        val actualSum = redisPassOwnerRepository.sumPurchasedAtAfterDate(passOwnerId, afterDate)
 
         // THEN
         val doesCacheContainsBigDecimalUnderKey = redisTemplate.opsForValue().get(
