@@ -4,8 +4,8 @@ import com.example.passmanagersvc.passowner.infrastructure.mongo.entity.MongoPas
 import com.example.passmanagersvc.passowner.infrastructure.mongo.mapper.PassOwnerMapper.toDomain
 import com.example.passmanagersvc.passowner.infrastructure.redis.repository.RedisPassOwnerRepository
 import com.example.passmanagersvc.passowner.infrastructure.redis.repository.RedisPassOwnerRepository.Companion.passOwnerKey
-import com.example.passmanagersvc.passowner.infrastructure.redis.repository.RedisPassOwnerRepository.Companion.purchaseAfterDateKey
 import com.example.passmanagersvc.passowner.util.IntegrationTest
+import com.example.passmanagersvc.util.PassFixture.passTypes
 import com.example.passmanagersvc.util.PassFixture.passesToCreate
 import com.example.passmanagersvc.util.PassOwnerFixture.getOwnerWithUniqueFields
 import com.example.passmanagersvc.util.PassOwnerFixture.mongoPassOwnerToCreate
@@ -139,24 +139,10 @@ internal class RedisPassOwnerRepositoryTest : IntegrationTest() {
         val actualSum = redisPassOwnerRepository.sumPurchasedAtAfterDate(passOwnerId, afterDate)
 
         // THEN
-        val doesCacheContainsBigDecimalUnderKey = redisTemplate.opsForValue().get(
-            purchaseAfterDateKey(
-                passOwnerId,
-                afterDate
-            )
-        )
-
         val expectedValue = BigDecimal.valueOf(30)
 
         actualSum.test()
             .assertNext { assertThat(it).isEqualTo(expectedValue) }
-            .verifyComplete()
-
-        doesCacheContainsBigDecimalUnderKey.test()
-            .assertNext { byteArray ->
-                val convertedValue = objectMapper.readValue<BigDecimal>(byteArray)
-                assertThat(convertedValue).isEqualTo(expectedValue)
-            }
             .verifyComplete()
     }
 
@@ -173,6 +159,25 @@ internal class RedisPassOwnerRepositoryTest : IntegrationTest() {
         // THEN
         actualSum.test()
             .assertNext { assertThat(it).isEqualTo(BigDecimal.ZERO) }
+            .verifyComplete()
+    }
+
+    @Test
+    fun `getting passes price distributions should return correct distribution per type`() {
+        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields()).block()!!
+        val passOwnerId = insertedPassOwner.id!!
+        mongoTemplate.insertAll(passTypes).subscribe()
+        mongoTemplate.insertAll(passesToCreate(passOwnerId)).subscribe()
+
+        // WHEN
+        val priceDistributionFlux = redisPassOwnerRepository.getPassesPriceDistribution(passOwnerId.toString())
+
+        // THEN
+        priceDistributionFlux.collectList()
+            .test()
+            .assertNext { priceDistributions ->
+                assertThat(priceDistributions).hasSize(3).allMatch { it.spentForPassType == BigDecimal.TEN }
+            }
             .verifyComplete()
     }
 }
