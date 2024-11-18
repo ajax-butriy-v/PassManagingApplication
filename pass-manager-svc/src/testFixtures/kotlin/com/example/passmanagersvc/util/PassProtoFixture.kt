@@ -11,8 +11,8 @@ import com.example.internal.input.reqreply.FindPassByIdRequest
 import com.example.internal.input.reqreply.FindPassByIdResponse
 import com.example.internal.input.reqreply.TransferPassRequest
 import com.example.internal.input.reqreply.TransferPassResponse
-import com.example.passmanagersvc.domain.Pass
-import com.example.passmanagersvc.infrastructure.kafka.mapper.TransferredPassMessageMapper.toProto
+import com.example.passmanagersvc.pass.domain.Pass
+import com.example.passmanagersvc.pass.infrastructure.nats.mapper.ProtoPassMapper.toProto
 
 object PassProtoFixture {
     private const val PASS_OWNER_NOT_FOUND = "Could not find pass owner by id "

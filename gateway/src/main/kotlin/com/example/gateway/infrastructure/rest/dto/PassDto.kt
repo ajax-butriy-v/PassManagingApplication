@@ -1,6 +1,6 @@
 package com.example.gateway.infrastructure.rest.dto
 
-import com.example.core.infrastructure.bpp.ValidObjectIdFormat
+import com.example.gateway.infrastructure.bpp.ValidObjectIdFormat
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Positive
 import java.math.BigDecimal

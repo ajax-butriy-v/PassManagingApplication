@@ -1,7 +1,7 @@
 package com.example.passmanagersvc.changelog
 
-import com.example.passmanagersvc.infrastructure.mongo.entity.MongoPass
-import com.example.passmanagersvc.infrastructure.mongo.entity.MongoPassOwner
+import com.example.passmanagersvc.pass.infrastructure.mongo.entity.MongoPass
+import com.example.passmanagersvc.passowner.infrastructure.mongo.entity.MongoPassOwner
 import io.mongock.api.annotations.ChangeUnit
 import io.mongock.api.annotations.Execution
 import io.mongock.api.annotations.RollbackExecution

@@ -1,10 +1,10 @@
 package com.example.passmanagersvc.util
 
 
-import com.example.passmanagersvc.infrastructure.mongo.entity.MongoPassOwner
-import com.example.passmanagersvc.infrastructure.mongo.mapper.PassOwnerMapper.toDomain
-import com.example.passmanagersvc.infrastructure.rest.dto.PassOwnerDto
-import com.example.passmanagersvc.infrastructure.rest.dto.PassOwnerUpdateDto
+import com.example.passmanagersvc.passowner.infrastructure.mongo.entity.MongoPassOwner
+import com.example.passmanagersvc.passowner.infrastructure.mongo.mapper.PassOwnerMapper.toDomain
+import com.example.passmanagersvc.passowner.infrastructure.rest.dto.PassOwnerDto
+import com.example.passmanagersvc.passowner.infrastructure.rest.dto.PassOwnerUpdateDto
 import io.github.serpro69.kfaker.Faker
 import org.bson.types.ObjectId
 

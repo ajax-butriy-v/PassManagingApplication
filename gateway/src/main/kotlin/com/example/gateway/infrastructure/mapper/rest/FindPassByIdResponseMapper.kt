@@ -3,8 +3,8 @@ package com.example.gateway.infrastructure.mapper.rest
 import com.example.commonmodels.Pass
 import com.example.core.exception.InternalRuntimeException
 import com.example.core.exception.PassNotFoundException
-import com.example.core.web.mapper.proto.DecimalProtoMapper.toBDecimal
-import com.example.core.web.mapper.proto.DecimalProtoMapper.toBigDecimal
+import com.example.core.mapper.proto.DecimalProtoMapper.toBDecimal
+import com.example.core.mapper.proto.DecimalProtoMapper.toBigDecimal
 import com.example.gateway.infrastructure.rest.dto.PassDto
 import com.example.internal.input.reqreply.FindPassByIdResponse
 import com.example.internal.input.reqreply.FindPassByIdResponse.Failure.ErrorCase.ERROR_NOT_SET

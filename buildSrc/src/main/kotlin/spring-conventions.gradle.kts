@@ -14,6 +14,7 @@ dependencies {
     testImplementation("io.projectreactor:reactor-test:3.5.11") {
         exclude(module = "mockito-core")
     }
+    testImplementation("com.tngtech.archunit:archunit:1.3.0")
     testImplementation("com.ninja-squad:springmockk:4.0.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

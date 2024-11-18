@@ -1,9 +1,9 @@
 package com.example.passmanagersvc.util
 
-import com.example.passmanagersvc.infrastructure.mongo.entity.MongoPass
-import com.example.passmanagersvc.infrastructure.mongo.entity.MongoPassType
-import com.example.passmanagersvc.infrastructure.mongo.mapper.PassMapper.toDomain
-import com.example.passmanagersvc.infrastructure.mongo.mapper.PassTypeMapper.toDomain
+import com.example.passmanagersvc.pass.infrastructure.mongo.entity.MongoPass
+import com.example.passmanagersvc.pass.infrastructure.mongo.mapper.PassMapper.toDomain
+import com.example.passmanagersvc.passtype.infrastructure.mongo.entity.MongoPassType
+import com.example.passmanagersvc.passtype.infrastructure.mongo.mapper.PassTypeMapper.toDomain
 import com.example.passmanagersvc.util.PassOwnerFixture.mongoPassOwnerFromDb
 import org.bson.types.ObjectId
 import java.math.BigDecimal

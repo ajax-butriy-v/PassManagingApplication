@@ -18,6 +18,7 @@ grpc = "1.63.0"
 grpc-reactor = "1.2.4"
 grpc-spring-boot-starter = "3.1.0.RELEASE"
 mongodb-bson = "5.2.0"
+archunit = "1.3.0"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -59,3 +60,4 @@ grpc-reactor = { module = "com.salesforce.servicelibs:reactor-grpc", version.ref
 grpc-spring-boot-starter = { module = "net.devh:grpc-spring-boot-starter", version.ref = "grpc-spring-boot-starter" }
 grpc-server-spring-boot-starter = { module = "net.devh:grpc-server-spring-boot-starter", version.ref = "grpc-spring-boot-starter" }
 mongodb-bson = { module = "org.mongodb:bson", version.ref = "mongodb-bson" }
+archunit = { group = "com.tngtech.archunit", name = "archunit", version.ref = "archunit" }
