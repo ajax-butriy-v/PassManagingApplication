@@ -3,8 +3,6 @@ package com.example.passmanagersvc.util
 
 import com.example.passmanagersvc.passowner.infrastructure.mongo.entity.MongoPassOwner
 import com.example.passmanagersvc.passowner.infrastructure.mongo.mapper.PassOwnerMapper.toDomain
-import com.example.passmanagersvc.passowner.infrastructure.rest.dto.PassOwnerDto
-import com.example.passmanagersvc.passowner.infrastructure.rest.dto.PassOwnerUpdateDto
 import io.github.serpro69.kfaker.Faker
 import org.bson.types.ObjectId
 
@@ -22,20 +20,6 @@ object PassOwnerFixture {
     val mongoPassOwnerFromDb = mongoPassOwnerToCreate.copy(id = id)
     val passOwnerFromDb = mongoPassOwnerFromDb.toDomain()
     val passOwnerIdFromDb = id.toString()
-
-    val passOwnerDto = PassOwnerDto(
-        firstName = mongoPassOwnerFromDb.firstName,
-        lastName = mongoPassOwnerFromDb.lastName,
-        phoneNumber = mongoPassOwnerFromDb.phoneNumber,
-        email = mongoPassOwnerFromDb.email
-    )
-
-    val passOwnerUpdateDto = PassOwnerUpdateDto(
-        firstName = mongoPassOwnerFromDb.firstName,
-        lastName = mongoPassOwnerFromDb.lastName,
-        phoneNumber = mongoPassOwnerFromDb.phoneNumber,
-        email = mongoPassOwnerFromDb.email
-    )
 
     fun getOwnerWithUniqueFields(): MongoPassOwner {
         return Faker().run {

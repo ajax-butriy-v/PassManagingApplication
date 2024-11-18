@@ -11,7 +11,7 @@ import java.lang.reflect.Method
 import kotlin.reflect.full.hasAnnotation
 
 @Component
-class ValidObjectIdFormatBeanPostProcessor : BeanPostProcessor {
+internal class ValidObjectIdFormatBeanPostProcessor : BeanPostProcessor {
     private val beanMap: MutableMap<String, Set<Method>> = mutableMapOf()
 
     override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any {

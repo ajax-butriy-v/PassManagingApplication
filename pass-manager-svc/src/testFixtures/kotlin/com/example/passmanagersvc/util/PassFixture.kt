@@ -29,7 +29,6 @@ object PassFixture {
         }
     val mongoPassTypeToCreate = mongoPassTypesToCreate.first()
     val passTypeToCreate = mongoPassTypeToCreate.toDomain()
-    val passTypesToCreate = mongoPassTypesToCreate.map { it.toDomain() }
     val passTypes = mongoPassTypesToCreate.map { it.copy(id = ObjectId.get()) }
     val singleMongoPassType = passTypes.first()
     val singlePassType = singleMongoPassType.toDomain()
