@@ -9,10 +9,10 @@ import com.example.passmanagersvc.infrastructure.redis.repository.RedisPassOwner
 import com.example.passmanagersvc.infrastructure.redis.repository.RedisPassOwnerRepository.Companion.priceDistributionsKey
 import com.example.passmanagersvc.infrastructure.redis.repository.RedisPassOwnerRepository.Companion.purchaseAfterDateKey
 import com.example.passmanagersvc.util.IntegrationTest
-import com.example.passmanagersvc.util.PassFixture.mongoPassesFromDb
-import com.example.passmanagersvc.util.PassFixture.passTypes
+import com.example.passmanagersvc.util.PassFixture.mongoPassTypesToCreate
+import com.example.passmanagersvc.util.PassFixture.passesToCreate
 import com.example.passmanagersvc.util.PassOwnerFixture.getOwnerWithUniqueFields
-import com.example.passmanagersvc.util.PassOwnerFixture.mongoPassOwnerFromDb
+import com.example.passmanagersvc.util.PassOwnerFixture.mongoPassOwnerToCreate
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.assertj.core.api.Assertions.assertThat
@@ -74,7 +74,7 @@ internal class RedisPassOwnerRepositoryTest : IntegrationTest() {
         val actualResponse = redisPassOwnerRepository.findById(invalidPassOwnerId)
 
         // THEN
-        val keyWithEmptyValue = redisTemplate.opsForValue().get(passOwnerKey(invalidPassOwnerId)).block()!!
+        val keyWithEmptyValue = redisTemplate.opsForValue().get(passOwnerKey(invalidPassOwnerId)).block()
 
         assertThat(keyWithEmptyValue).isEmpty()
 
@@ -155,16 +155,16 @@ internal class RedisPassOwnerRepositoryTest : IntegrationTest() {
 
     @Test
     fun `getting passes price distributions should return correct distribution per type`() {
-        val passOwnerId = mongoPassOwnerFromDb.id
-        mongoTemplate.insert(getOwnerWithUniqueFields().copy(id = passOwnerId)).block()!!
-        mongoTemplate.insertAll(passTypes).collectList().block()!!
-        mongoTemplate.insertAll(mongoPassesFromDb).collectList().block()!!
+        val passOwner = mongoTemplate.insert(mongoPassOwnerToCreate).block()!!
+        val passOwnerId = passOwner.id.toString()
+        mongoTemplate.insertAll(mongoPassTypesToCreate).collectList().block()!!
+        mongoTemplate.insertAll(passesToCreate(passOwner.id!!)).collectList().block()!!
 
         // WHEN
-        val priceDistributionFlux = redisPassOwnerRepository.getPassesPriceDistribution(passOwnerId.toString())
+        val priceDistributionFlux = redisPassOwnerRepository.getPassesPriceDistribution(passOwnerId)
 
         // THEN
-        val key = priceDistributionsKey(passOwnerId.toString())
+        val key = priceDistributionsKey(passOwnerId)
         val doesCacheContainsListUnderKey = redisTemplate.opsForList().range(key, 0, -1)
 
         priceDistributionFlux.collectList()
@@ -185,9 +185,9 @@ internal class RedisPassOwnerRepositoryTest : IntegrationTest() {
     @Test
     fun `getting sum of purchased passes for pass owner should return correct sum`() {
         // GIVEN
-        val passOwnerId = mongoPassOwnerFromDb.id
-        mongoTemplate.insert(getOwnerWithUniqueFields().copy(id = passOwnerId)).subscribe()
-        mongoTemplate.insertAll(mongoPassesFromDb).subscribe()
+        val passOwner = mongoTemplate.insert(mongoPassOwnerToCreate).block()!!
+        val passOwnerId = passOwner.id.toString()
+        mongoTemplate.insertAll(passesToCreate(passOwner.id!!)).collectList().block()!!
         val afterDate = LocalDate.now()
 
         // WHEN
@@ -196,7 +196,7 @@ internal class RedisPassOwnerRepositoryTest : IntegrationTest() {
         // THEN
         val doesCacheContainsBigDecimalUnderKey = redisTemplate.opsForValue().get(
             purchaseAfterDateKey(
-                passOwnerId.toString(),
+                passOwnerId,
                 afterDate
             )
         )

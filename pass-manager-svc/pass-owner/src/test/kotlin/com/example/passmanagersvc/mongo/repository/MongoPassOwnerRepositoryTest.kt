@@ -4,10 +4,10 @@ import com.example.passmanagersvc.infrastructure.mongo.entity.MongoPassOwner
 import com.example.passmanagersvc.infrastructure.mongo.mapper.PassOwnerMapper.toDomain
 import com.example.passmanagersvc.infrastructure.mongo.repository.MongoPassOwnerRepository
 import com.example.passmanagersvc.util.IntegrationTest
-import com.example.passmanagersvc.util.PassFixture.mongoPassesFromDb
+import com.example.passmanagersvc.util.PassFixture.mongoPassTypesToCreate
 import com.example.passmanagersvc.util.PassFixture.passTypes
+import com.example.passmanagersvc.util.PassFixture.passesToCreate
 import com.example.passmanagersvc.util.PassOwnerFixture.getOwnerWithUniqueFields
-import com.example.passmanagersvc.util.PassOwnerFixture.mongoPassOwnerFromDb
 import org.assertj.core.api.Assertions.assertThat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
@@ -106,13 +106,12 @@ internal class MongoPassOwnerRepositoryTest : IntegrationTest() {
     @Test
     fun `getting passes price distributions should return correct distribution per type`() {
         // GIVEN
-        val passOwnerId = mongoPassOwnerFromDb.id
-        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields().copy(id = passOwnerId)).block()
-        mongoTemplate.insertAll(passTypes).subscribe()
-        mongoTemplate.insertAll(mongoPassesFromDb).subscribe()
+        val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields()).block()!!
+        val passTypes = mongoTemplate.insertAll(mongoPassTypesToCreate).collectList().block()!!
+        mongoTemplate.insertAll(passesToCreate(insertedPassOwner.id!!, passTypes)).collectList().block()!!
 
         // WHEN
-        val priceDistributionFlux = passOwnerRepository.getPassesPriceDistribution(insertedPassOwner!!.id.toString())
+        val priceDistributionFlux = passOwnerRepository.getPassesPriceDistribution(insertedPassOwner.id.toString())
 
         // THEN
         priceDistributionFlux.collectList()
@@ -126,9 +125,10 @@ internal class MongoPassOwnerRepositoryTest : IntegrationTest() {
     @Test
     fun `getting sum of purchased passes for pass owner should return correct sum`() {
         // GIVEN
-        val passOwnerId = mongoPassOwnerFromDb.id
-        mongoTemplate.insert(getOwnerWithUniqueFields().copy(id = passOwnerId)).subscribe()
-        mongoTemplate.insertAll(mongoPassesFromDb).subscribe()
+        val passOwner = mongoTemplate.insert(getOwnerWithUniqueFields()).block()!!
+        val passOwnerId = passOwner.id!!
+        mongoTemplate.insertAll(passTypes).collectList().block()!!
+        mongoTemplate.insertAll(passesToCreate(passOwner.id!!)).collectList().block()!!
         val afterDate = LocalDate.now()
 
         // WHEN
