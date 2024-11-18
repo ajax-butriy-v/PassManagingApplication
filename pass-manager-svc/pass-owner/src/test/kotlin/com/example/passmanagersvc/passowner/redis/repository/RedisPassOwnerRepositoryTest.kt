@@ -5,7 +5,7 @@ import com.example.passmanagersvc.passowner.infrastructure.mongo.mapper.PassOwne
 import com.example.passmanagersvc.passowner.infrastructure.redis.repository.RedisPassOwnerRepository
 import com.example.passmanagersvc.passowner.infrastructure.redis.repository.RedisPassOwnerRepository.Companion.passOwnerKey
 import com.example.passmanagersvc.passowner.util.IntegrationTest
-import com.example.passmanagersvc.util.PassFixture.passTypes
+import com.example.passmanagersvc.util.PassFixture.mongoPassTypesToCreate
 import com.example.passmanagersvc.util.PassFixture.passesToCreate
 import com.example.passmanagersvc.util.PassOwnerFixture.getOwnerWithUniqueFields
 import com.example.passmanagersvc.util.PassOwnerFixture.mongoPassOwnerToCreate
@@ -166,8 +166,8 @@ internal class RedisPassOwnerRepositoryTest : IntegrationTest() {
     fun `getting passes price distributions should return correct distribution per type`() {
         val insertedPassOwner = mongoTemplate.insert(getOwnerWithUniqueFields()).block()!!
         val passOwnerId = insertedPassOwner.id!!
-        mongoTemplate.insertAll(passTypes).subscribe()
-        mongoTemplate.insertAll(passesToCreate(passOwnerId)).subscribe()
+        val passTypes = mongoTemplate.insertAll(mongoPassTypesToCreate).collectList().block()!!
+        mongoTemplate.insertAll(passesToCreate(passOwnerId, passTypes)).subscribe()
 
         // WHEN
         val priceDistributionFlux = redisPassOwnerRepository.getPassesPriceDistribution(passOwnerId.toString())
