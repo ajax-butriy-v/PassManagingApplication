@@ -3,7 +3,7 @@ package com.example.gateway.mapper.rest
 import com.example.core.exception.InternalRuntimeException
 import com.example.core.exception.PassNotFoundException
 import com.example.core.exception.PassOwnerNotFoundException
-import com.example.gateway.infrastructure.mapper.rest.TransferPassResponseMapper.toUnitResponse
+import com.example.gateway.infrastructure.rest.mapper.TransferPassResponseMapper.toUnitResponse
 import com.example.gateway.util.PassProtoFixture.failureTransferPassResponse
 import com.example.gateway.util.PassProtoFixture.failureTransferPassResponseWithPassNotFound
 import com.example.gateway.util.PassProtoFixture.failureTransferPassResponseWithPassOwnerNotFound

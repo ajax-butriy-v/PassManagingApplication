@@ -1,11 +1,11 @@
-package com.example.gateway.infrastructure.mapper.rest
+package com.example.gateway.infrastructure.rest.mapper
 
 import com.example.core.exception.InternalRuntimeException
 import com.example.core.exception.PassOwnerNotFoundException
 import com.example.core.exception.PassTypeNotFoundException
-import com.example.gateway.infrastructure.mapper.rest.FindPassByIdResponseMapper.fromProtoToDto
-import com.example.gateway.infrastructure.mapper.rest.FindPassByIdResponseMapper.toProto
 import com.example.gateway.infrastructure.rest.dto.PassDto
+import com.example.gateway.infrastructure.rest.mapper.FindPassByIdResponseMapper.fromProtoToDto
+import com.example.gateway.infrastructure.rest.mapper.FindPassByIdResponseMapper.toProto
 import com.example.internal.input.reqreply.CreatePassRequest
 import com.example.internal.input.reqreply.CreatePassResponse
 import com.example.internal.input.reqreply.CreatePassResponse.Failure.ErrorCase.OWNER_NOT_FOUND_BY_ID

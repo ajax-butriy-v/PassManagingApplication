@@ -3,7 +3,7 @@ package com.example.gateway.mapper.rest
 import com.example.core.exception.InternalRuntimeException
 import com.example.core.exception.PassOwnerNotFoundException
 import com.example.core.exception.PassTypeNotFoundException
-import com.example.gateway.infrastructure.mapper.rest.CreatePassResponseMapper.toDto
+import com.example.gateway.infrastructure.rest.mapper.CreatePassResponseMapper.toDto
 import com.example.gateway.util.PassDtoFixture
 import com.example.gateway.util.PassProtoFixture.failureCreatePassResponse
 import com.example.gateway.util.PassProtoFixture.failureCreatePassResponseWithPassOwnerNotFound

@@ -21,7 +21,7 @@ object PassTypeMapper {
     fun MongoPassType.toDomain(): PassType {
         return PassType(
             id = id?.toString(),
-            activeFrom = activeFrom,
+            activeFrom = activeFrom ?: Instant.now(),
             activeTo = activeTo ?: Instant.now(),
             name = name.orEmpty(),
             price = price ?: BigDecimal.ZERO,

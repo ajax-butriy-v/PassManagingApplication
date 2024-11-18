@@ -2,10 +2,10 @@ package com.example.gateway.infrastructure.grpc
 
 import com.example.commonmodels.Pass
 import com.example.gateway.application.port.output.NatsHandlerPassMessageOutPort
-import com.example.gateway.infrastructure.mapper.grpc.CreatePassMapper.toGrpcProto
-import com.example.gateway.infrastructure.mapper.grpc.CreatePassMapper.toInternalProto
-import com.example.gateway.infrastructure.mapper.grpc.FindPassByIdMapper.toGrpcProto
-import com.example.gateway.infrastructure.mapper.grpc.FindPassByIdMapper.toInternalProto
+import com.example.gateway.infrastructure.grpc.mapper.CreatePassMapper.toGrpcProto
+import com.example.gateway.infrastructure.grpc.mapper.CreatePassMapper.toInternalProto
+import com.example.gateway.infrastructure.grpc.mapper.FindPassByIdMapper.toGrpcProto
+import com.example.gateway.infrastructure.grpc.mapper.FindPassByIdMapper.toInternalProto
 import com.example.grpcapi.reqrep.pass.CreatePassRequest
 import com.example.grpcapi.reqrep.pass.CreatePassResponse
 import com.example.grpcapi.reqrep.pass.FindPassByIdRequest

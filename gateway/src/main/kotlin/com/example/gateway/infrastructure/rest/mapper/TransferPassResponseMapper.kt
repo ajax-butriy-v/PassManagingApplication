@@ -1,4 +1,4 @@
-package com.example.gateway.infrastructure.mapper.rest
+package com.example.gateway.infrastructure.rest.mapper
 
 import com.example.core.exception.InternalRuntimeException
 import com.example.core.exception.PassNotFoundException

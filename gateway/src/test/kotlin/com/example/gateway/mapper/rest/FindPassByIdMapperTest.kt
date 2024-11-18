@@ -2,7 +2,7 @@ package com.example.gateway.mapper.rest
 
 import com.example.core.exception.InternalRuntimeException
 import com.example.core.exception.PassNotFoundException
-import com.example.gateway.infrastructure.mapper.rest.FindPassByIdResponseMapper.toDto
+import com.example.gateway.infrastructure.rest.mapper.FindPassByIdResponseMapper.toDto
 import com.example.gateway.util.PassDtoFixture
 import com.example.gateway.util.PassProtoFixture.failureFindPassByIdResponseWithPassNotFound
 import com.example.gateway.util.PassProtoFixture.protoPass

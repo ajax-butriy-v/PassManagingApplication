@@ -1,12 +1,12 @@
 package com.example.gateway.infrastructure.rest
 
-import com.example.gateway.infrastructure.mapper.rest.CancelPassResponseMapper.toUnitResponse
-import com.example.gateway.infrastructure.mapper.rest.CreatePassResponseMapper.toCreatePassRequest
-import com.example.gateway.infrastructure.mapper.rest.CreatePassResponseMapper.toDto
-import com.example.gateway.infrastructure.mapper.rest.DeletePassByIdResponseMapper.toDeleteResponse
-import com.example.gateway.infrastructure.mapper.rest.FindPassByIdResponseMapper.toDto
-import com.example.gateway.infrastructure.mapper.rest.TransferPassResponseMapper.toUnitResponse
 import com.example.gateway.infrastructure.rest.dto.PassDto
+import com.example.gateway.infrastructure.rest.mapper.CancelPassResponseMapper.toUnitResponse
+import com.example.gateway.infrastructure.rest.mapper.CreatePassResponseMapper.toCreatePassRequest
+import com.example.gateway.infrastructure.rest.mapper.CreatePassResponseMapper.toDto
+import com.example.gateway.infrastructure.rest.mapper.DeletePassByIdResponseMapper.toDeleteResponse
+import com.example.gateway.infrastructure.rest.mapper.FindPassByIdResponseMapper.toDto
+import com.example.gateway.infrastructure.rest.mapper.TransferPassResponseMapper.toUnitResponse
 import com.example.internal.NatsSubject.Pass.CANCEL
 import com.example.internal.NatsSubject.Pass.CREATE
 import com.example.internal.NatsSubject.Pass.DELETE_BY_ID

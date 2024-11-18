@@ -65,22 +65,6 @@ internal class PassOwnerServiceImplTest {
     }
 
     @Test
-    fun `find by id should return object with specified id`() {
-        // GIVEN
-        every { passOwnerRepositoryOutPort.findById(any()) } returns passOwnerFromDb.toMono()
-
-        // WHEN
-        val ownerById = passOwnerService.findById(passOwnerIdFromDb)
-
-        // THEN
-        ownerById.test()
-            .assertNext { assertThat(it).usingRecursiveAssertion().isEqualTo(passOwnerFromDb) }
-            .verifyComplete()
-
-        verify { passOwnerRepositoryOutPort.findById(any()) }
-    }
-
-    @Test
     fun `delete by id should delete object`() {
         // GIVEN
         every { passOwnerRepositoryOutPort.deleteById(any()) } returns Unit.toMono()

@@ -12,12 +12,8 @@ import reactor.kotlin.core.publisher.switchIfEmpty
 class PassOwnerService(
     private val passOwnerRepositoryOutPort: PassOwnerRepositoryOutPort,
 ) : PassOwnerServiceInputPort {
-    override fun findById(passOwnerId: String): Mono<PassOwner> {
-        return passOwnerRepositoryOutPort.findById(passOwnerId)
-    }
-
     override fun getById(passOwnerId: String): Mono<PassOwner> {
-        return findById(passOwnerId).switchIfEmpty {
+        return passOwnerRepositoryOutPort.findById(passOwnerId).switchIfEmpty {
             Mono.error(PassOwnerNotFoundException("Could not find pass owner by id $passOwnerId"))
         }
     }

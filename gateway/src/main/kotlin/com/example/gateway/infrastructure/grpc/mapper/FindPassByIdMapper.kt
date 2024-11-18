@@ -1,4 +1,4 @@
-package com.example.gateway.infrastructure.mapper.grpc
+package com.example.gateway.infrastructure.grpc.mapper
 
 import com.example.commonmodels.Pass
 import com.example.core.exception.InternalRuntimeException

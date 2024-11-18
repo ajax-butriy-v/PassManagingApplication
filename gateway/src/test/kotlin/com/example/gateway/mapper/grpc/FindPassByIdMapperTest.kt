@@ -2,8 +2,8 @@ package com.example.gateway.mapper.grpc
 
 import com.example.core.exception.InternalRuntimeException
 import com.example.core.exception.PassNotFoundException
-import com.example.gateway.infrastructure.mapper.grpc.FindPassByIdMapper.toGrpcProto
-import com.example.gateway.infrastructure.mapper.grpc.FindPassByIdMapper.toInternalProto
+import com.example.gateway.infrastructure.grpc.mapper.FindPassByIdMapper.toGrpcProto
+import com.example.gateway.infrastructure.grpc.mapper.FindPassByIdMapper.toInternalProto
 import com.example.gateway.util.PassGrpcProtoFixture.failureFindPassByIdResponseWithPassNotFound
 import com.example.grpcapi.reqrep.pass.FindPassByIdRequest
 import org.assertj.core.api.Assertions.assertThat

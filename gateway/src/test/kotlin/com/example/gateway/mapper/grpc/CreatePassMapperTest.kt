@@ -3,8 +3,8 @@ package com.example.gateway.mapper.grpc
 import com.example.core.exception.InternalRuntimeException
 import com.example.core.exception.PassOwnerNotFoundException
 import com.example.core.exception.PassTypeNotFoundException
-import com.example.gateway.infrastructure.mapper.grpc.CreatePassMapper.toGrpcProto
-import com.example.gateway.infrastructure.mapper.grpc.CreatePassMapper.toInternalProto
+import com.example.gateway.infrastructure.grpc.mapper.CreatePassMapper.toGrpcProto
+import com.example.gateway.infrastructure.grpc.mapper.CreatePassMapper.toInternalProto
 import com.example.gateway.util.PassGrpcProtoFixture.failureCreatePassResponseWithPassOwnerNotFound
 import com.example.gateway.util.PassGrpcProtoFixture.failureCreatePassResponseWithPassTypeNotFound
 import com.example.gateway.util.PassProtoFixture.protoPass

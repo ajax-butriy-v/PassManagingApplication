@@ -5,7 +5,7 @@ import java.time.Instant
 
 data class PassType(
     val id: String?,
-    val activeFrom: Instant?,
+    val activeFrom: Instant,
     val activeTo: Instant,
     val name: String,
     val price: BigDecimal,
