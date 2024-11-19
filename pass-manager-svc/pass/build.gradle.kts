@@ -1,5 +1,5 @@
 plugins {
-    `subproject-without-main-conventions`
+    `subproject-conventions`
     `grpc-conventions`
 }
 

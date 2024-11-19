@@ -1,7 +1,7 @@
 package com.example.passmanagersvc.pass.infrastructure.kafka.producer
 
 import com.example.internal.KafkaTopic
-import com.example.passmanagersvc.pass.application.port.output.TransferPassMessageProducerOutPort
+import com.example.passmanagersvc.pass.application.port.out.TransferPassMessageProducerOutPort
 import com.example.passmanagersvc.pass.domain.Pass
 import com.example.passmanagersvc.pass.infrastructure.kafka.mapper.TransferredPassMessageMapper.toTransferredPassMessage
 import org.springframework.stereotype.Component

@@ -3,7 +3,7 @@ package com.example.passmanagersvc.pass.infrastructure.nats.handler
 import com.example.internal.NatsSubject.Pass.TRANSFER
 import com.example.internal.input.reqreply.TransferPassRequest
 import com.example.internal.input.reqreply.TransferPassResponse
-import com.example.passmanagersvc.pass.application.port.input.PassManagementServiceInputPort
+import com.example.passmanagersvc.pass.application.port.input.PassManagementServiceInPort
 import com.example.passmanagersvc.pass.infrastructure.nats.mapper.TransferPassMapper.failureTransferPassResponse
 import com.example.passmanagersvc.pass.infrastructure.nats.mapper.TransferPassMapper.successTransferPassResponse
 import com.google.protobuf.Parser
@@ -16,7 +16,7 @@ import systems.ajax.nats.handler.api.ProtoNatsMessageHandler
 
 @Component
 class TransferPassNatsController(
-    private val passManagementServiceInputPort: PassManagementServiceInputPort,
+    private val passManagementServiceInPort: PassManagementServiceInPort,
 ) : ProtoNatsMessageHandler<TransferPassRequest, TransferPassResponse> {
     override val log: Logger = LoggerFactory.getLogger(TransferPassNatsController::class.java)
     override val parser: Parser<TransferPassRequest> = TransferPassRequest.parser()
@@ -28,7 +28,7 @@ class TransferPassNatsController(
     }
 
     override fun doHandle(inMsg: TransferPassRequest): Mono<TransferPassResponse> {
-        return passManagementServiceInputPort.transferPass(inMsg.id, inMsg.ownerId)
+        return passManagementServiceInPort.transferPass(inMsg.id, inMsg.ownerId)
             .thenReturn(successTransferPassResponse())
     }
 

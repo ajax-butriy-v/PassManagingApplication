@@ -3,7 +3,7 @@ package com.example.passmanagersvc.pass.infrastructure.nats.handler
 import com.example.internal.NatsSubject.Pass.FIND_BY_ID
 import com.example.internal.input.reqreply.FindPassByIdRequest
 import com.example.internal.input.reqreply.FindPassByIdResponse
-import com.example.passmanagersvc.pass.application.port.input.PassServiceInputPort
+import com.example.passmanagersvc.pass.application.port.input.PassServiceInPort
 import com.example.passmanagersvc.pass.infrastructure.nats.mapper.FindPassByIdMapper.failureFindByIdPassResponse
 import com.example.passmanagersvc.pass.infrastructure.nats.mapper.FindPassByIdMapper.toSuccessFindPassByIdResponse
 import com.example.passmanagersvc.pass.infrastructure.nats.mapper.ProtoPassMapper.toProto
@@ -17,7 +17,7 @@ import systems.ajax.nats.handler.api.ProtoNatsMessageHandler
 
 @Component
 class FindPassByIdNatsController(
-    private val passServiceInputPort: PassServiceInputPort,
+    private val passServiceInPort: PassServiceInPort,
 ) : ProtoNatsMessageHandler<FindPassByIdRequest, FindPassByIdResponse> {
     override val log: Logger = LoggerFactory.getLogger(FindPassByIdNatsController::class.java)
     override val parser: Parser<FindPassByIdRequest> = FindPassByIdRequest.parser()
@@ -29,7 +29,7 @@ class FindPassByIdNatsController(
     }
 
     override fun doHandle(inMsg: FindPassByIdRequest): Mono<FindPassByIdResponse> {
-        return passServiceInputPort.getById(inMsg.id)
+        return passServiceInPort.getById(inMsg.id)
             .map { passFromDb -> passFromDb.toProto() }
             .map { proto -> proto.toSuccessFindPassByIdResponse() }
     }

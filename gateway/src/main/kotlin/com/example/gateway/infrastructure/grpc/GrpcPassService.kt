@@ -1,7 +1,7 @@
 package com.example.gateway.infrastructure.grpc
 
 import com.example.commonmodels.Pass
-import com.example.gateway.application.port.output.NatsHandlerPassMessageOutPort
+import com.example.gateway.application.port.output.NatsHandlerPassMessageInPort
 import com.example.gateway.infrastructure.grpc.mapper.CreatePassMapper.toGrpcProto
 import com.example.gateway.infrastructure.grpc.mapper.CreatePassMapper.toInternalProto
 import com.example.gateway.infrastructure.grpc.mapper.FindPassByIdMapper.toGrpcProto
@@ -19,24 +19,24 @@ import reactor.core.publisher.Mono
 
 @GrpcService
 class GrpcPassService(
-    private val natsHandlerPassMessageOutPort: NatsHandlerPassMessageOutPort,
+    private val natsHandlerPassMessageInPort: NatsHandlerPassMessageInPort,
 ) : ReactorPassServiceGrpc.PassServiceImplBase() {
 
     override fun getAllTransferredPasses(request: Mono<GetAllTransferredPassesRequest>): Flux<Pass> {
         return request.map { it.passTypeName }
-            .flatMapMany { natsHandlerPassMessageOutPort.getAllTransferredPasses(it) }
+            .flatMapMany { natsHandlerPassMessageInPort.getAllTransferredPasses(it) }
             .map(TransferredPassMessage::getPass)
     }
 
     override fun findPassById(request: Mono<FindPassByIdRequest>): Mono<FindPassByIdResponse> {
         return request.map { it.toInternalProto() }
-            .flatMap { natsHandlerPassMessageOutPort.findPassById(it) }
+            .flatMap { natsHandlerPassMessageInPort.findPassById(it) }
             .map { it.toGrpcProto() }
     }
 
     override fun createPass(request: Mono<CreatePassRequest>): Mono<CreatePassResponse> {
         return request.map { it.toInternalProto() }
-            .flatMap { natsHandlerPassMessageOutPort.createPass(it) }
+            .flatMap { natsHandlerPassMessageInPort.createPass(it) }
             .map { it.toGrpcProto() }
     }
 }

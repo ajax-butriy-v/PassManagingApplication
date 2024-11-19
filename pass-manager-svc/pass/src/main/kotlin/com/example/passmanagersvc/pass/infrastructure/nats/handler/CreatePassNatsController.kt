@@ -3,7 +3,7 @@ package com.example.passmanagersvc.pass.infrastructure.nats.handler
 import com.example.internal.NatsSubject.Pass.CREATE
 import com.example.internal.input.reqreply.CreatePassRequest
 import com.example.internal.input.reqreply.CreatePassResponse
-import com.example.passmanagersvc.pass.application.port.input.PassServiceInputPort
+import com.example.passmanagersvc.pass.application.port.input.PassServiceInPort
 import com.example.passmanagersvc.pass.infrastructure.nats.mapper.CreatePassMapper.failureCreatedPassResponse
 import com.example.passmanagersvc.pass.infrastructure.nats.mapper.CreatePassMapper.toSuccessCreatePassResponse
 import com.example.passmanagersvc.pass.infrastructure.nats.mapper.ProtoPassMapper.toDomain
@@ -18,7 +18,7 @@ import systems.ajax.nats.handler.api.ProtoNatsMessageHandler
 
 @Component
 class CreatePassNatsController(
-    private val passServiceInputPort: PassServiceInputPort,
+    private val passServiceInPort: PassServiceInPort,
 ) : ProtoNatsMessageHandler<CreatePassRequest, CreatePassResponse> {
     override val log: Logger = LoggerFactory.getLogger(CreatePassNatsController::class.java)
     override val parser: Parser<CreatePassRequest> = CreatePassRequest.parser()
@@ -31,7 +31,7 @@ class CreatePassNatsController(
 
     override fun doHandle(inMsg: CreatePassRequest): Mono<CreatePassResponse> {
         return inMsg.passToCreate.let { protoPass ->
-            passServiceInputPort.create(protoPass.toDomain(), protoPass.passOwnerId, protoPass.passTypeId)
+            passServiceInPort.create(protoPass.toDomain(), protoPass.passOwnerId, protoPass.passTypeId)
                 .map { createdPass -> createdPass.toProto() }
                 .map { proto -> proto.toSuccessCreatePassResponse() }
         }

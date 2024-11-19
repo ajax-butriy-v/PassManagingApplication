@@ -2,7 +2,7 @@ package com.example.passmanagersvc.pass.infrastructure.kafka.consumer
 
 import com.example.internal.KafkaTopic
 import com.example.internal.input.reqreply.TransferredPassMessage
-import com.example.passmanagersvc.pass.application.port.input.PassManagementServiceInputPort
+import com.example.passmanagersvc.pass.application.port.input.PassManagementServiceInPort
 import com.example.passmanagersvc.pass.infrastructure.nats.mapper.ProtoPassMapper.toDomain
 import com.google.protobuf.Parser
 import org.springframework.stereotype.Component
@@ -14,7 +14,7 @@ import systems.ajax.kafka.handler.subscription.topic.TopicSingle
 
 @Component
 class TransferPassMessageConsumer(
-    private val passManagementServiceInputPort: PassManagementServiceInputPort,
+    private val passManagementServiceInPort: PassManagementServiceInPort,
 ) : KafkaHandler<TransferredPassMessage, TopicSingle> {
 
     override val groupId: String = CONSUMER_TRANSFER_PASS_GROUP
@@ -32,7 +32,7 @@ class TransferPassMessageConsumer(
 
     private fun delegateToStatisticsService(message: TransferredPassMessage): Mono<Unit> {
         val pass = message.pass.toDomain().copy(id = message.passId)
-        return passManagementServiceInputPort.publishTransferPassStatistics(
+        return passManagementServiceInPort.publishTransferPassStatistics(
             pass,
             message.previousPassOwnerId
         )

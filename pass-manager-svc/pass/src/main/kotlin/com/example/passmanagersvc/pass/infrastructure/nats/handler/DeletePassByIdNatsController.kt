@@ -3,7 +3,7 @@ package com.example.passmanagersvc.pass.infrastructure.nats.handler
 import com.example.internal.NatsSubject.Pass.DELETE_BY_ID
 import com.example.internal.input.reqreply.DeletePassByIdRequest
 import com.example.internal.input.reqreply.DeletePassByIdResponse
-import com.example.passmanagersvc.pass.application.port.input.PassServiceInputPort
+import com.example.passmanagersvc.pass.application.port.input.PassServiceInPort
 import com.example.passmanagersvc.pass.infrastructure.nats.mapper.DeletePassByIdMapper.failureDeletePassByIdResponse
 import com.example.passmanagersvc.pass.infrastructure.nats.mapper.DeletePassByIdMapper.successDeletePassByIdResponse
 import com.google.protobuf.Parser
@@ -16,7 +16,7 @@ import systems.ajax.nats.handler.api.ProtoNatsMessageHandler
 
 @Component
 class DeletePassByIdNatsController(
-    private val passServiceInputPort: PassServiceInputPort,
+    private val passServiceInPort: PassServiceInPort,
 ) : ProtoNatsMessageHandler<DeletePassByIdRequest, DeletePassByIdResponse> {
     override val log: Logger = LoggerFactory.getLogger(DeletePassByIdNatsController::class.java)
     override val parser: Parser<DeletePassByIdRequest> = DeletePassByIdRequest.parser()
@@ -28,7 +28,7 @@ class DeletePassByIdNatsController(
     }
 
     override fun doHandle(inMsg: DeletePassByIdRequest): Mono<DeletePassByIdResponse> {
-        return passServiceInputPort.deleteById(inMsg.id)
+        return passServiceInPort.deleteById(inMsg.id)
             .thenReturn(successDeletePassByIdResponse())
     }
 

@@ -1,6 +1,6 @@
 package com.example.passmanagersvc.pass.infrastructure.mongo.repository
 
-import com.example.passmanagersvc.pass.application.port.output.PassRepositoryOutPort
+import com.example.passmanagersvc.pass.application.port.out.PassRepositoryOutPort
 import com.example.passmanagersvc.pass.domain.Pass
 import com.example.passmanagersvc.pass.infrastructure.mongo.entity.MongoPass
 import com.example.passmanagersvc.pass.infrastructure.mongo.entity.MongoPass.Companion.COLLECTION_NAME

@@ -1,7 +1,7 @@
 package com.example.passmanagersvc.passowner.infrastructure.rest
 
-import com.example.passmanagersvc.passowner.application.port.input.PassOwnerServiceInputPort
-import com.example.passmanagersvc.passowner.application.port.input.PassOwnerStatisticsServiceInputPort
+import com.example.passmanagersvc.passowner.application.port.input.PassOwnerServiceInPort
+import com.example.passmanagersvc.passowner.application.port.input.PassOwnerStatisticsServiceInPort
 import com.example.passmanagersvc.passowner.domain.PriceDistribution
 import com.example.passmanagersvc.passowner.infrastructure.rest.dto.PassOwnerDto
 import com.example.passmanagersvc.passowner.infrastructure.rest.dto.PassOwnerUpdateDto
@@ -28,14 +28,14 @@ import java.time.LocalDate
 @RestController
 @RequestMapping("/owners")
 class PassOwnerController(
-    private val passOwnerServiceInputPort: PassOwnerServiceInputPort,
-    private val passOwnerStatisticsServiceInputPort: PassOwnerStatisticsServiceInputPort,
+    private val passOwnerServiceInPort: PassOwnerServiceInPort,
+    private val passOwnerStatisticsServiceInPort: PassOwnerStatisticsServiceInPort,
 ) {
 
     @GetMapping("/{id}/distributions")
     @ResponseStatus(HttpStatus.OK)
     fun calculatePriceDistributions(@PathVariable id: String): Flux<PriceDistribution> {
-        return passOwnerStatisticsServiceInputPort.calculatePriceDistributions(id)
+        return passOwnerStatisticsServiceInPort.calculatePriceDistributions(id)
     }
 
     @GetMapping("/{id}/spent")
@@ -44,14 +44,14 @@ class PassOwnerController(
         @RequestParam afterDate: LocalDate,
         @PathVariable("id") ownerId: String,
     ): Mono<SpentAfterDateDto> {
-        return passOwnerStatisticsServiceInputPort.calculateSpentAfterDate(afterDate, ownerId)
+        return passOwnerStatisticsServiceInPort.calculateSpentAfterDate(afterDate, ownerId)
             .map { spentAfterDate -> SpentAfterDateDto(ownerId, afterDate, spentAfterDate) }
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun create(@Valid @RequestBody dto: PassOwnerDto): Mono<PassOwnerDto> {
-        return passOwnerServiceInputPort.create(dto.toDomain()).map { it.toDto() }
+        return passOwnerServiceInPort.create(dto.toDomain()).map { it.toDto() }
     }
 
     @PatchMapping("/{id}")
@@ -60,15 +60,15 @@ class PassOwnerController(
         @Valid @RequestBody updateDto: PassOwnerUpdateDto,
         @PathVariable("id") ownerId: String,
     ): Mono<PassOwnerDto> {
-        return passOwnerServiceInputPort.getById(ownerId)
+        return passOwnerServiceInPort.getById(ownerId)
             .map { it.partialUpdate(updateDto) }
-            .flatMap { passOwnerServiceInputPort.update(ownerId, it) }
+            .flatMap { passOwnerServiceInPort.update(ownerId, it) }
             .map { it.toDto() }
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun deleteById(@PathVariable id: String): Mono<Unit> {
-        return passOwnerServiceInputPort.deleteById(id)
+        return passOwnerServiceInPort.deleteById(id)
     }
 }
