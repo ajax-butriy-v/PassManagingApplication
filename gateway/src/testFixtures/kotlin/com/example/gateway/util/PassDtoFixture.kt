@@ -1,6 +1,6 @@
 package com.example.gateway.util
 
-import com.example.gateway.dto.PassDto
+import com.example.gateway.infrastructure.rest.dto.PassDto
 import org.bson.types.ObjectId
 import java.math.BigDecimal
 

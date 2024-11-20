@@ -28,7 +28,7 @@ java {
 }
 
 detekt {
-    config.from("../detekt-config.yml")
+    config.from("${rootDir}/detekt-config.yml")
     buildUponDefaultConfig = true
 }
 

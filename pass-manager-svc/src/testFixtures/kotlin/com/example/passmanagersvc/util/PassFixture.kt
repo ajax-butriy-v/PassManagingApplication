@@ -1,8 +1,10 @@
 package com.example.passmanagersvc.util
 
-import com.example.passmanagersvc.domain.MongoPass
-import com.example.passmanagersvc.domain.MongoPassType
-import com.example.passmanagersvc.util.PassOwnerFixture.passOwnerFromDb
+import com.example.passmanagersvc.pass.infrastructure.mongo.entity.MongoPass
+import com.example.passmanagersvc.pass.infrastructure.mongo.mapper.PassMapper.toDomain
+import com.example.passmanagersvc.passtype.infrastructure.mongo.entity.MongoPassType
+import com.example.passmanagersvc.passtype.infrastructure.mongo.mapper.PassTypeMapper.toDomain
+import com.example.passmanagersvc.util.PassOwnerFixture.mongoPassOwnerFromDb
 import org.bson.types.ObjectId
 import java.math.BigDecimal
 import java.time.Clock
@@ -15,7 +17,7 @@ object PassFixture {
     private val clock = Clock.fixed(Instant.now(), ZoneId.systemDefault())
     private val instant = Instant.now(clock).truncatedTo(ChronoUnit.MILLIS)
 
-    private val passTypesToCreate = listOf("First", "Second", "Third")
+    val mongoPassTypesToCreate = listOf("First", "Second", "Third")
         .map {
             MongoPassType(
                 id = null,
@@ -25,23 +27,52 @@ object PassFixture {
                 price = BigDecimal.TEN
             )
         }
-    val passTypeToCreate = passTypesToCreate.first()
-    val passTypes = passTypesToCreate.map { it.copy(id = ObjectId.get()) }
-    val singlePassType = passTypes.first()
-    val singlePassTypeId = singlePassType.id!!.toString()
+    val mongoPassTypeToCreate = mongoPassTypesToCreate.first()
+    val passTypeToCreate = mongoPassTypeToCreate.toDomain()
+    val passTypes = mongoPassTypesToCreate.map { it.copy(id = ObjectId.get()) }
+    val singleMongoPassType = passTypes.first()
+    val singlePassType = singleMongoPassType.toDomain()
+    val singlePassTypeId = singleMongoPassType.id!!.toString()
 
     val passesToCreate = passTypes.map {
         MongoPass(
             id = null,
             purchasedFor = BigDecimal.TEN,
-            passOwnerId = passOwnerFromDb.id,
+            passOwnerId = mongoPassOwnerFromDb.id,
             passTypeId = it.id,
             purchasedAt = instant,
         )
     }
-    val passesFromDb = passesToCreate.map { it.copy(id = ObjectId.get()) }
-    val passToCreate = passesToCreate.first()
-    val passFromDb = passesFromDb.first()
-    val singlePassId = passFromDb.id.toString()
+    val mongoPassesFromDb = passesToCreate.map { it.copy(id = ObjectId.get()) }
+    val passesFromDb = mongoPassesFromDb.map { it.toDomain() }
+    val mongoPassToCreate = passesToCreate.first()
+    val passToCreate = mongoPassToCreate.toDomain()
+    val mongoPassFromDb = mongoPassesFromDb.first()
+    val passFromDb = mongoPassFromDb.toDomain()
+    val singlePassId = mongoPassFromDb.id.toString()
+
+    fun passesToCreate(passOwnerId: ObjectId): List<MongoPass> {
+        return passTypes.map {
+            MongoPass(
+                id = null,
+                purchasedFor = BigDecimal.TEN,
+                passOwnerId = passOwnerId,
+                passTypeId = it.id,
+                purchasedAt = instant,
+            )
+        }
+    }
+
+    fun passesToCreate(passOwnerId: ObjectId, passTypes: List<MongoPassType>): List<MongoPass> {
+        return passTypes.map {
+            MongoPass(
+                id = null,
+                purchasedFor = BigDecimal.TEN,
+                passOwnerId = passOwnerId,
+                passTypeId = it.id,
+                purchasedAt = instant,
+            )
+        }
+    }
 }
 
