@@ -1,6 +1,6 @@
 package com.example.passmanagersvc.passowner.infrastructure.mongo.repository
 
-import com.example.passmanagersvc.passowner.application.port.out.PassOwnerRepositoryOutPort
+import com.example.passmanagersvc.passowner.application.port.output.PassOwnerRepositoryOutPort
 import com.example.passmanagersvc.passowner.domain.PassOwner
 import com.example.passmanagersvc.passowner.domain.PriceDistribution
 import com.example.passmanagersvc.passowner.infrastructure.mongo.entity.MongoPassOwner

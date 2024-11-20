@@ -1,4 +1,4 @@
-package com.example.gateway.application.port.output
+package com.example.gateway.application.port.input
 
 import com.example.internal.input.reqreply.CreatePassRequest
 import com.example.internal.input.reqreply.CreatePassResponse

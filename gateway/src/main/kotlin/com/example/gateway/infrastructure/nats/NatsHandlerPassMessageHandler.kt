@@ -1,6 +1,6 @@
 package com.example.gateway.infrastructure.nats
 
-import com.example.gateway.application.port.output.NatsHandlerPassMessageInPort
+import com.example.gateway.application.port.input.NatsHandlerPassMessageInPort
 import com.example.internal.NatsSubject
 import com.example.internal.NatsSubject.Pass.CREATE
 import com.example.internal.NatsSubject.Pass.FIND_BY_ID

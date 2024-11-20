@@ -2,7 +2,7 @@ package com.example.passmanagersvc.pass.application.service
 
 import com.example.core.exception.PassNotFoundException
 import com.example.passmanagersvc.pass.application.port.input.PassServiceInPort
-import com.example.passmanagersvc.pass.application.port.out.PassRepositoryOutPort
+import com.example.passmanagersvc.pass.application.port.output.PassRepositoryOutPort
 import com.example.passmanagersvc.pass.domain.Pass
 import com.example.passmanagersvc.passowner.application.port.input.PassOwnerServiceInPort
 import com.example.passmanagersvc.passtype.application.port.input.PassTypeServiceInPort

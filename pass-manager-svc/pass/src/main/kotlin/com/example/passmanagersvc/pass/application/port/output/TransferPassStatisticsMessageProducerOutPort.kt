@@ -1,4 +1,4 @@
-package com.example.passmanagersvc.pass.application.port.out
+package com.example.passmanagersvc.pass.application.port.output
 
 import com.example.internal.input.reqreply.TransferredPassStatisticsMessage
 import reactor.core.publisher.Mono

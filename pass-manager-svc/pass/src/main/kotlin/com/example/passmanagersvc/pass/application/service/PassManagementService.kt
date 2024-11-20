@@ -4,8 +4,8 @@ import com.example.internal.input.reqreply.TransferredPassStatisticsMessage
 import com.example.passmanagersvc.pass.application.mapper.TransferredPassStatisticsMessageMapper.toTransferPassStatisticsMessage
 import com.example.passmanagersvc.pass.application.port.input.PassManagementServiceInPort
 import com.example.passmanagersvc.pass.application.port.input.PassServiceInPort
-import com.example.passmanagersvc.pass.application.port.out.TransferPassMessageProducerOutPort
-import com.example.passmanagersvc.pass.application.port.out.TransferPassStatisticsMessageProducerOutPort
+import com.example.passmanagersvc.pass.application.port.output.TransferPassMessageProducerOutPort
+import com.example.passmanagersvc.pass.application.port.output.TransferPassStatisticsMessageProducerOutPort
 import com.example.passmanagersvc.pass.domain.Pass
 import com.example.passmanagersvc.passowner.application.port.input.PassOwnerServiceInPort
 import com.example.passmanagersvc.passtype.application.port.input.PassTypeServiceInPort

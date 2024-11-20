@@ -1,6 +1,6 @@
 package com.example.gateway.infrastructure.grpc
 
-import com.example.gateway.application.port.output.NatsHandlerPassMessageInPort
+import com.example.gateway.application.port.input.NatsHandlerPassMessageInPort
 import com.example.gateway.infrastructure.rest.mapper.CreatePassResponseMapper.toCreatePassRequest
 import com.example.gateway.util.PassDtoFixture.passDto
 import com.example.gateway.util.PassDtoFixture.passId

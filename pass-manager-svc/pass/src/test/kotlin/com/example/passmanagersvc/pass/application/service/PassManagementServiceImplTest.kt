@@ -1,8 +1,8 @@
 package com.example.passmanagersvc.pass.application.service
 
 import com.example.passmanagersvc.pass.application.port.input.PassServiceInPort
-import com.example.passmanagersvc.pass.application.port.out.TransferPassMessageProducerOutPort
-import com.example.passmanagersvc.pass.application.port.out.TransferPassStatisticsMessageProducerOutPort
+import com.example.passmanagersvc.pass.application.port.output.TransferPassMessageProducerOutPort
+import com.example.passmanagersvc.pass.application.port.output.TransferPassStatisticsMessageProducerOutPort
 import com.example.passmanagersvc.passowner.application.port.input.PassOwnerServiceInPort
 import com.example.passmanagersvc.passtype.application.port.input.PassTypeServiceInPort
 import com.example.passmanagersvc.util.PassFixture.mongoPassFromDb

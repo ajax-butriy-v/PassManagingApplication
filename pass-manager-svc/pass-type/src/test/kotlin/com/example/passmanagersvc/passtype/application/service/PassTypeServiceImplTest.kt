@@ -1,7 +1,7 @@
 package com.example.passmanagersvc.passtype.application.service
 
 import com.example.core.exception.PassTypeNotFoundException
-import com.example.passmanagersvc.passtype.application.port.out.PassTypeRepositoryOutPort
+import com.example.passmanagersvc.passtype.application.port.output.PassTypeRepositoryOutPort
 import com.example.passmanagersvc.util.PassFixture.singlePassType
 import com.example.passmanagersvc.util.PassFixture.singlePassTypeId
 import io.mockk.every

@@ -2,7 +2,7 @@ package com.example.passmanagersvc.pass.infrastructure.nats.handler
 
 import com.example.internal.NatsSubject.Pass.DELETE_BY_ID
 import com.example.internal.input.reqreply.DeletePassByIdResponse
-import com.example.passmanagersvc.pass.application.port.out.PassRepositoryOutPort
+import com.example.passmanagersvc.pass.application.port.output.PassRepositoryOutPort
 import com.example.passmanagersvc.pass.util.IntegrationTest
 import com.example.passmanagersvc.util.PassFixture.passToCreate
 import com.example.passmanagersvc.util.PassProtoFixture.deletePassByIdRequest

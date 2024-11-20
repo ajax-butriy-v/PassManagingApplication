@@ -2,7 +2,7 @@ package com.example.passmanagersvc.pass.infrastructure.kafka.producer
 
 import com.example.internal.KafkaTopic
 import com.example.internal.input.reqreply.TransferredPassStatisticsMessage
-import com.example.passmanagersvc.pass.application.port.out.TransferPassStatisticsMessageProducerOutPort
+import com.example.passmanagersvc.pass.application.port.output.TransferPassStatisticsMessageProducerOutPort
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import systems.ajax.kafka.publisher.KafkaPublisher

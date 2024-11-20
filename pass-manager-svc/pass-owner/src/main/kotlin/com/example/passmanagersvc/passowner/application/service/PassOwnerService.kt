@@ -2,7 +2,7 @@ package com.example.passmanagersvc.passowner.application.service
 
 import com.example.core.exception.PassOwnerNotFoundException
 import com.example.passmanagersvc.passowner.application.port.input.PassOwnerServiceInPort
-import com.example.passmanagersvc.passowner.application.port.out.PassOwnerRepositoryOutPort
+import com.example.passmanagersvc.passowner.application.port.output.PassOwnerRepositoryOutPort
 import com.example.passmanagersvc.passowner.domain.PassOwner
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono

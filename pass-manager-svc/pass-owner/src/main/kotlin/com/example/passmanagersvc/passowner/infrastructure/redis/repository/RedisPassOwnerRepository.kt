@@ -2,7 +2,7 @@ package com.example.passmanagersvc.passowner.infrastructure.redis.repository
 
 import com.example.core.exception.PassOwnerNotFoundException
 import com.example.core.util.isRedisOrSocketException
-import com.example.passmanagersvc.passowner.application.port.out.PassOwnerRepositoryOutPort
+import com.example.passmanagersvc.passowner.application.port.output.PassOwnerRepositoryOutPort
 import com.example.passmanagersvc.passowner.domain.PassOwner
 import com.example.passmanagersvc.passowner.domain.PriceDistribution
 import com.fasterxml.jackson.databind.ObjectMapper

@@ -2,9 +2,9 @@ package com.example.passmanagersvc.pass.infrastructure.nats.handler
 
 import com.example.internal.NatsSubject.Pass.CANCEL
 import com.example.internal.input.reqreply.CancelPassResponse
-import com.example.passmanagersvc.pass.application.port.out.PassRepositoryOutPort
+import com.example.passmanagersvc.pass.application.port.output.PassRepositoryOutPort
 import com.example.passmanagersvc.pass.util.IntegrationTest
-import com.example.passmanagersvc.passowner.application.port.out.PassOwnerRepositoryOutPort
+import com.example.passmanagersvc.passowner.application.port.output.PassOwnerRepositoryOutPort
 import com.example.passmanagersvc.passowner.infrastructure.mongo.mapper.PassOwnerMapper.toDomain
 import com.example.passmanagersvc.util.PassFixture.passToCreate
 import com.example.passmanagersvc.util.PassOwnerFixture.getOwnerWithUniqueFields

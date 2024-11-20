@@ -1,6 +1,6 @@
 package com.example.passmanagersvc.passtype.infrastructure.mongo.repository
 
-import com.example.passmanagersvc.passtype.application.port.out.PassTypeRepositoryOutPort
+import com.example.passmanagersvc.passtype.application.port.output.PassTypeRepositoryOutPort
 import com.example.passmanagersvc.passtype.infrastructure.mongo.entity.MongoPassType
 import com.example.passmanagersvc.passtype.infrastructure.mongo.mapper.PassTypeMapper.toDomain
 import com.example.passmanagersvc.passtype.util.IntegrationTest

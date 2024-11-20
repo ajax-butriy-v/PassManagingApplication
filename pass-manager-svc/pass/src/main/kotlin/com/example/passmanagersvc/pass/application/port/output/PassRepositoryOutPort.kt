@@ -1,4 +1,4 @@
-package com.example.passmanagersvc.pass.application.port.out
+package com.example.passmanagersvc.pass.application.port.output
 
 import com.example.passmanagersvc.pass.domain.Pass
 import reactor.core.publisher.Flux

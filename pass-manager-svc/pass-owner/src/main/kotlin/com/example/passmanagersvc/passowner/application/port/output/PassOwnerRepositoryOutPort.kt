@@ -1,4 +1,4 @@
-package com.example.passmanagersvc.passowner.application.port.out
+package com.example.passmanagersvc.passowner.application.port.output
 
 import com.example.passmanagersvc.passowner.domain.PassOwner
 import com.example.passmanagersvc.passowner.domain.PriceDistribution

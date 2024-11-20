@@ -1,7 +1,7 @@
 package com.example.passmanagersvc.passowner.application.service
 
 import com.example.passmanagersvc.passowner.application.port.input.PassOwnerServiceInPort
-import com.example.passmanagersvc.passowner.application.port.out.PassOwnerRepositoryOutPort
+import com.example.passmanagersvc.passowner.application.port.output.PassOwnerRepositoryOutPort
 import com.example.passmanagersvc.passowner.domain.PriceDistribution
 import com.example.passmanagersvc.util.PassOwnerFixture.passOwnerFromDb
 import com.example.passmanagersvc.util.PassOwnerFixture.passOwnerIdFromDb

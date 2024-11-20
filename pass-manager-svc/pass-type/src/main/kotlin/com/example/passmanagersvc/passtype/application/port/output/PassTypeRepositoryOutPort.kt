@@ -1,4 +1,4 @@
-package com.example.passmanagersvc.passtype.application.port.out
+package com.example.passmanagersvc.passtype.application.port.output
 
 import com.example.passmanagersvc.passtype.domain.PassType
 import reactor.core.publisher.Mono
